@@ -1,0 +1,370 @@
+﻿using Bindito.Core;
+using System.Collections.Generic;
+using Timberborn.BaseComponentSystem;
+using Timberborn.BlockSystem;
+using Timberborn.BuildingRange;
+using Timberborn.ConstructibleSystem;
+using Timberborn.Forestry;
+using Timberborn.PrefabSystem;
+using Timberborn.Yielding;
+using Timberborn.Goods;
+using UnityEngine;
+using System;
+using Timberborn.TimeSystem;
+using Timberborn.Growing;
+using Timberborn.BuildingsBlocking;
+using Timberborn.Persistence;
+using Timberborn.GoodConsumingBuildingSystem;
+using Timberborn.InventorySystem;
+using Timberborn.Common;
+using Cordial.Mods.BoosterJuice.Scripts.UI;
+using Timberborn.WorkSystem;
+using Timberborn.Workshops;
+using Timberborn.SingletonSystem;
+
+namespace Cordial.Mods.BoosterJuice.Scripts {
+  public class GrowthFertilizationBuilding : BaseComponent, 
+        IBuildingWithRange,
+        IFinishedStateListener,
+        IPausableComponent,
+        IPersistentEntity
+    {
+
+        [SerializeField]
+        private float _growthFactor;
+
+        [SerializeField]
+        private float _yieldFactor;
+
+        [SerializeField]
+        private int _growthFertilizationRadius;
+
+        [SerializeField]
+        private int _capacity;
+
+        [SerializeField]
+        private string _supply;
+
+        [SerializeField]
+        private float _consumptionFactor;
+
+        private static readonly ComponentKey GrowthFertilizationBuildingKey = new ComponentKey(nameof(GrowthFertilizationBuilding));
+        private static readonly PropertyKey<float> SupplyLeftKey = new PropertyKey<float>("SupplyLeft");
+
+        // from GoodConsumingBuilding
+        private BlockableBuilding _blockableBuilding;
+        private readonly List<GoodConsumingToggle> _toggles = new List<GoodConsumingToggle>();
+        private float _supplyLeft;
+
+        // tree handling
+        private readonly List<Growable> _nearbyGrowingTrees = new List<Growable>();
+
+        public Inventory Inventory { get; private set; }
+
+        public bool IsConsuming { get; private set; }
+
+        public bool ConsumptionPaused { get; private set; }
+
+        public int TreesTotalCount => this._treesInRangeCount;
+        public int TreesGrowCount => this._nearbyGrowingTrees.Count;
+
+        public IEnumerable<Growable> GrowingTrees => this._nearbyGrowingTrees;
+
+        public int ConsumptionPerHour => Mathf.CeilToInt(this._consumptionPerHour);
+        public string Supply => this._supply;
+
+        public int Capacity => this._capacity;
+
+        public int SupplyLeft => this.Inventory.UnreservedAmountInStock(this._supply);
+
+        public float SupplyAmount
+        {
+            get => (float)this.Inventory.UnreservedAmountInStock(this._supply) + this._supplyLeft;
+        }
+        public float DailyGrowth => (this._dailyGrowth * 100.0f);
+
+        public bool IsReadyToFertilize => (double)this.SupplyAmount > 0.0;
+
+        // productivity calculation and worker access
+        private WorkplaceWorkingHours _workplaceWorkingHours;
+        private Workshop _workshop;
+        private EventBus _eventBus;
+
+        private int _treesInRangeCount = 0;
+        private int _workHoursPassed = 0;
+        private float _consumptionPerHour = 0.0f;
+        private float _dailyGrowth = 0.0f;
+
+        // fertilization handling
+        private readonly float _timeTriggerCallCountPerDay = 1/24f;  // call the trigger every hour;
+
+        private int _buildingId = 0;
+
+        private TreeCuttingArea _treeCuttingArea;
+        private GrowthFertilizationAreaService _growththFertilizationAreaService;
+        private BlockService _blockService;
+        private BlockObjectRange _blockObjectRange;
+
+
+        private List<Yielder> _yieldersInArea = new();
+
+
+
+        private ITimeTriggerFactory _timeTriggerFactory;
+        private ITimeTrigger _timeTrigger;
+
+        // unknown
+        private Prefab _prefab;
+
+
+        [Inject]
+        public void InjectDependencies( BlockService blockService,
+                                        TreeCuttingArea treeCuttingArea,
+                                        ITimeTriggerFactory timeTriggerFactory,
+                                        GrowthFertilizationAreaService growthFertilizationAreaService,
+                                        EventBus eventBus )
+        {
+            this._treeCuttingArea = treeCuttingArea;
+            this._blockService = blockService;
+            this._growththFertilizationAreaService = growthFertilizationAreaService;
+            this._timeTriggerFactory = timeTriggerFactory;
+            this._eventBus = eventBus;
+        }
+        public void Awake()
+        {
+            this._blockableBuilding = this.GetComponentFast<BlockableBuilding>();
+            this._blockObjectRange = this.GetComponentFast<BlockObjectRange>();
+            this._prefab = this.GetComponentFast<Prefab>();
+            // set up time triggering response
+            this._timeTrigger = this._timeTriggerFactory.Create(new Action(this.FertilizeNearbyGrowingTrees), _timeTriggerCallCountPerDay);
+
+            // add building to area service for other UIs/Classes to access range of all GrowthFertilization
+            _buildingId =   this._growththFertilizationAreaService.AddBuilding(this);
+
+            // access working hours / productivity
+            this._workplaceWorkingHours = this.GetComponentFast<WorkplaceWorkingHours>();
+            this._workshop = this.GetComponentFast<Workshop>();
+
+
+            this._eventBus.Register((object)this);
+
+            this.enabled = false;
+        }
+        public void InitializeInventory(Inventory inventory)
+        {
+            Asserts.FieldIsNull<GrowthFertilizationBuilding>(this, (object)this.Inventory, "Inventory");
+            this.Inventory = inventory;
+        }
+
+        [OnEvent]
+        public void OnDaytimeStart(DaytimeStartEvent daytimeStartEvent) => this.StartNextDay();
+
+        private void StartNextDay()
+        {
+            // at each day start, reset counter for growth calculation
+            _workHoursPassed = 0;
+            _dailyGrowth = 0.0f;
+
+        }
+
+        public IEnumerable<BaseComponent> GetObjectsInRange()
+        {
+            //Debug.Log("Cordial Booster: GetBlocksInRange");
+
+            foreach (Vector3Int coordinates in this.GetBlocksInRange())
+            {
+                TreeComponent treeComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(coordinates);
+
+                if (treeComponentAt != null)
+                {
+        //        // check if coordinates are also in the treecutting area
+        //        if (this._treeCuttingArea.IsInCuttingArea(coordinates))
+        //        {
+        //            // tree is cuttable, change growth rate or yield
+        //            // get yielder
+        //            foreach (Yielder yielder in this._treeCuttingArea.YieldersInArea)
+        //            {
+        //                if (yielder.Coordinates == coordinates)
+        //                {
+        //                    if (yielder.IsYieldingOrAlive())
+        //                    {
+        //                        GoodAmount goodAmount = yielder.Yield;
+
+        //                        Debug.Log("FS: " + yielder.name + " - " + goodAmount.ToString());
+
+        //                        if (!_yieldersInArea.Contains(yielder))
+        //                        {
+        //                            _yieldersInArea.Add(yielder);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+                    yield return (BaseComponent)treeComponentAt;
+                }
+            }
+        }
+
+
+        public IEnumerable<Vector3Int> GetBlocksInRange()
+        {
+            //Debug.Log("Cordial Booster: GetBlocksInRange");
+            return this._blockObjectRange.GetBlocksOnTerrainInRectangularRadius(this._growthFertilizationRadius);
+        }
+
+        public IEnumerable<string> RangeNames()
+        {
+            yield return this._prefab.PrefabName;
+        }
+
+        public IEnumerable<Yielder> YieldersInArea()
+        {
+            return this._yieldersInArea;
+        }
+
+        public void OnEnterFinishedState()
+        {
+            // register building area
+            this._growththFertilizationAreaService.UpdateBuildingArea(_buildingId);
+
+            this._timeTrigger.Resume();
+            this.Inventory.Enable();
+            this.enabled = true;
+        }
+
+        public void OnExitFinishedState()
+        {
+            this._timeTrigger.Pause();
+            this.Inventory.Disable();
+            this.enabled = false;
+        }
+
+        public void Save(IEntitySaver entitySaver)
+        {
+            entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).Set(GrowthFertilizationBuilding.SupplyLeftKey, this._supplyLeft);
+        }
+
+        public void Load(IEntityLoader entityLoader)
+        {
+            if (!entityLoader.HasComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey))
+                return;
+
+            // update supply from save
+            this._supplyLeft = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).Get(GrowthFertilizationBuilding.SupplyLeftKey);
+        }
+
+        public GoodConsumingToggle GetGoodConsumingToggle()
+        {
+            GoodConsumingToggle goodConsumingToggle = new GoodConsumingToggle();
+            this._toggles.Add(goodConsumingToggle);
+            goodConsumingToggle.StateChanged += (EventHandler)((_1, _2) => this.UpdateConsumptionState());
+            return goodConsumingToggle;
+        }
+        private void UpdateConsumptionState()
+        {
+            this.ConsumptionPaused = this._toggles.FastAny<GoodConsumingToggle>((Predicate<GoodConsumingToggle>)(toggle => toggle.Paused));
+        }
+
+        private bool UpdateConsumption(float goodConsume)
+        {
+            this.IsConsuming = !this.ConsumptionPaused && this._blockableBuilding.IsUnblocked && this.ConsumeSupplies(goodConsume);
+
+            return this.IsConsuming;
+        }
+        private bool ConsumeSupplies(float goodConsume)
+        {
+            if ((double)this._supplyLeft > 0.0)
+            {
+                this._supplyLeft -= goodConsume;
+                return true;
+            }
+            if ((double)this._supplyLeft > 0.0 || this.Inventory.UnreservedAmountInStock(this._supply) <= 0)
+            {
+                return false;
+            }
+
+
+            this.Inventory.Take(new GoodAmount(this._supply, 1));
+            this._supplyLeft = 1f;
+            return true;
+        }
+
+        private void FertilizeNearbyGrowingTrees()
+        {
+            this.UpdateNearbyGrowingTrees();
+
+            // check if working day has finished
+            if (this._workplaceWorkingHours.AreWorkingHours && (0 < this._workshop.NumberOfWorkersWorking))
+            {
+                _workHoursPassed++; // increment for each hour worker is actively there
+                _consumptionPerHour = 0;
+                float growthTimeOffsetCycle = 0.0f;
+                float growthTimeTotal_d =   0.0f; 
+
+                foreach (Growable growable in this._nearbyGrowingTrees)
+                {
+                    // get actual growth (1.0 is considered 100% in game)
+                    float growth = growable.GrowthProgress;
+
+                    // get original growth time
+                    growthTimeTotal_d = growable.GrowthTimeInDays;
+
+                    // calculate targeted growth time 
+                    float growthTimeTgt_d = growthTimeTotal_d * _growthFactor;
+
+                    // calculate offset to be applied to growable each day
+                    float growthTimeOffset = (((1.0f / growthTimeTgt_d) - (1.0f / growthTimeTotal_d)) / 100.0f);
+
+                    // add proportional effect that growth effect diminishes during the day
+                    // x =  ((hoursInDay+1) - workHour) * (growthTimeOffset * !HoursOfDay)
+                    // x =  ((24+1) - t) * (e.g. 3.33 * 300)
+                    growthTimeOffsetCycle = ((25.0f - (float)_workHoursPassed) * (growthTimeOffset / 300.0f));
+
+                    // calculate consumption
+                    float growthFertilizerConsumption = _consumptionFactor * growthTimeOffset * _timeTriggerCallCountPerDay;
+
+                    _consumptionPerHour += growthFertilizerConsumption;
+
+                    if (UpdateConsumption(growthFertilizerConsumption))
+                    {
+                        // update growth
+                        growable.IncreaseGrowthProgress(growthTimeOffsetCycle);
+                    }
+                }
+
+                // growth increase in this cycle, reference as percentage of the whole growth time
+                _dailyGrowth += ((growthTimeOffsetCycle / (1/growthTimeTotal_d)) * 100.0f);
+            }
+
+            this._timeTrigger.Reset();
+            this._timeTrigger.Resume();
+        }
+
+        private void UpdateNearbyGrowingTrees()
+        {
+            this._nearbyGrowingTrees.Clear();
+
+            _treesInRangeCount = 0;
+
+            foreach (Vector3Int coordinates in this._growththFertilizationAreaService.GetRegisteredFertilizationArea(_buildingId))
+            {
+                TreeComponent treeComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(coordinates);
+
+                if (treeComponentAt != null)
+                {
+                    treeComponentAt.TryGetComponentFast<Growable>(out Growable growable);
+
+                    if (growable != null)
+                    {
+                        // check if still growing
+                        if (growable.GrowthInProgress)
+                        {
+                            this._nearbyGrowingTrees.Add(growable);
+                        }
+                    }
+                    _treesInRangeCount++;
+                }
+            }
+        }
+    }
+}
