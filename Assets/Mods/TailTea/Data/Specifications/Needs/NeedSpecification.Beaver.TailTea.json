@@ -1,0 +1,24 @@
+{
+  "Id": "TailTea",
+  "BackwardCompatibleIds": [
+  ],
+  "Order": 9,
+  "NeedGroupId": "Nutrition",
+  "CharacterType": "Beaver",
+  "DisplayNameLocKey": "Cordial.Good.TailTea.PluralDisplayName",
+  "StartingValue": 0.0,
+  "MinimumValue": 0.0,
+  "MaximumValue": 1.0,
+  "DailyDelta": -0.05,
+  "ImportanceMultiplier": 1.0,
+  "CriticalNeedType": {
+    "Value": "None"
+  },
+  "CriticalSpriteName": "",
+  "CriticalDescriptionLocKey": "",
+  "DeathOnMinValue": false,
+  "DeathMessageLocKey": "",
+  "Effectiveness": 10.0,
+  "Wastable": true,
+  "FavorableWellbeing": 1
+}
