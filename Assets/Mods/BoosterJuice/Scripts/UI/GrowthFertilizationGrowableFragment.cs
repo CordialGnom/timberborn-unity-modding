@@ -21,18 +21,14 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
     sealed class GrowthFertilizationGrowableFragment : IEntityPanelFragment
     {
-        const string RulesAreaCaptionTextLocKey = "Cordial.Growables.GrowthFertilizationGrowableFragment.RulesAreaCaptionTextLocKey";
-        const string RuleTextLocKey = "Cordial.Growables.GrowthFertilizationGrowableFragment.RuleTextLocKey";
-
         readonly UiFactory _uiFactory;
 
         private TreeComponent _growthFertilizationTreeComponent;
-        private GrowthFertilizationBuilding _growthFertilizationBuilding;
         private GrowthFertilizationAreaService _growthFertilizationAreaService;
 
         VisualElement _root = new();
-        Label _caption = new();
-        Label _rulesList = new();
+        Label _title = new();
+        Label _growthInfo = new();
 
         public GrowthFertilizationGrowableFragment(UiFactory uiFactory)
         {
@@ -44,20 +40,20 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
             this._growthFertilizationAreaService = DependencyContainer.GetInstance<GrowthFertilizationAreaService>();
 
             // var presets = _builder.Presets();
-            // _caption = presets.Labels().Label(color: Color.cyan);
-            // _rulesList = presets.Labels().GameText();
+            // _title = presets.Labels().Label(color: Color.cyan);
+            // _growthInfo = presets.Labels().GameText();
             //
             // UIFragmentBuilder uIFragmentBuilder = _builder.CreateFragmentBuilder()
-            //     .AddComponent(_caption)
-            //     .AddComponent(_rulesList);
+            //     .AddComponent(_title)
+            //     .AddComponent(_growthInfo);
             // _root = uIFragmentBuilder.BuildAndInitialize();
             // _root.ToggleDisplayStyle(visible: false);
             // return _root;
-            _caption = _uiFactory.CreateLabel();
-            _rulesList = _uiFactory.CreateLabel();
+            _title = _uiFactory.CreateLabel();
+            _growthInfo = _uiFactory.CreateLabel();
 
             _root = _uiFactory.CreateCenteredPanelFragmentBuilder()
-                .AddComponent(_caption).AddComponent(_rulesList)
+                .AddComponent(_title).AddComponent(_growthInfo)
                 .BuildAndInitialize();
             _root.ToggleDisplayStyle(visible: false);
             return _root;
@@ -80,25 +76,14 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
                     {
                         if( this._growthFertilizationAreaService.CheckCoordinateFertilizationArea(blockObject.Coordinates) )
                         {
-                            
-
-                                _caption.text = "Growth influenced by fertilizer.";
-                                _rulesList.text = "Daily growth increased by: " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(blockObject.Coordinates).ToString("0.0") + " %");
-                                _root.ToggleDisplayStyle(true);
-                                return;
+                            _title.text = "Growth influenced by fertilizer.";
+                            _growthInfo.text = "Daily growth increased by: " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(blockObject.Coordinates).ToString("0.0") + " %");
+                            _root.ToggleDisplayStyle(true);
+                            return;
                         }
                     }
-                    else
-                    {
-                        _caption.text = "Tree Growth Objects";
-                    }
-                }
-                else
-                {
-                    _caption.text = "Tree Growth Default";
                 }
             }
-            //UpdateYielderState();
             _root.ToggleDisplayStyle(false);
         }
 
@@ -119,16 +104,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
             if (growable != null)
             {
                 // get building from area service
-
-                this._rulesList.text = "Growth Progress: " + growable.GrowthProgress;
+                this._growthInfo.text = "Growth Progress: " + growable.GrowthProgress;
             }
         }
-
-        //private void UpdateYielderState()
-        //{
-        //    if (!(bool)(Object)this._growthFertilizationTreeComponent)
-        //        return;
-        //    this._caption.text = "Trees growing:  " + (this._growthFertilizationTreeComponent.GrowthProgress) + "/" + (this._growthFertilizationTreeComponent.TreesTotalCount);
-        //}
     }
 }
