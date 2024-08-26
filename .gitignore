@@ -100,3 +100,5 @@ Assets/UniversalRenderPipelineGlobalSettings.asset
 /UIElementsSchema/
 /UserSettings/
 Assets/Tools
+Assets/DefaultVolumeProfile.*
+Assets/UniversalRenderPipelineGlobalSettings.*
