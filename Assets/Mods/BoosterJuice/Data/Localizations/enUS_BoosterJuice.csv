@@ -5,9 +5,7 @@ Cordial.Fertilizer.Mild,Tree Fertilizer,-
 Cordial.Fertilizer.Strong,Tree Fertilizer,-
 Building.CordialChemist.Description,Cooks chemical concotions,-
 Building.CordialChemist.DisplayName,Chemist,A building that serves as an chemistry laboratory. Produces all sorts of smells and smoke.
-Building.CordialChemist.FlavorDescription,"The fantasitical apparatus inside is used strictly for scientific purposes.",-
+Building.CordialChemist.FlavorDescription,"The fantastical apparatus inside is used strictly for scientific purposes.",-
 Building.CordialFertilizerDump.Description,Distributes fertilizer to planted trees,-
-Building.CordialFertilizerDump.DisplayName,Fertilizer Distribution,-
+Building.CordialFertilizerDump.DisplayName,Fertilizer Dump,-
 Building.CordialFertilizerDump.FlavorDescription,"Fertilizer for trees improves growth and yield.",-
-Cordial.Buildings.GrowthFertilizationBuildingFragment.RulesAreaCaptionTextLocKey,"Fertilization Area Rules",-
-Cordial.Buildings.GrowthFertilizationBuildingFragment.RuleTextLocKey,"Fertilization Rules",-
