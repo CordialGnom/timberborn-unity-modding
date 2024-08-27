@@ -25,6 +25,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
         private TreeComponent _growthFertilizationTreeComponent;
         private GrowthFertilizationAreaService _growthFertilizationAreaService;
+        private Vector3Int _growableCoordinates;
 
         VisualElement _root = new();
         Label _title = new();
@@ -38,7 +39,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
         public VisualElement InitializeFragment()
         {
             this._growthFertilizationAreaService = DependencyContainer.GetInstance<GrowthFertilizationAreaService>();
-
+            this._growableCoordinates = Vector3Int.zero;
             // var presets = _builder.Presets();
             // _title = presets.Labels().Label(color: Color.cyan);
             // _growthInfo = presets.Labels().GameText();
@@ -76,9 +77,11 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
                     {
                         if( this._growthFertilizationAreaService.CheckCoordinateFertilizationArea(blockObject.Coordinates) )
                         {
+                            this._growableCoordinates = blockObject.Coordinates;
+
                             _title.text = "Growth influenced by fertilizer.";
                             _growthInfo.text = "Daily growth increased by: " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(blockObject.Coordinates).ToString("0.0") + " %");
-                            _root.ToggleDisplayStyle(true);
+                            _root.ToggleDisplayStyle((bool)(Object)this._growthFertilizationTreeComponent);
                             return;
                         }
                     }
@@ -94,6 +97,15 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
         public void UpdateFragment()
         {
+            if ((this._growthInfo != null)
+                && (this._growthFertilizationTreeComponent != null)
+                && (this._growthFertilizationAreaService != null)
+                && (this._growableCoordinates != null)
+                )
+            {
+                this._growthInfo.text = "Daily growth increased by: " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(this._growableCoordinates).ToString("0.0") + " %");
+                _root.ToggleDisplayStyle((bool)(Object)this._growthFertilizationTreeComponent);
+            }
         }
 
         private void UpdateGrowableState(Growable growable)

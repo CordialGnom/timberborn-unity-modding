@@ -5,7 +5,6 @@
 
 using System.Collections.Generic;
 using System.Text;
-using TimberApi.UIBuilderSystem;
 using Timberborn.BaseComponentSystem;
 using Timberborn.CoreUI;
 using Timberborn.EntityPanelSystem;
@@ -17,7 +16,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
     sealed class GrowthFertilizationBuildingFragment : IEntityPanelFragment
     {
-        readonly UiFactory _uiFactory;
+        private readonly UiFactory _uiFactory;
 
         private GrowthFertilizationBuilding _growthFertilizationBuilding;
 
@@ -26,7 +25,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
         Label _consumptionText = new ();
         Label _capacityStateText = new();
 
-        public GrowthFertilizationBuildingFragment(UiFactory uiFactory)
+        public GrowthFertilizationBuildingFragment(UiFactory uiFactory )
         {
             _uiFactory = uiFactory;
         }
@@ -65,6 +64,13 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
         public void UpdateFragment()
         {
+            if (null != _growthFertilizationBuilding)
+            {
+                this.UpdateGrowthState();
+                this.UpdateConsumptionState();
+                this.UpdateInventoryState();
+                _root.ToggleDisplayStyle((bool)(Object)this._growthFertilizationBuilding);
+            }
         }
 
         private void UpdateInventoryState()
@@ -79,7 +85,6 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
                 return;
             this._consumptionText.text = "Using: " + _growthFertilizationBuilding.ConsumptionPerHour + " Fertilizer / Hour";
         }
-
 
         private void UpdateGrowthState()
         {
