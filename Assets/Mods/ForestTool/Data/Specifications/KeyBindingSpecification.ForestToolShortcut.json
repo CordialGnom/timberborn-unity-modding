@@ -1,0 +1,10 @@
+{
+  "Id": "Cordial.ForestTool.KeyBinding.ForestToolConfigShortcut",
+  "GroupId": "ForestTool",
+  "Order": 19,
+  "LocKey": "Cordial.ForestTool.KeyBinding.ForestToolConfigShortcut",
+  "PrimaryInputBindingSpecification": {
+    "Path": "/Keyboard/leftCtrl"
+  },
+  "AllowOtherModifiers": true
+}
