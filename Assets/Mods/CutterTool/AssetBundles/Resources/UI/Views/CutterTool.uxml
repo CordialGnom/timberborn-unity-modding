@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Mods/CutterTool/AssetBundles/Resources/UI/Styles/CutterToolStyle.uss?fileID=7433441132597879392&amp;guid=98485eaa55f28b44db7739bc37abac99&amp;type=3#CutterToolStyle" />
+    <Timberborn.CoreUI.NineSliceVisualElement name="NineSliceVisualElement" style="height: 166px; width: 351px;">
+        <ui:Label name="CutterToolLabel" text="Cutter Tool Config" class="cutter-tool__label" style="color: rgb(0, 0, 0); bottom: 526px; right: 77px;" />
+        <ui:GroupBox style="height: 152px;">
+            <Timberborn.CoreUI.LocalizableToggle value="true" text="Pine" text-loc-key="Mods.CutterTool.Cut.Pine" tooltip="Select to cut pine trees" />
+            <Timberborn.CoreUI.LocalizableToggle text="Birch" text-loc-key="Mods.CutterTool.Cut.Birch" toggle-on-label-click="true" value="true" tooltip="Select to cut birch  trees" />
+            <Timberborn.CoreUI.LocalizableToggle text="Maple" value="true" text-loc-key="Mods.CutterTool.Cut.Maple" tooltip="Select to cut maple trees" />
+        </ui:GroupBox>
+    </Timberborn.CoreUI.NineSliceVisualElement>
+    <ui:VisualElement name="CutterToolWrapper" picking-mode="Ignore" class="cutter-tool__wrapper" />
+</ui:UXML>
