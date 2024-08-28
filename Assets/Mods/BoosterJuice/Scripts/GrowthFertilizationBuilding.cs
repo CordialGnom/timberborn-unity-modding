@@ -50,6 +50,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         private static readonly ComponentKey GrowthFertilizationBuildingKey = new ComponentKey(nameof(GrowthFertilizationBuilding));
         private static readonly PropertyKey<float> SupplyLeftKey = new PropertyKey<float>("SupplyLeft");
+        private static readonly PropertyKey<float> DailyGrowthKey = new PropertyKey<float>("DailyGrowth");
 
         // from GoodConsumingBuilding
         private BlockableBuilding _blockableBuilding;
@@ -169,37 +170,12 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         public IEnumerable<BaseComponent> GetObjectsInRange()
         {
-            //Debug.Log("Cordial Booster: GetBlocksInRange");
-
             foreach (Vector3Int coordinates in this.GetBlocksInRange())
             {
                 TreeComponent treeComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(coordinates);
 
                 if (treeComponentAt != null)
                 {
-        //        // check if coordinates are also in the treecutting area
-        //        if (this._treeCuttingArea.IsInCuttingArea(coordinates))
-        //        {
-        //            // tree is cuttable, change growth rate or yield
-        //            // get yielder
-        //            foreach (Yielder yielder in this._treeCuttingArea.YieldersInArea)
-        //            {
-        //                if (yielder.Coordinates == coordinates)
-        //                {
-        //                    if (yielder.IsYieldingOrAlive())
-        //                    {
-        //                        GoodAmount goodAmount = yielder.Yield;
-
-        //                        Debug.Log("FS: " + yielder.name + " - " + goodAmount.ToString());
-
-        //                        if (!_yieldersInArea.Contains(yielder))
-        //                        {
-        //                            _yieldersInArea.Add(yielder);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
                     yield return (BaseComponent)treeComponentAt;
                 }
             }
@@ -208,7 +184,6 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         public IEnumerable<Vector3Int> GetBlocksInRange()
         {
-            //Debug.Log("Cordial Booster: GetBlocksInRange");
             return this._blockObjectRange.GetBlocksOnTerrainInRectangularRadius(this._growthFertilizationRadius);
         }
 
@@ -241,7 +216,11 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         public void Save(IEntitySaver entitySaver)
         {
-            entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).Set(GrowthFertilizationBuilding.SupplyLeftKey, this._supplyLeft);
+            entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey)
+                .Set(GrowthFertilizationBuilding.SupplyLeftKey, this._supplyLeft);
+
+            entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey)
+                .Set(GrowthFertilizationBuilding.DailyGrowthKey, this._dailyGrowth);
         }
 
         public void Load(IEntityLoader entityLoader)
@@ -249,8 +228,13 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
             if (!entityLoader.HasComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey))
                 return;
 
-            // update supply from save
-            this._supplyLeft = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).Get(GrowthFertilizationBuilding.SupplyLeftKey);
+            // update supply from save if available
+            float? valueOrNullable = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).GetValueOrNullable(GrowthFertilizationBuilding.SupplyLeftKey);
+            this._supplyLeft = valueOrNullable.GetValueOrDefault();
+            
+            // update grwoth from save if available
+            valueOrNullable = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).GetValueOrNullable(GrowthFertilizationBuilding.DailyGrowthKey);
+            this._dailyGrowth = valueOrNullable.GetValueOrDefault();
         }
 
         public GoodConsumingToggle GetGoodConsumingToggle()
