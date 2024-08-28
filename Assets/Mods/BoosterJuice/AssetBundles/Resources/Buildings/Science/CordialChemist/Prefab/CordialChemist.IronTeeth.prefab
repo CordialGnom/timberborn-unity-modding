@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: -790041461, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selectionSoundName: Herbalist
+  _selectionSoundName: Default
   _loopingSoundName: 
   _buildingCost:
   - _goodId: Plank

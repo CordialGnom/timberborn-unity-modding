@@ -499,7 +499,7 @@ MonoBehaviour:
   m_Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelName: Buildings/Science/CordialChemist/CordialChemist.Folktails.ConstructionStage0.Model
+  _modelName: Buildings/Wellbeing/Herbalist/Herbalist.Folktails.ConstructionStage0.Model
 --- !u!65 &65674075532428830
 BoxCollider:
   m_ObjectHideFlags: 0
