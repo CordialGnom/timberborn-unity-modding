@@ -99,12 +99,12 @@ MonoBehaviour:
   _loopingSoundName: 
   _buildingCost:
   - _goodId: Plank
-    _amount: 10
+    _amount: 6
   - _goodId: Gear
-    _amount: 15
+    _amount: 10
   - _goodId: Log
-    _amount: 5
-  _scienceCost: 300
+    _amount: 8
+  _scienceCost: 200
   _placeFinished: 0
   _finishableWithBeaversOnSite: 0
   _path: 0
@@ -157,8 +157,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _productionRecipeIds:
-  - Fertilizer.Mild
-  - Fertilizer.Strong
+  - Fertilizer.Mild.Folktails
+  - Fertilizer.Strong.Folktails
 --- !u!114 &114020141782412925
 MonoBehaviour:
   m_ObjectHideFlags: 0
