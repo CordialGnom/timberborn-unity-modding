@@ -1,11 +1,12 @@
 {
-  "Id": "Fertilizer.Mild",
+  "Id": "Fertilizer.Mild.Folktails",
   "DisplayLocKey": "Cordial.Fertilizer.Mild",
   "CycleDurationInHours": 2,
   "CyclesCapacity": 5,
   "Ingredients": [
-    { "Good": { "Id": "Berries" }, 		"Amount": 2 },
-    { "Good": { "Id": "Spadderdock" },  "Amount": 2 },
+    { "Good": { "Id": "Berries" }, 		"Amount": 1 },
+    { "Good": { "Id": "Wheat" }, 		"Amount": 1 },
+    { "Good": { "Id": "Spadderdock" },  "Amount": 1 },
     { "Good": { "Id": "Water" }, 		"Amount": 2 }
   ],
   "Products": [
