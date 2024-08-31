@@ -1,0 +1,13 @@
+{
+  "Name": "Booster Juice",
+  "Version": "0.0.1.2",
+  "Id": "Cordial.BoosterJuice",
+  "MinimumGameVersion": "0.6.1.0",
+  "Description": "Increase forest growth and yield, with new goods and buildings",
+  "RequiredMods": [
+   {
+	"Id": "TimberApi",
+	"MinimumVersion": "0.7.4.0"
+   }
+  ]
+}
