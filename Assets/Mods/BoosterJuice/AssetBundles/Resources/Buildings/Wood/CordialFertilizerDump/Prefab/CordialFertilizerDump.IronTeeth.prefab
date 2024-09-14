@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 3045347935002632006}
   - component: {fileID: 8892177175870057185}
   - component: {fileID: 7672197548274035088}
-  - component: {fileID: 5559480691963793134}
+  - component: {fileID: 1421905538244486391}
   m_Layer: 0
   m_Name: CordialFertilizerDump.IronTeeth
   m_TagString: Untagged
@@ -184,7 +184,6 @@ MonoBehaviour:
   _scienceCost: 120
   _placeFinished: 0
   _finishableWithBeaversOnSite: 0
-  _path: 0
   _drawRangeBoundsOnIt: 0
 --- !u!114 &5124144526841976077
 MonoBehaviour:
@@ -195,13 +194,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2863585299073478030}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -460516431, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
+  m_Script: {fileID: 1596376676, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _finishedModel: {fileID: 666627564884985863}
-  _unfinishedModel: {fileID: 4187045584144244368}
-  _finishedUncoveredModel: {fileID: 0}
-  _forceUnfinishedModelForUnfinishedBuilding: 0
+  _finishedModelName: '#Finished'
+  _unfinishedModelName: '#Unfinished'
+  _finishedUncoveredModelName: 
+  _constructionModeModel: 0
 --- !u!114 &-1066210719923161554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,7 +217,9 @@ MonoBehaviour:
   _defaultWorkers: 1
   _defaultWorkerType: Beaver
   _disallowOtherWorkerTypes: 0
-  _workerTypeUnlockCosts: []
+  _workerTypeUnlockCosts:
+  - _workerType: Bot
+    _scienceCost: 500
 --- !u!114 &-961603786714167271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,13 +329,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2863585299073478030}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1115175677, guid: b5f268a4cb31a93ed707a95d3a502b0e, type: 3}
+  m_Script: {fileID: 652365310, guid: b6b9d4cc3090b6fceb2eb6438dd271f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _displayNameLocKey: Building.CordialFertilizerDump.DisplayName
   _descriptionLocKey: Building.CordialFertilizerDump.Description
   _flavorDescriptionLocKey: Building.CordialFertilizerDump.FlavorDescription
-  _image: {fileID: 21300000, guid: b50272f96d92e8d4ea57744ebd711419, type: 3}
+  _imagePath: Buildings/Wood/CordialFertilizerDump/FertilizerDumpIcon
 --- !u!114 &-3161173505399161988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -412,12 +413,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2863585299073478030}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1501203204, guid: 644c1295076bbdbb604b7f96aa6be9c2, type: 3}
+  m_Script: {fileID: 437054131, guid: 644c1295076bbdbb604b7f96aa6be9c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _progressThresholds:
   - 0
---- !u!114 &5559480691963793134
+--- !u!114 &1421905538244486391
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
