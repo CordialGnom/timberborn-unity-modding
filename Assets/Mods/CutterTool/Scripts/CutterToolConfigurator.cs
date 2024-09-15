@@ -1,5 +1,6 @@
 using Bindito.Core;
 using TimberApi.Tools.ToolSystem;
+using Cordial.Mods.CutterTool.Scripts.UI;
 
 namespace Cordial.Mods.CutterTool.Scripts
 {
@@ -10,7 +11,7 @@ namespace Cordial.Mods.CutterTool.Scripts
         {
             containerDefinition.Bind<CutterToolSettings>().AsSingleton();
             containerDefinition.Bind<CutterToolInitializer>().AsSingleton();
-            containerDefinition.Bind<CutterToolConfigPanel>().AsSingleton();
+            //containerDefinition.Bind<CutterToolConfigPanel>().AsSingleton();
             containerDefinition.Bind<ICutterTool>().To<CutterToolService>().AsSingleton();
             containerDefinition.Bind<CutterToolService>().AsSingleton();
             containerDefinition.MultiBind<IToolFactory>().To<CutterToolFactory>().AsSingleton();

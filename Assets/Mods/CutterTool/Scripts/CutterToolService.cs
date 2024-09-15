@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cordial.Mods.CutterTool.Scripts.UI;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
 using Timberborn.Forestry;
-using Timberborn.ForestryUI;
 using Timberborn.InputSystem;
 using Timberborn.Localization;
 using Timberborn.SelectionSystem;
@@ -33,7 +33,7 @@ namespace Cordial.Mods.CutterTool.Scripts
 
         // UI setup
         private CutterToolInitializer _cutterToolInitializer;
-        private CutterToolConfigPanel _cutterToolConfigPanel;
+        //private CutterToolConfigPanel _cutterToolConfigPanel;
         //private CutterToolSettings _cutterToolSettings;
 
         // input handling
@@ -86,20 +86,22 @@ namespace Cordial.Mods.CutterTool.Scripts
         public void Load()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
-            _cutterToolConfigPanel = DependencyContainer.GetInstance<CutterToolConfigPanel>();
+            //_cutterToolConfigPanel = DependencyContainer.GetInstance<CutterToolConfigPanel>();
         }
         public override void Enter()
         {
             // activate tool
             this._selectionToolProcessor.Enter();
-            this._cutterToolConfigPanel.OnUIConfirmed();
+            //this._cutterToolConfigPanel.OnUIConfirmed();
             //_cutterToolInitializer.SetVisualState(true);
+            this._eventBus.Post((object)new CutterToolSelectedEvent(this) );
         }
         public override void Exit()
         {
             this._selectionToolProcessor.Exit();
             //this._cutterToolConfigPanel.OnUICancelled();
             //_cutterToolInitializer.SetVisualState(false);
+            this._eventBus.Post((object)new CutterToolUnselectedEvent(this));
         }
         void IPriorityInputProcessor.ProcessInput()
         {
