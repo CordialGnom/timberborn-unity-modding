@@ -13,20 +13,26 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         private readonly VisualElementLoader _visualElementLoader;
         private readonly EventBus _eventBus;
 
+
+        readonly CutterToolConfigFragment _cutterToolConfigFragment;
+
         private VisualElement _root;
 
-            public CutterToolInitializer(UILayout uiLayout, 
-                                        VisualElementLoader visualElementLoader,
-                                        EventBus eventBus)
+            public CutterToolInitializer( UILayout uiLayout, 
+                                            VisualElementLoader visualElementLoader,
+                                            CutterToolConfigFragment cutterToolConfigFragment,
+                                            EventBus eventBus)
         {
             this._uiLayout = uiLayout;
             this._visualElementLoader = visualElementLoader;
+            this._cutterToolConfigFragment = cutterToolConfigFragment;
             this._eventBus = eventBus;
         }
 
         public void Load()
-            {
-                this._root = this._visualElementLoader.LoadVisualElement("Common/EntityPanel/EntityPanel");
+        {
+                //this._root = this._visualElementLoader.LoadVisualElement("Common/EntityPanel/EntityPanel");
+            this._root = this._cutterToolConfigFragment.InitializeFragment();
 
             this._uiLayout.AddAbsoluteItem(this._root);
             this._eventBus.Register((object)this);
