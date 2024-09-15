@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TimberApi.DependencyContainerSystem;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
@@ -33,6 +34,7 @@ namespace Mods.CutterTool.Scripts
 
         // UI setup
         private CutterToolInitializer _cutterToolInitializer;
+        private CutterToolConfigPanel _cutterToolConfigPanel;
         //private CutterToolSettings _cutterToolSettings;
 
         // input handling
@@ -85,17 +87,20 @@ namespace Mods.CutterTool.Scripts
         public void Load()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
+            _cutterToolConfigPanel = DependencyContainer.GetInstance<CutterToolConfigPanel>();
         }
         public override void Enter()
         {
             // activate tool
             this._selectionToolProcessor.Enter();
-            _cutterToolInitializer.SetVisualState(true);
+            this._cutterToolConfigPanel.OnUIConfirmed();
+            //_cutterToolInitializer.SetVisualState(true);
         }
         public override void Exit()
         {
             this._selectionToolProcessor.Exit();
-            _cutterToolInitializer.SetVisualState(false);
+            //this._cutterToolConfigPanel.OnUICancelled();
+            //_cutterToolInitializer.SetVisualState(false);
         }
         void IPriorityInputProcessor.ProcessInput()
         {
