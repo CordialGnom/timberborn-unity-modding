@@ -1,7 +1,7 @@
 ﻿using TimberApi.Tools.ToolSystem;
 using Timberborn.ToolSystem;
 
-namespace Mods.CutterTool.Scripts
+namespace Cordial.Mods.CutterTool.Scripts
 {
     public class CutterToolFactory : IToolFactory
     {

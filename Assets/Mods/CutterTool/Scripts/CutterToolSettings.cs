@@ -2,7 +2,7 @@
 using Timberborn.SettingsSystem;
 using ModSettings.Core;
 
-namespace Mods.CutterTool.Scripts
+namespace Cordial.Mods.CutterTool.Scripts
 {
     public class CutterToolSettings : ModSettingsOwner
     {

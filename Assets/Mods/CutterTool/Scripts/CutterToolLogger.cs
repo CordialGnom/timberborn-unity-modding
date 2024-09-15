@@ -1,7 +1,7 @@
 ﻿using Timberborn.ModManagerScene;
 using UnityEngine;
 
-namespace Mods.CutterTool.Scripts {
+namespace Cordial.Mods.CutterTool.Scripts {
   internal class CutterToolLogger : IModStarter {
 
     public void StartMod()

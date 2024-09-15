@@ -10,7 +10,7 @@ using Timberborn.UILayoutSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Mods.CutterTool.Scripts
+namespace Cordial.Mods.CutterTool.Scripts
 {
     public class CutterToolConfigPanel : IPanelController, ILoadableSingleton
     {

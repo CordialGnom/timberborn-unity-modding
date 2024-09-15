@@ -1,6 +1,6 @@
 ﻿using Timberborn.ToolSystem;
 
-namespace Mods.CutterTool.Scripts
+namespace Cordial.Mods.CutterTool.Scripts
 {
     public interface ICutterTool
     {

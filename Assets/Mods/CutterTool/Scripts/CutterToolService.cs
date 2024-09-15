@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using TimberApi.DependencyContainerSystem;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
@@ -15,7 +14,7 @@ using Timberborn.TerrainSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
 
-namespace Mods.CutterTool.Scripts
+namespace Cordial.Mods.CutterTool.Scripts
 {
     public class CutterToolService : Tool, ILoadableSingleton, ICutterTool, IPriorityInputProcessor, IInputProcessor
     {

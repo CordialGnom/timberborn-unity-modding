@@ -1,7 +1,7 @@
 using Bindito.Core;
 using TimberApi.Tools.ToolSystem;
 
-namespace Mods.CutterTool.Scripts
+namespace Cordial.Mods.CutterTool.Scripts
 {
     [Context("Game")]
     public class CutterToolConfigurator : IConfigurator {
