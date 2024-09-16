@@ -232,6 +232,9 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         public void OnExitFinishedState()
         {
+            // un-register building area
+            this._growththFertilizationAreaService.RemoveBuildingArea(_buildingId);
+
             this._timeTrigger.Pause();
             this.Inventory.Disable();
             this.enabled = false;
