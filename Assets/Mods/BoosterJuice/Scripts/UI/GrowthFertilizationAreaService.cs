@@ -116,7 +116,37 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
             }
         }
 
+        public float GetGrowthProgessAverage(Vector3Int coordinate)
+        {
+            // get building ID referenced to the coordinate
+            int buildingID = _coordinateRegistry.GetValueOrDefault(coordinate, 0);
+
+            if (buildingID == 0)
+            {
+                return 0.0f;
+            }
+            else
+            {
+                GrowthFertilizationBuilding building = _buildingRegistry.GetValueOrDefault(buildingID, null);
+
+                if (building != null)
+                {
+                    return building.AverageGrowth;
+                }
+                else
+                {
+                    return 0.0f;
+                }
+            }
+        }
+        public float GetGrowthFactor()
+        {
+            // get first building, as all should have the same reference
+            KeyValuePair<int, GrowthFertilizationBuilding> kvp = _buildingRegistry.First();
+
+            if (kvp.Value == null)
+                return 0.0f;
+            return kvp.Value.GrowthFactor;
+        }
     }
-
-
 }
