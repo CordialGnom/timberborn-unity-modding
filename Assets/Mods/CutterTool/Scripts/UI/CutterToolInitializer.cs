@@ -1,4 +1,6 @@
-﻿using Timberborn.CoreUI;
+﻿using System.Collections.Generic;
+using Timberborn.Beavers;
+using Timberborn.CoreUI;
 using Timberborn.SingletonSystem;
 using Timberborn.UILayoutSystem;
 using UnityEngine;
@@ -38,24 +40,65 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
             //Debug.Log("CTI: LEP: x:" + rect.size.x + " y:" + rect.size.y + " p1:" + rect.position.x + " p2:" + rect.position.y + " c:" + this._entityroot.childCount );
 
-            //var elements = this._entityroot.Children();
-            //List<VisualElement> elementList = new();
+            var elements = this._entityroot.Children();
+            List<VisualElement> elementList = new();
 
-            //foreach (var element in elements)
+            foreach (var element in elements)
+            {
+                Debug.Log("CTI: LEP: E: " + element.name + " EC: " + element.childCount);
+
+
+                switch (element.name)
+                {
+                    case "EntityDescription":
+                    case "EntityDescriptionHider":
+                    case "SideFragments":
+                    case "Fragments":
+                        elementList.Add(element);
+                        break;
+                    default:
+                        break;
+                }
+
+                foreach (var child in element.Children())
+                {
+                    Debug.Log("CTI: LEP:  C: " + child.name + " CC: " + child.childCount);
+
+                    if (child.name == "Header")
+                    {
+                        elementList.Add(child);
+                    }
+
+                    foreach (var kid in child.Children())
+                    {
+                        Debug.Log("CTI: LEP:   K: " + kid.name + " KC: " + kid.childCount);
+
+                        foreach (var newt in kid.Children())
+                        {
+                            Debug.Log("CTI: LEP:    N: " + newt.name + " NC: " + newt.childCount);
+
+                            foreach (var sal in newt.Children())
+                            {
+                                Debug.Log("CTI: LEP:     S: " + sal.name + " SC: " + sal.childCount);
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            //for (int index = 0; index < elementList.Count; ++index)
             //{
-            //    elementList.AddItem(element);
-            //}
-
-
-            //for ( int index = 0; index < elementList.Count; ++index)
-            //{
-
             //    this._entityroot.Remove(elementList[index]);
             //}
             //elementList.Clear();
 
             this._entityroot.Clear();
 
+            for (int index = 0; index < elementList.Count; ++index)
+            {
+                this._entityroot.Add(elementList[index]);
+            }
 
 
             this._root = this._cutterToolConfigFragment.InitializeFragment();
