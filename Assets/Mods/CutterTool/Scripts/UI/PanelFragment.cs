@@ -1,5 +1,6 @@
 ﻿// Timberborn Utils
 // Author: igor.zavoychinskiy@gmail.com
+// Reworked by cordialgnom@gmail.com for personal use
 // License: Public Domain
 
 using TimberApi.UIBuilderSystem;
@@ -9,7 +10,6 @@ using TimberApi.UIBuilderSystem.StylingElements;
 using Timberborn.CoreUI;
 using UnityEngine.UIElements;
 
-// ReSharper disable once CheckNamespace
 namespace Cordial.Mods.CutterTool.Scripts.UI
 {
 
@@ -47,13 +47,20 @@ public abstract class PanelFragmentBuilder<TBuilder> : BaseBuilder<TBuilder, Nin
     return BuilderInstance;
   }
 
-  /// <summary>Sets the height of the panel.</summary>
+  /// <summary>Sets the width of the panel.</summary>
   public TBuilder SetWidth(Length width) {
     Root.style.width = width;
     return BuilderInstance;
   }
 
-  /// <summary>Sets the height of the panel.</summary>
+    public TBuilder SetHeight(Length height)
+    {
+        Root.style.height = height;
+        return BuilderInstance;
+    }
+
+   
+        /// <summary>Sets how the content is justified.</summary>
   public TBuilder SetJustifyContent(Justify justify) {
     Root.style.justifyContent = justify;
     return BuilderInstance;
