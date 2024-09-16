@@ -17,8 +17,9 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         readonly CutterToolConfigFragment _cutterToolConfigFragment;
 
         private VisualElement _root;
+        private VisualElement _entityroot;
 
-            public CutterToolInitializer( UILayout uiLayout, 
+        public CutterToolInitializer( UILayout uiLayout, 
                                             VisualElementLoader visualElementLoader,
                                             CutterToolConfigFragment cutterToolConfigFragment,
                                             EventBus eventBus)
@@ -31,13 +32,42 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
         public void Load()
         {
-                //this._root = this._visualElementLoader.LoadVisualElement("Common/EntityPanel/EntityPanel");
+            this._entityroot = this._visualElementLoader.LoadVisualElement("Common/EntityPanel/EntityPanel");
+
+            //Rect rect = this._entityroot.layout;
+
+            //Debug.Log("CTI: LEP: x:" + rect.size.x + " y:" + rect.size.y + " p1:" + rect.position.x + " p2:" + rect.position.y + " c:" + this._entityroot.childCount );
+
+            //var elements = this._entityroot.Children();
+            //List<VisualElement> elementList = new();
+
+            //foreach (var element in elements)
+            //{
+            //    elementList.AddItem(element);
+            //}
+
+
+            //for ( int index = 0; index < elementList.Count; ++index)
+            //{
+
+            //    this._entityroot.Remove(elementList[index]);
+            //}
+            //elementList.Clear();
+
+            this._entityroot.Clear();
+
+
+
             this._root = this._cutterToolConfigFragment.InitializeFragment();
 
-            this._uiLayout.AddAbsoluteItem(this._root);
+            this._entityroot.Add(this._root);
+
+            this._uiLayout.AddAbsoluteItem(this._entityroot);
+            //this._uiLayout.AddBottomRight(this._root, 10);
             this._eventBus.Register((object)this);
 
-            this._root.ToggleDisplayStyle(false);
+            this._entityroot.ToggleDisplayStyle(false);
+            //this._root.ToggleDisplayStyle(false);
 
             Debug.Log("CTI: Load");
         }
@@ -56,6 +86,13 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
             Debug.Log("CTI: SE");
             this.SetVisualState(true);
+
+            this._entityroot.ToggleDisplayStyle(true);
+
+            Rect rect = this._entityroot.layout;
+
+            Debug.Log("CTI: SEP: c" + this._entityroot.childCount );
+
         }
 
         [OnEvent]
@@ -65,6 +102,7 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                 return;
             Debug.Log("CTI: USE");
             this.SetVisualState(false);
+            this._entityroot.ToggleDisplayStyle(false);
         }
     }
 }
