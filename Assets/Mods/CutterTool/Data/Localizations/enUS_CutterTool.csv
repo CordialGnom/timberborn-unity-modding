@@ -1,23 +1,12 @@
 ID,Text,Comment
 Cordial.CutterTool.DisplayName,Mark special tree cutting area,-
-Cordial.CutterTool.Description,tree cutting area marking tool with line or pattern selection,-
+Cordial.CutterTool.Description, configurable tree cutting area marking tool,-
 Cordial.CutterTool.KeyBindingGroup.CutterTool,Cutter Tool,-
 Cordial.CutterTool.KeyBinding.CutterToolConfigShortcut,Cutter tool configuration,-
 Cordial.CutterTool.CutterToolPanel.Title, Cutter Tool Setup,-
-Cordial.CutterTool.CutterToolPanel.PanelDescription, Configure trees and/or spots to be cut,-
-Cordial.CutterTool.CutterToolPanel.ToggleTree01, Birch,-
-Cordial.CutterTool.CutterToolPanel.ToggleTree02, Pine,-
-Cordial.CutterTool.CutterToolPanel.ToggleTree03, Chestnut,-
-Cordial.CutterTool.CutterToolPanel.ToggleTree04, Maple,-
-Cordial.CutterTool.CutterToolPanel.ToggleTree05, Oak,-
-Cordial.CutterTool.CutterToolPanel.ToggleTree06, Empty Spots,-
-Cordial.CutterTool.CutterToolPanel.ButtonConfirm, Confirm,-
-Cordial.CutterTool.CutterToolPanel.ButtonClose, Close,-
-Cordial.CutterTool.CutterToolPanel.ButtonReset, Reset,-
-Cordial.CutterTool.CutterTool.PanelDescription, You need to unlock Forester to plant trees,-
-Cordial.CutterTool.CutterTool.ButtonConfirm, Confirm,-
-Mods.CutterTool.Cut.Birch, Cut Birch, -
-Mods.CutterTool.Cut.Pine, Cut Pine, -
-Mods.CutterTool.Cut.Maple, Cut Maple, -
-Mods.CutterTool.Cut.Oak, Cut Oak, -
-preview.textfields.ingame.color, ColorView,-
+Cordial.CutterTool.CutterToolPanel.Description, Configure trees and/or cutting selection area,- 
+Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern01, All,-
+Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern02, Checkered,-
+Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern03, Lines X,-
+Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern04, Lines Y,-
+Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeAll, All
