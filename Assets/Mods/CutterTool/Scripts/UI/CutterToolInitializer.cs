@@ -43,49 +43,49 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             var elements = this._entityroot.Children();
             List<VisualElement> elementList = new();
 
-            foreach (var element in elements)
-            {
-                Debug.Log("CTI: LEP: E: " + element.name + " EC: " + element.childCount);
+            //foreach (var element in elements)
+            //{
+            //    Debug.Log("CTI: LEP: E: " + element.name + " EC: " + element.childCount);
 
 
-                switch (element.name)
-                {
-                    case "EntityDescription":
-                    case "EntityDescriptionHider":
-                    case "SideFragments":
-                    case "Fragments":
-                        elementList.Add(element);
-                        break;
-                    default:
-                        break;
-                }
+            //    switch (element.name)
+            //    {
+            //        case "EntityDescription":
+            //        case "EntityDescriptionHider":
+            //        case "SideFragments":
+            //        case "Fragments":
+            //            elementList.Add(element);
+            //            break;
+            //        default:
+            //            break;
+            //    }
 
-                foreach (var child in element.Children())
-                {
-                    Debug.Log("CTI: LEP:  C: " + child.name + " CC: " + child.childCount);
+            //    foreach (var child in element.Children())
+            //    {
+            //        Debug.Log("CTI: LEP:  C: " + child.name + " CC: " + child.childCount);
 
-                    if (child.name == "Header")
-                    {
-                        elementList.Add(child);
-                    }
+            //        if (child.name == "Header")
+            //        {
+            //            elementList.Add(child);
+            //        }
 
-                    foreach (var kid in child.Children())
-                    {
-                        Debug.Log("CTI: LEP:   K: " + kid.name + " KC: " + kid.childCount);
+            //        foreach (var kid in child.Children())
+            //        {
+            //            Debug.Log("CTI: LEP:   K: " + kid.name + " KC: " + kid.childCount);
 
-                        foreach (var newt in kid.Children())
-                        {
-                            Debug.Log("CTI: LEP:    N: " + newt.name + " NC: " + newt.childCount);
+            //            foreach (var newt in kid.Children())
+            //            {
+            //                Debug.Log("CTI: LEP:    N: " + newt.name + " NC: " + newt.childCount);
 
-                            foreach (var sal in newt.Children())
-                            {
-                                Debug.Log("CTI: LEP:     S: " + sal.name + " SC: " + sal.childCount);
+            //                foreach (var sal in newt.Children())
+            //                {
+            //                    Debug.Log("CTI: LEP:     S: " + sal.name + " SC: " + sal.childCount);
 
-                            }
-                        }
-                    }
-                }
-            }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
             //for (int index = 0; index < elementList.Count; ++index)
             //{
@@ -95,10 +95,10 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
             this._entityroot.Clear();
 
-            for (int index = 0; index < elementList.Count; ++index)
-            {
-                this._entityroot.Add(elementList[index]);
-            }
+            //for (int index = 0; index < elementList.Count; ++index)
+            //{
+            //    this._entityroot.Add(elementList[index]);
+            //}
 
 
             this._root = this._cutterToolConfigFragment.InitializeFragment();
