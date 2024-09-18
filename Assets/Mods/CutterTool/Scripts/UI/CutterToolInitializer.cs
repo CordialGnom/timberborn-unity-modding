@@ -8,6 +8,14 @@ using UnityEngine.UIElements;
 
 namespace Cordial.Mods.CutterTool.Scripts.UI
 {
+    public enum CutterPatterns
+    {
+        All = 0,
+        Checkered, 
+        LinesX,
+        LinesY
+    }
+
     public class CutterToolInitializer : ILoadableSingleton 
     {
 
