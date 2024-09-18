@@ -3,11 +3,9 @@ using TimberApi.UIBuilderSystem;
 using TimberApi.UIBuilderSystem.CustomElements;
 using TimberApi.UIPresets.Labels;
 using TimberApi.UIPresets.Toggles;
-using Timberborn.Beavers;
 using Timberborn.CoreUI;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEngine.UI.InputField;
 
 namespace Cordial.Mods.CutterTool.Scripts.UI
 {
@@ -36,9 +34,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
         private CutterPatterns _cutterPatterns;
 
-        //ToggleButtonGroup _togglePatternGroup;
-        //ToggleButtonGroup _toggleTreeTypeGroup;
-
         Toggle _toggle06 = new();
 
 
@@ -60,32 +55,17 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             _toggleArea03 = _uiBuilder.Create<GameToggle>().SetName("Pattern03").SetLocKey("Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern03").Build();
             _toggleArea04 = _uiBuilder.Create<GameToggle>().SetName("Pattern04").SetLocKey("Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern04").Build();
 
-            //_togglePatternGroup = new();
-            //_togglePatternGroup.allowEmptySelection = false;
-            //_togglePatternGroup.isMultipleSelection = false;
-            //_togglePatternGroup.Add(_toggleArea01);
-            //_togglePatternGroup.Add(_toggleArea02);
-            //_togglePatternGroup.Add(_toggleArea03);
-            //_togglePatternGroup.Add(_toggleArea04);
-
-
             // add toggle for all tree types
             _toggleTreeAll = _uiBuilder.Create<GameToggle>()
                 .SetName("TreeAll")
                 .SetLocKey("Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeAll")
                 .Build();
 
-            //_toggleTreeTypeGroup = new();
-            //_toggleTreeTypeGroup.allowEmptySelection = false;
-            //_toggleTreeTypeGroup.isMultipleSelection = false;
-            //_toggleTreeTypeGroup.Add(_toggleTreeAll);
-
             // get faction access and available tree types
             for (int i = 0; i < 4; ++i)
             {
                 string resourceName = _treeTypeRootName + i.ToString();
                 _toggleTreeList.Add(_uiBuilder.Create<GameToggle>()
-                //_toggleTreeTypeGroup.Add(_uiBuilder.Create<GameToggle>()
                     .SetName(resourceName)
                     .SetLocKey(resourceName)
                     .Build());
@@ -93,13 +73,10 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
             // create title label
             _labelTitle = _uiBuilder.Create<GameLabel>()
-                .SetLocKey("Cordial.CutterTool.CutterToolPanel.Title")
-                .Title()
-                .Build();
+                                    .SetLocKey("Cordial.CutterTool.CutterToolPanel.Title")
+                                    .Title()
+                                    .Build();
             _labelDescription = _uiBuilder.Create<GameLabel>().SetLocKey("Cordial.CutterTool.CutterToolPanel.Description").Small().Build();
-
-            //menu.AddPreset(factory => factory.Labels().DefaultText("Cordial.TreeTool.TreeToolPanel.PanelDescription", builder: builder => builder.SetStyle(style => { style.alignSelf = Align.Center; style.marginBottom = new Length(10); })));
-
 
             _root.Add(CreatePanelFragmentRedBuilder()
                              .AddComponent(_labelTitle)
@@ -127,8 +104,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             _root.Add(CreateCenteredPanelFragmentBuilder()
                     .AddComponent(_toggleTreeAll)
                     .AddComponent(toggleList)
-                    //.AddComponent(_toggleTreeAll)
-                    //.AddComponent(_toggleTreeTypeGroup)
                     .BuildAndInitialize());
 
             // reset toggle name list
@@ -139,17 +114,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
             SendToggleUpdateEvent("Pattern01", true);
             SendToggleUpdateEvent("TreeAll", true);
-            // register toggle groups
-            //RegisterToggleGroupCallback(_root);
 
-            //SendToggleUpdateEvent("Pattern01", true);
-            //SendToggleUpdateEvent("TreeAll", true);
-
-            //.AddComponent(_toggleTreeList)
-            //.AddComponent(_toggle05)
-            //.AddComponent(_toggle06)
-            //.BuildAndInitialize());
-
+            
             _root.ToggleDisplayStyle(false);
 
             return _root;
@@ -159,12 +125,10 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         {
             foreach (var child in visualElement.Children())
             {
-                Debug.Log("RTC: " + child.GetType().Name);
 
                 if (child.GetType() == typeof(LocalizableToggle))
                 {
                     _root.Q<Toggle>(child.name).RegisterValueChangedCallback(value => ToggleValueChange(child.name, value.newValue));
-                    Debug.Log("RTC: registered");
                     _toggleNameList.Add(child.name);   
                 }
                 else
@@ -172,27 +136,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                     RegisterToggleCallback(child);
                 }
             }
-        }
-
-        private void RegisterToggleGroupCallback(VisualElement visualElement)
-        {
-            foreach (var child in visualElement.Children())
-            {
-                if (child.GetType() == typeof(ToggleButtonGroup))
-                {
-                    _root.Q<ToggleButtonGroup>(child.name).RegisterCallback<ChangeEvent<ToggleButtonGroupState>>(ToggleGroupChangeTest);
-                }
-                else
-                {
-                    RegisterToggleGroupCallback(child);
-                }
-            }
-        }
-
-        void ToggleGroupChangeTest(ChangeEvent<ToggleButtonGroupState> e)
-        {
-            //This debug is not getting fired when I click the button during play mode
-            Debug.Log("ToggleGroupChangeTest: " + e);
         }
 
         public PanelFragment CreateCenteredPanelFragmentBuilder()
@@ -220,22 +163,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                 ;
         }
 
-        private void ToggleGroupChange(string resourceName, ToggleButtonGroupState value)
-        {
-            Debug.Log("TGC: " + resourceName + " - " + value);
-        }
-
         private void ToggleValueChange(string resourceName, bool value)
         {
-            // Do some action when toggle changed value
-            //for (int index = 0; index < _resourceNames.Count; ++index)
-            //{
-            //    if (resourceName == _resourceNames[index])
-            //    {
-            //        _LocalCheckbox[index] = value;
-            //    }
-            //}
-
 
             switch (resourceName)
             {
@@ -290,7 +219,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                 _root.Q<Toggle>(name).SetValueWithoutNotify(newValue);
             }
         }
-
         private void UpdateTogglePattern(bool pattern01, bool pattern02, bool pattern03, bool pattern04 )
         {
             SendToggleUpdateEventWithoutNotify("Pattern01", pattern01);
@@ -298,7 +226,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             SendToggleUpdateEventWithoutNotify("Pattern03", pattern03);
             SendToggleUpdateEventWithoutNotify("Pattern04", pattern04);
         }
-
         private void UpdateToggleTreeType(int type, bool value)
         {
             if (type == 0)
