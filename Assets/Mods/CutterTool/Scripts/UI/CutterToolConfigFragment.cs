@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using TimberApi.UIBuilderSystem;
 using TimberApi.UIBuilderSystem.CustomElements;
 using TimberApi.UIPresets.Labels;
@@ -36,16 +37,38 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
         Toggle _toggle06 = new();
 
+        // faction / tree configuration
+        CutterToolFactionSpecService _cutterToolFactionSpecService;
+
+
 
         public CutterToolConfigFragment (UIBuilder uiBuilder,
-            VisualElementLoader visualElementLoader)
+                                         CutterToolFactionSpecService cutterToolFactionSpecService,
+                                         VisualElementLoader visualElementLoader )
         {
             _uiBuilder = uiBuilder;
             _visualElementLoader = visualElementLoader;
+            _cutterToolFactionSpecService = cutterToolFactionSpecService;
+
         }
 
         public VisualElement InitializeFragment()
         {
+
+            ImmutableArray<string> treeList = _cutterToolFactionSpecService.GetFactionTrees();
+
+            foreach (string tree in treeList)
+            {
+                Debug.Log("CTCT: T: " + tree);
+            }
+
+            treeList = _cutterToolFactionSpecService.GetSingleTrees();
+
+            foreach (string tree in treeList)
+            {
+                Debug.Log("CTCT: S: " + tree);
+            }
+
             _toggleArea01 = _uiBuilder.Create<GameToggle>()
                 .SetName("Pattern01")
                 .SetLocKey("Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern01")
@@ -112,10 +135,15 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             // register all toggles to name list and callbacks
             RegisterToggleCallback(_root);
 
-            SendToggleUpdateEvent("Pattern01", true);
-            SendToggleUpdateEvent("TreeAll", true);
+            // set default values of toggles 
+            foreach (Toggle toggle in _toggleTreeList)
+            {
+                SendToggleUpdateEvent(toggle.name, true);
+            }
 
-            
+            SendToggleUpdateEvent("TreeAll", true);
+            SendToggleUpdateEvent("Pattern01", true);
+
             _root.ToggleDisplayStyle(false);
 
             return _root;
@@ -191,12 +219,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                     char ctype = resourceName[resourceName.Length - 1];
                     int type = ctype - '0';
                     UpdateToggleTreeType(type, value);
-                    Debug.Log("TVC: Type" + resourceName + " - " + type);
                     break;
             }
-
-
-            Debug.Log("TVC: " + resourceName + " -- " + value.ToString());
         }
 
         private void SendToggleUpdateEvent(string name, bool newValue)
