@@ -1,6 +1,4 @@
-﻿using Cordial.Mods.CutterTool.Scripts;
-
-namespace Cordial.Mods.CutterTool.Scripts.UI
+﻿namespace Cordial.Mods.CutterTool.Scripts.UI
 {
     public class CutterToolSelectedEvent
     {

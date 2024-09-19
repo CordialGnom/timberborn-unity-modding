@@ -97,15 +97,11 @@ namespace Cordial.Mods.CutterTool.Scripts
         {
             // activate tool
             this._selectionToolProcessor.Enter();
-            //this._cutterToolConfigPanel.OnUIConfirmed();
-            //_cutterToolInitializer.SetVisualState(true);
             this._eventBus.Post((object)new CutterToolSelectedEvent(this) );
         }
         public override void Exit()
         {
             this._selectionToolProcessor.Exit();
-            //this._cutterToolConfigPanel.OnUICancelled();
-            //_cutterToolInitializer.SetVisualState(false);
             this._eventBus.Post((object)new CutterToolUnselectedEvent(this));
         }
         void IPriorityInputProcessor.ProcessInput()
@@ -137,7 +133,7 @@ namespace Cordial.Mods.CutterTool.Scripts
             // iterate over all input blocks -> toggle boolean flag for it
             foreach (Vector3Int block in inputBlocks)
             {
-                boToggleAdd = !boToggleAdd;
+                boToggleAdd = (_cutterPatterns == CutterPatterns.Checkered) ? !boToggleAdd : true;
 
                 if (boToggleAdd)
                 {
@@ -154,14 +150,14 @@ namespace Cordial.Mods.CutterTool.Scripts
 
                             if (objectComponentAt != null)
                             {
-                                string resource = objectComponentAt.name;
-                                string search = "Pine";
+                                string treeName = objectComponentAt.name;
+                                treeName = treeName.Replace("(Clone)", "");
+                                treeName = treeName.Replace(" ", "");
 
-                                int pos = resource.IndexOf(search);
+                                Debug.Log("CT: PC: " + treeName);
 
-                                if (0 <= pos)
+                                if (_treeTypesActive.Contains(treeName))
                                 {
-
                                     this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
                                     this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.SelectionToolHighlight);
                                 }
@@ -204,7 +200,7 @@ namespace Cordial.Mods.CutterTool.Scripts
                 // iterate over all input blocks -> toggle boolean flag for it
                 foreach (Vector3Int block in inputBlocks)
                 {
-                    boToggleAdd = !boToggleAdd;
+                    boToggleAdd = (_cutterPatterns == CutterPatterns.Checkered) ? !boToggleAdd : true;
 
                     if (boToggleAdd)
                     {
@@ -221,20 +217,20 @@ namespace Cordial.Mods.CutterTool.Scripts
 
                                 if (objectComponentAt != null)
                                 {
-                                    // todo Cord: add again when settings view is done
-                                    //string resource = objectComponentAt.name;
-                                    //string search = "Pine";
+                                    string treeName = objectComponentAt.name;
+                                    treeName = treeName.Replace("(Clone)", "");
+                                    treeName = treeName.Replace(" ", "");
 
-                                    //int pos = resource.IndexOf(search);
+                                    Debug.Log("CT: AC: " + treeName);
 
-                                    //if (0 <= pos)
-                                    //{
+                                    if (_treeTypesActive.Contains(treeName))
+                                    {
                                         coordinatesList.Add(leveledCoordinate);
-                                    //}
-                                    //else
-                                    //{
-                                    //    // ignore entry, not contained
-                                    //}
+                                    }
+                                    else
+                                    {
+                                        // ignore entry, not contained
+                                    }
                                 }
                                 else
                                 {

@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Amazon.Runtime.Internal.Transform;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using TimberApi.UIBuilderSystem;
 using TimberApi.UIBuilderSystem.CustomElements;
 using TimberApi.UIPresets.Labels;
 using TimberApi.UIPresets.Toggles;
 using Timberborn.CoreUI;
+using Timberborn.SingletonSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,8 +14,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 {
     public class CutterToolConfigFragment
     {
-        private readonly string _treeTypeRootName = "TreeType0";
-
         readonly UIBuilder _uiBuilder;
         private readonly VisualElementLoader _visualElementLoader;
 
@@ -32,20 +32,24 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
         List<Toggle> _toggleTreeList = new();
         List<string> _toggleNameList = new();
+        private readonly Dictionary<string, Toggle> _toggleTreeDict = new();
 
         private CutterPatterns _cutterPatterns;
 
-        Toggle _toggle06 = new();
-
         // faction / tree configuration
         CutterToolFactionSpecService _cutterToolFactionSpecService;
+        private readonly EventBus _eventBus;
+
+        public CutterPatterns CutterPatterns => _cutterPatterns;
 
 
 
         public CutterToolConfigFragment (UIBuilder uiBuilder,
                                          CutterToolFactionSpecService cutterToolFactionSpecService,
-                                         VisualElementLoader visualElementLoader )
+                                         VisualElementLoader visualElementLoader,
+                                         EventBus eventBus)
         {
+            _eventBus = eventBus;
             _uiBuilder = uiBuilder;
             _visualElementLoader = visualElementLoader;
             _cutterToolFactionSpecService = cutterToolFactionSpecService;
@@ -54,20 +58,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
         public VisualElement InitializeFragment()
         {
-
-            ImmutableArray<string> treeList = _cutterToolFactionSpecService.GetFactionTrees();
-
-            foreach (string tree in treeList)
-            {
-                Debug.Log("CTCT: T: " + tree);
-            }
-
-            treeList = _cutterToolFactionSpecService.GetSingleTrees();
-
-            foreach (string tree in treeList)
-            {
-                Debug.Log("CTCT: S: " + tree);
-            }
 
             _toggleArea01 = _uiBuilder.Create<GameToggle>()
                 .SetName("Pattern01")
@@ -84,14 +74,18 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                 .SetLocKey("Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeAll")
                 .Build();
 
-            // get faction access and available tree types
-            for (int i = 0; i < 4; ++i)
+            // create toggle elements for all available tree types
+            ImmutableArray<string> treeList = _cutterToolFactionSpecService.GetAllTrees();
+
+            for (int index = 0; index < treeList.Length; ++index )
             {
-                string resourceName = _treeTypeRootName + i.ToString();
-                _toggleTreeList.Add(_uiBuilder.Create<GameToggle>()
-                    .SetName(resourceName)
-                    .SetLocKey(resourceName)
+                _toggleTreeList.Add(_uiBuilder.Create<GameTextToggle>()
+                    .SetName(treeList[index])
+                    .SetText(treeList[index])
+                    //.SetLocKey(treeList[index-1])
                     .Build());
+
+                _toggleTreeDict.Add(treeList[index], _toggleTreeList[index]);
             }
 
             // create title label
@@ -114,7 +108,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                             .AddComponent(_toggleArea02)
                             .AddComponent(_toggleArea03)
                             .AddComponent(_toggleArea04)
-                            //.AddComponent(_togglePatternGroup)
                             .BuildAndInitialize());
 
             VisualElement toggleList = new();
@@ -153,8 +146,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         {
             foreach (var child in visualElement.Children())
             {
-
-                if (child.GetType() == typeof(LocalizableToggle))
+                if ((child.GetType() == typeof(LocalizableToggle))
+                    || (child.GetType() == typeof(Toggle)))
                 {
                     _root.Q<Toggle>(child.name).RegisterValueChangedCallback(value => ToggleValueChange(child.name, value.newValue));
                     _toggleNameList.Add(child.name);   
@@ -191,6 +184,17 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                 ;
         }
 
+        public Dictionary<string, bool> GetTreeDict()
+        {
+            Dictionary<string, bool> dict = new();
+
+            foreach (KeyValuePair<string, Toggle> kvp in _toggleTreeDict)
+            {
+                dict.Add(kvp.Key, kvp.Value.value);
+            }
+            return dict;
+        }
+
         private void ToggleValueChange(string resourceName, bool value)
         {
 
@@ -212,15 +216,15 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                     _cutterPatterns = CutterPatterns.LinesY;
                     UpdateTogglePattern(false, false, false, true);
                     break;
-                case "TreeAll":    // all
-                    UpdateToggleTreeType(0, value);
-                    break;
                 default:    // tree type configuration
-                    char ctype = resourceName[resourceName.Length - 1];
-                    int type = ctype - '0';
-                    UpdateToggleTreeType(type, value);
+                    UpdateToggleTreeType(resourceName, value);
                     break;
             }
+
+            // after a toggle value has changed, set event to update 
+            // patter and/or tree type usage elsewhere
+            this._eventBus.Post((object)new CutterToolConfigChangeEvent(this));
+
         }
 
         private void SendToggleUpdateEvent(string name, bool newValue)
@@ -250,9 +254,9 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             SendToggleUpdateEventWithoutNotify("Pattern03", pattern03);
             SendToggleUpdateEventWithoutNotify("Pattern04", pattern04);
         }
-        private void UpdateToggleTreeType(int type, bool value)
+        private void UpdateToggleTreeType(string name, bool value)
         {
-            if (type == 0)
+            if (name == "TreeAll")
             {
                 SendToggleUpdateEventWithoutNotify("TreeAll", value);
 
@@ -268,8 +272,9 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             {
                 SendToggleUpdateEventWithoutNotify("TreeAll", false);
 
-                SendToggleUpdateEventWithoutNotify(_treeTypeRootName + type.ToString(), value);
-            }
+
+                SendToggleUpdateEventWithoutNotify(name, value);
+            }  
         }
     }
 }
