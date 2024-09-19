@@ -36,6 +36,11 @@ namespace Cordial.Mods.CutterTool.Scripts
         //private CutterToolConfigPanel _cutterToolConfigPanel;
         //private CutterToolSettings _cutterToolSettings;
 
+        // configuration
+        private Dictionary<string, bool> _toggleTreeDict = new();
+        private CutterPatterns _cutterPatterns;
+        private List<string> _treeTypesActive = new();
+
         // input handling
         private readonly InputService _inputService;        // to check keybinding and mouse state
 
@@ -86,7 +91,7 @@ namespace Cordial.Mods.CutterTool.Scripts
         public void Load()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
-            //_cutterToolConfigPanel = DependencyContainer.GetInstance<CutterToolConfigPanel>();
+            this._eventBus.Register((object)this);
         }
         public override void Enter()
         {
@@ -249,6 +254,26 @@ namespace Cordial.Mods.CutterTool.Scripts
         private void ShowNoneCallback()
         {
             this._areaHighlightingService.UnhighlightAll();
+        }
+
+        [OnEvent]
+        public void OnCutterToolConfigChangeEvent(CutterToolConfigChangeEvent cutterToolConfigChangeEvent)
+        {
+            if (null == cutterToolConfigChangeEvent)
+                return;
+
+            _toggleTreeDict = cutterToolConfigChangeEvent.CutterToolConfig.GetTreeDict();
+            _cutterPatterns = cutterToolConfigChangeEvent.CutterToolConfig.CutterPatterns;
+
+            _treeTypesActive.Clear();
+
+            foreach (KeyValuePair<string, bool> kvp in _toggleTreeDict)
+            {
+                if (kvp.Value)
+                {
+                    _treeTypesActive.Add(kvp.Key);
+                }
+            }
         }
     }
 }
