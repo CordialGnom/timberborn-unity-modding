@@ -67,7 +67,6 @@ namespace Cordial.Mods.CutterTool.Scripts
 
         public void Load()
         {
-
             if (null == _factionService)
             {
                 Debug.LogError("CutterTool: No Faction Service");
@@ -84,17 +83,6 @@ namespace Cordial.Mods.CutterTool.Scripts
             {
                 Debug.LogError("CutterTool: No faction found");
             }
-            else
-            {
-                Debug.Log("CT: FID: " + _factionId);
-            }
-
-            // this._specificationService.GetSpecifications<PrefabGroupSpecification>((IObjectSerializer<PrefabGroupSpecification>)this._prefabGroupSpecificationDeserializer).Where<PrefabGroupSpecification>((Func<PrefabGroupSpecification, bool>)(spec => spec.Id == prefabGroup)).SelectMany<PrefabGroupSpecification, string>((Func<PrefabGroupSpecification, IEnumerable<string>>)(spec => (IEnumerable<string>)spec.Paths)).Select<string, GameObject>((Func<string, GameObject>)(path => this._assetLoader.Load<GameObject>(path))));
-
-            // did not achieve natural resource access through timberapi
-            // CutterToolSpecificationService.GetAll();
-            // CutterToolSpecificationService.GetDefaultTreeNames();
-
         }
 
         public static string FactionId
@@ -102,6 +90,7 @@ namespace Cordial.Mods.CutterTool.Scripts
             get { return _factionId; }
         }
 
+        // not used, access available prefabs via prefabservice (below)
         public ImmutableArray<string> GetFactionTrees()
         {
             string prefabFound = "";
@@ -151,109 +140,23 @@ namespace Cordial.Mods.CutterTool.Scripts
             }
             return treeTypes.ToImmutableArray<string>();
         }
-
-        public ImmutableArray<string> GetCommonTrees()
+        public ImmutableArray<string> GetAllTrees()
         {
-            //string prefabFound = "";
-            //ImmutableArray<string> prefabGroups;
-            List<string> treeTypes = new();
-
-            if (null != _prefabGroupService)
-            {
-
-               var gameObjects = _prefabGroupService.AllPrefabs;
-
-                //todo Cordial: Load a prefab group
-                foreach (GameObject gameObject in gameObjects)
-                {
-                    //string search = "Trees";
-                    treeTypes.Add(gameObject.name);
-
-                    Debug.Log("CT: FSP: " + gameObject.name);
-                    //int pos = resource.IndexOf(search);
-
-                    //if (0 < pos)
-                    //{
-                    //    // shorten whole string
-                    //    string temp = resource.Substring(pos + search.Length).Trim();
-                    //    string[] parts = temp.Split('/');
-                    //    treeTypes.Add(parts[parts.Length - 1]);
-                    //}
-                    //else
-                    //{
-                    //    // ignore entry
-                    //}
-
-                }
-
-
-                // returns more resources than trees: 
-                //                  [Info: Tree Tool] Found: NaturalResources / Bushes / Dandelion / Dandelion
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Carrot / Carrot
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Cattail / Cattail
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Potato / Potato
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Spadderdock / Spadderdock
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Sunflower / Sunflower
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Wheat / Wheat
-                //                  [Info: Tree Tool] Found: NaturalResources / Trees / ChestnutTree / ChestnutTree
-                //                  [Info: Tree Tool] Found: NaturalResources / Trees / Maple / Maple
-            }
-            else
-            {
-                Debug.LogError("CutterTool: Faction Service NA");
-            }
-            return treeTypes.ToImmutableArray<string>();
-        }
-
-        public ImmutableArray<string> GetSingleTrees()
-        {
-            //string prefabFound = "";
-            //ImmutableArray<string> prefabGroups;
             List<string> treeTypes = new();
 
             if (null != _prefabService)
-            {
-
-                var gameObjects = _prefabService.GetAll<TreeComponent>();
+            { 
+                var treeComponents = _prefabService.GetAll<TreeComponent>();
 
                 //todo Cordial: Load a prefab group
-                foreach (var gameObject in gameObjects)
+                foreach (var treeObject in treeComponents)
                 {
-                    //string search = "Trees";
-                    treeTypes.Add(gameObject.name);
-
-                    Debug.Log("CT: GST: " + gameObject.name);
-                    //int pos = resource.IndexOf(search);
-
-                    //if (0 < pos)
-                    //{
-                    //    // shorten whole string
-                    //    string temp = resource.Substring(pos + search.Length).Trim();
-                    //    string[] parts = temp.Split('/');
-                    //    treeTypes.Add(parts[parts.Length - 1]);
-                    //}
-                    //else
-                    //{
-                    //    // ignore entry
-                    //}
-
+                    treeTypes.Add(treeObject.name);
                 }
-
-
-                // returns more resources than trees: 
-                //                  [Info: Tree Tool] Found: NaturalResources / Bushes / Dandelion / Dandelion
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Carrot / Carrot
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Cattail / Cattail
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Potato / Potato
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Spadderdock / Spadderdock
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Sunflower / Sunflower
-                //                  [Info: Tree Tool] Found: NaturalResources / Crops / Wheat / Wheat
-                //                  [Info: Tree Tool] Found: NaturalResources / Trees / ChestnutTree / ChestnutTree
-                //                  [Info: Tree Tool] Found: NaturalResources / Trees / Maple / Maple
             }
             else
             {
-                Debug.LogError("CutterTool: Faction Service NA");
+                Debug.LogError("CutterTool: Prefabservice NA");
             }
             return treeTypes.ToImmutableArray<string>();
         }
