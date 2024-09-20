@@ -29,7 +29,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
         VisualElement _root = new();
         Label _title = new();
-        Label _growthInfo = new();
+        Label _growthDailyInfo = new();
+        Label _growthAvgInfo = new();
 
         public GrowthFertilizationGrowableFragment(UiFactory uiFactory)
         {
@@ -42,19 +43,22 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
             this._growableCoordinates = Vector3Int.zero;
             // var presets = _builder.Presets();
             // _title = presets.Labels().Label(color: Color.cyan);
-            // _growthInfo = presets.Labels().GameText();
+            // _growthDailyInfo = presets.Labels().GameText();
             //
             // UIFragmentBuilder uIFragmentBuilder = _builder.CreateFragmentBuilder()
             //     .AddComponent(_title)
-            //     .AddComponent(_growthInfo);
+            //     .AddComponent(_growthDailyInfo);
             // _root = uIFragmentBuilder.BuildAndInitialize();
             // _root.ToggleDisplayStyle(visible: false);
             // return _root;
             _title = _uiFactory.CreateLabel();
-            _growthInfo = _uiFactory.CreateLabel();
+            _growthDailyInfo = _uiFactory.CreateLabel();
+            _growthAvgInfo = _uiFactory.CreateLabel();
 
             _root = _uiFactory.CreateCenteredPanelFragmentBuilder()
-                .AddComponent(_title).AddComponent(_growthInfo)
+                .AddComponent(_title)
+                .AddComponent(_growthDailyInfo)
+                .AddComponent(_growthAvgInfo)
                 .BuildAndInitialize();
             _root.ToggleDisplayStyle(visible: false);
             return _root;
@@ -80,9 +84,30 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
                             this._growableCoordinates = blockObject.Coordinates;
 
                             _title.text = "Growth influenced by fertilizer.";
-                            _growthInfo.text = "Daily growth increased by: " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(blockObject.Coordinates).ToString("0.0") + " %");
+
+                            if (!growable.IsGrown)
+                            {
+                                _growthDailyInfo.visible = true;
+                                _growthAvgInfo.visible = true;
+
+                                _growthDailyInfo.text = "Daily growth increased by: " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(blockObject.Coordinates).ToString("0.0") + " %");
+
+                                // calculate average growth reduction
+                                float growthTimeDescrease = (growable.GrowthTimeInDays * this._growthFertilizationAreaService.GetGrowthFactor() * (this._growthFertilizationAreaService.GetGrowthProgessAverage(blockObject.Coordinates) / 100.0f));
+
+                                _growthAvgInfo.text = ("Average growth decreased by: " + growthTimeDescrease.ToString("0.0") + " days");
+                            }
+                            else
+                            {
+                                _growthDailyInfo.visible = false;
+                                _growthAvgInfo.visible = false;
+                            }
                             _root.ToggleDisplayStyle((bool)(Object)this._growthFertilizationTreeComponent);
                             return;
+                        }
+                        else
+                        {
+                            this._growableCoordinates = Vector3Int.zero;
                         }
                     }
                 }
@@ -97,13 +122,13 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
         public void UpdateFragment()
         {
-            if ((this._growthInfo != null)
+            if ((this._growthDailyInfo != null)
                 && (this._growthFertilizationTreeComponent != null)
                 && (this._growthFertilizationAreaService != null)
-                && (this._growableCoordinates != null)
+                && (this._growableCoordinates != Vector3Int.zero)
                 )
             {
-                this._growthInfo.text = "Daily growth increased by: " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(this._growableCoordinates).ToString("0.0") + " %");
+                this._growthDailyInfo.text = "Daily growth increased by: " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(this._growableCoordinates).ToString("0.0") + " %");
                 _root.ToggleDisplayStyle((bool)(Object)this._growthFertilizationTreeComponent);
             }
         }
@@ -116,7 +141,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
             if (growable != null)
             {
                 // get building from area service
-                this._growthInfo.text = "Growth Progress: " + growable.GrowthProgress;
+                this._growthDailyInfo.text = "Growth Progress: " + growable.GrowthProgress;
             }
         }
     }

@@ -59,6 +59,25 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
             }
         }
 
+        public void RemoveBuildingArea(int _buildingCount)
+        {
+            // get registry before adding new building, to check if range is to be added
+            if (_buildingRegistry.TryGetValue(_buildingCount, out GrowthFertilizationBuilding building))
+            {
+                // remove the building from the registry
+                _buildingRegistry.Remove(_buildingCount);
+
+                // clear coordinate registry
+                _coordinateRegistry.Clear();
+
+                // after removing building, re-register the coordinates of the still available buildings (to ensure overlapped ranges are kept)
+                foreach (int index in _buildingRegistry.Keys)
+                {
+                    UpdateBuildingArea(index);
+                }
+            }
+        }
+
         public IEnumerable<Vector3Int> GetFertilizationArea()
         {
             List<Vector3Int> coordinateList = new();
@@ -116,7 +135,37 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
             }
         }
 
+        public float GetGrowthProgessAverage(Vector3Int coordinate)
+        {
+            // get building ID referenced to the coordinate
+            int buildingID = _coordinateRegistry.GetValueOrDefault(coordinate, 0);
+
+            if (buildingID == 0)
+            {
+                return 0.0f;
+            }
+            else
+            {
+                GrowthFertilizationBuilding building = _buildingRegistry.GetValueOrDefault(buildingID, null);
+
+                if (building != null)
+                {
+                    return building.AverageGrowth;
+                }
+                else
+                {
+                    return 0.0f;
+                }
+            }
+        }
+        public float GetGrowthFactor()
+        {
+            // get first building, as all should have the same reference
+            KeyValuePair<int, GrowthFertilizationBuilding> kvp = _buildingRegistry.First();
+
+            if (kvp.Value == null)
+                return 0.0f;
+            return kvp.Value.GrowthFactor;
+        }
     }
-
-
 }

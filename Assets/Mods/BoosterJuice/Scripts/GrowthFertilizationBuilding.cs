@@ -50,6 +50,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         private static readonly ComponentKey GrowthFertilizationBuildingKey = new ComponentKey(nameof(GrowthFertilizationBuilding));
         private static readonly PropertyKey<float> SupplyLeftKey = new PropertyKey<float>("SupplyLeft");
         private static readonly PropertyKey<float> DailyGrowthKey = new PropertyKey<float>("DailyGrowth");
+        private static readonly PropertyKey<float> AverageGrowthKey = new PropertyKey<float>("AverageGrowth");
+        private static readonly PropertyKey<int> WorkHoursPassed = new PropertyKey<int>("WorkHoursPassed");
 
         // from GoodConsumingBuilding
         private BlockableBuilding _blockableBuilding;
@@ -83,6 +85,10 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         }
         public float DailyGrowth => (this._dailyGrowth * 100.0f);
 
+        public float AverageGrowth => (this._averageGrowth * 100.0f);
+
+        public float GrowthFactor => (this._growthFactor);
+
         public bool IsReadyToFertilize => (double)this.SupplyAmount > 0.0;
 
         // productivity calculation and worker access
@@ -94,6 +100,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         private int _workHoursPassed = 0;
         private float _consumptionPerHour = 0.0f;
         private float _dailyGrowth = 0.0f;
+        private float _averageGrowth = 0.0f;
 
         // fertilization handling
         private readonly float _timeTriggerCallCountPerDay = 1/24f;  // call the trigger every hour;
@@ -163,8 +170,25 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         {
             // at each day start, reset counter for growth calculation
             _workHoursPassed = 0;
-            _dailyGrowth = 0.0f;
 
+            // calculate average growth of each day
+            // handle situation where average growth has never been set before (after update or new game)
+            if (_averageGrowth == 0)
+            {
+                if (_dailyGrowth > 1)
+                {
+                    _averageGrowth = 1;
+                }
+                else
+                {
+                    _averageGrowth = _dailyGrowth;
+                }
+            }
+
+            _averageGrowth = (_averageGrowth + _dailyGrowth) / 2.0f;
+
+            // reset daily growth
+            _dailyGrowth = 0.0f;
         }
 
         public IEnumerable<BaseComponent> GetObjectsInRange()
@@ -208,6 +232,9 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         public void OnExitFinishedState()
         {
+            // un-register building area
+            this._growththFertilizationAreaService.RemoveBuildingArea(_buildingId);
+
             this._timeTrigger.Pause();
             this.Inventory.Disable();
             this.enabled = false;
@@ -220,6 +247,12 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
             entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey)
                 .Set(GrowthFertilizationBuilding.DailyGrowthKey, this._dailyGrowth);
+
+            entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey)
+                .Set(GrowthFertilizationBuilding.AverageGrowthKey, this._averageGrowth);
+
+            entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey)
+                .Set(GrowthFertilizationBuilding.WorkHoursPassed, this._workHoursPassed);
         }
 
         public void Load(IEntityLoader entityLoader)
@@ -230,10 +263,18 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
             // update supply from save if available
             float? valueOrNullable = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).GetValueOrNullable(GrowthFertilizationBuilding.SupplyLeftKey);
             this._supplyLeft = valueOrNullable.GetValueOrDefault();
-            
-            // update grwoth from save if available
+
+            // update growth from save if available
             valueOrNullable = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).GetValueOrNullable(GrowthFertilizationBuilding.DailyGrowthKey);
             this._dailyGrowth = valueOrNullable.GetValueOrDefault();
+
+            // update average growth from save if available
+            valueOrNullable = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).GetValueOrNullable(GrowthFertilizationBuilding.AverageGrowthKey);
+            this._averageGrowth = valueOrNullable.GetValueOrDefault();
+
+            // update passed work hours from save if available
+            int? intValueOrNullable = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).GetValueOrNullable(GrowthFertilizationBuilding.WorkHoursPassed);
+            this._workHoursPassed = intValueOrNullable.GetValueOrDefault();
         }
 
         public GoodConsumingToggle GetGoodConsumingToggle()
@@ -318,7 +359,6 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 // growth increase in this cycle, reference as percentage of the whole growth time
                 _dailyGrowth += ((growthTimeOffsetCycle / (1/growthTimeTotal_d)) * 100.0f);
             }
-
             this._timeTrigger.Reset();
             this._timeTrigger.Resume();
         }
