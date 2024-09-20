@@ -29,19 +29,21 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         Toggle _toggleArea03 = new();
         Toggle _toggleArea04 = new();
         Toggle _toggleTreeAll = new();
+        Toggle _toggleTreeMark = new();
 
         List<Toggle> _toggleTreeList = new();
         List<string> _toggleNameList = new();
         private readonly Dictionary<string, Toggle> _toggleTreeDict = new();
 
         private CutterPatterns _cutterPatterns;
+        
 
         // faction / tree configuration
         CutterToolFactionSpecService _cutterToolFactionSpecService;
         private readonly EventBus _eventBus;
 
         public CutterPatterns CutterPatterns => _cutterPatterns;
-
+        public bool TreeMarkOnly => _toggleTreeMark.value;
 
 
         public CutterToolConfigFragment (UIBuilder uiBuilder,
@@ -68,6 +70,12 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             _toggleArea03 = _uiBuilder.Create<GameToggle>().SetName("Pattern03").SetLocKey("Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern03").Build();
             _toggleArea04 = _uiBuilder.Create<GameToggle>().SetName("Pattern04").SetLocKey("Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern04").Build();
 
+            // add toggle for to mark only tree types
+            _toggleTreeMark = _uiBuilder.Create<GameToggle>()
+                .SetName("TreeMark")
+                .SetLocKey("Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeMark")
+                .Build();
+            
             // add toggle for all tree types
             _toggleTreeAll = _uiBuilder.Create<GameToggle>()
                 .SetName("TreeAll")
@@ -118,6 +126,7 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             }
 
             _root.Add(CreateCenteredPanelFragmentBuilder()
+                    .AddComponent(_toggleTreeMark)
                     .AddComponent(_toggleTreeAll)
                     .AddComponent(toggleList)
                     .BuildAndInitialize());
@@ -138,6 +147,9 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             SendToggleUpdateEvent("Pattern01", true);
 
             _root.ToggleDisplayStyle(false);
+
+
+            this._eventBus.Post((object)new CutterToolConfigChangeEvent(this));
 
             return _root;
         }
@@ -215,6 +227,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                 case "Pattern04":
                     _cutterPatterns = CutterPatterns.LinesY;
                     UpdateTogglePattern(false, false, false, true);
+                    break;
+                case "TreeMark":
                     break;
                 default:    // tree type configuration
                     UpdateToggleTreeType(resourceName, value);

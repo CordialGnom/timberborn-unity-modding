@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cordial.Mods.CutterTool.Scripts.UI;
+using Moq;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
@@ -40,6 +41,7 @@ namespace Cordial.Mods.CutterTool.Scripts
         private Dictionary<string, bool> _toggleTreeDict = new();
         private CutterPatterns _cutterPatterns;
         private List<string> _treeTypesActive = new();
+        private bool _treeMarkOnly = false;
 
         // input handling
         private readonly InputService _inputService;        // to check keybinding and mouse state
@@ -154,22 +156,24 @@ namespace Cordial.Mods.CutterTool.Scripts
                                 treeName = treeName.Replace("(Clone)", "");
                                 treeName = treeName.Replace(" ", "");
 
-                                Debug.Log("CT: PC: " + treeName);
-
                                 if (_treeTypesActive.Contains(treeName))
                                 {
-                                    this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
-                                    this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.SelectionToolHighlight);
+                                    //this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
+                                    //this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.SelectionToolHighlight);
                                 }
                                 else
                                 {
                                     // ignore entry, not contained
-                                    this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PriorityTileColor);
+                                    //this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PriorityTileColor);
                                 }
+                            }
+                            else if (_treeMarkOnly == false)
+                            {
+                                //this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PriorityTileColor);
                             }
                             else
                             {
-                                this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PriorityTileColor);
+                                //this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PriorityTileColor);
 
                             }
                         }
@@ -179,9 +183,12 @@ namespace Cordial.Mods.CutterTool.Scripts
                 }
             }
 
+            HighlightPatternLinesX(inputBlocks, ray);
+
             // highlight everything added to the service above
             this._areaHighlightingService.Highlight();
         }
+
 
         private void ActionCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
@@ -221,8 +228,6 @@ namespace Cordial.Mods.CutterTool.Scripts
                                     treeName = treeName.Replace("(Clone)", "");
                                     treeName = treeName.Replace(" ", "");
 
-                                    Debug.Log("CT: AC: " + treeName);
-
                                     if (_treeTypesActive.Contains(treeName))
                                     {
                                         coordinatesList.Add(leveledCoordinate);
@@ -231,6 +236,10 @@ namespace Cordial.Mods.CutterTool.Scripts
                                     {
                                         // ignore entry, not contained
                                     }
+                                }
+                                else if (_treeMarkOnly == false)
+                                {
+                                    coordinatesList.Add(leveledCoordinate);
                                 }
                                 else
                                 {
@@ -246,10 +255,139 @@ namespace Cordial.Mods.CutterTool.Scripts
                 IEnumerable<Vector3Int> coordinates = coordinatesList;
                 this._treeCuttingArea.AddCoordinates(coordinates);
             }
+
+
         }
+
         private void ShowNoneCallback()
         {
             this._areaHighlightingService.UnhighlightAll();
+        }
+
+
+        private void HighlightPatternLinesX(IEnumerable<Vector3Int> inputBlocks, Ray ray)
+        {
+            Vector3Int blockMaxMax = Vector3Int.zero;
+            Vector3Int blockMinMin = Vector3Int.zero;
+            Vector3Int blockMinMax = Vector3Int.zero;
+            Vector3Int blockMaxMin = Vector3Int.zero;
+
+            List<Vector3Int> singleBlockList = new();
+
+            // iterate over all input blocks to get area
+            foreach (Vector3Int block in inputBlocks)
+            {
+                // get the min/max positions of the area
+                if (blockMaxMax == Vector3Int.zero)
+                {
+                    blockMaxMax = block;
+                }
+                else
+                {
+                    blockMaxMax = Vector3Int.Max(blockMaxMax, block);
+                }
+
+                if (blockMinMin == Vector3Int.zero)
+                {
+                    blockMinMin = block;
+                }
+                else
+                {
+                    blockMinMin = Vector3Int.Min(blockMinMin, block);
+                }
+
+                // get the 4 corner positions of the area
+                blockMinMax = new Vector3Int(blockMinMin.x, blockMaxMax.y, blockMaxMax.z);
+                blockMaxMin = new Vector3Int(blockMaxMax.x, blockMinMin.y, blockMaxMax.z);
+            }
+
+            // get the distance X and Y (it is one less than the marked area, as the start position is not counted.
+            // e.g. area 4 x 8, dist is 3 x 7.
+            float distX = Vector3Int.Distance(blockMinMin, blockMaxMin);
+            float distY = Vector3Int.Distance(blockMinMin, blockMinMax);
+
+            Debug.Log("Dist: X: " + distX + " - Y: " + distY);
+
+            foreach (Vector3Int block in inputBlocks)
+            {
+                // run for X pattern, meaning Y is toggled, X stays the same
+                if (CutterPatterns.LinesX == _cutterPatterns)
+                {
+                    if ((blockMinMin.y - block.y) % 2 == 0)
+                    {
+                        // add block to list for conversion to IEnumerable
+                        singleBlockList.Add(block);
+                        IEnumerable<Vector3Int> blocks = singleBlockList;
+
+                        // check if the block is on the same leveled coordinates. 
+                        foreach (Vector3Int leveledCoordinate in this._terrainAreaService.InMapLeveledCoordinates(blocks, ray))
+                        {
+                            if (!this._treeCuttingArea.IsInCuttingArea(leveledCoordinate))
+                            {
+                                this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.ConnectionHighlight);
+
+                            }
+                            else
+                            {
+                                // don't highlight
+                            }
+                        }
+                    }
+                }
+                else if (CutterPatterns.LinesY == _cutterPatterns)
+                {
+                    if ((blockMinMin.x - block.x) % 2 == 0)
+                    {
+                        // add block to list for conversion to IEnumerable
+                        singleBlockList.Add(block);
+                        IEnumerable<Vector3Int> blocks = singleBlockList;
+
+                        // check if the block is on the same leveled coordinates. 
+                        foreach (Vector3Int leveledCoordinate in this._terrainAreaService.InMapLeveledCoordinates(blocks, ray))
+                        {
+                            if (!this._treeCuttingArea.IsInCuttingArea(leveledCoordinate))
+                            {
+                                this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.ConnectionHighlight);
+                            }
+                            else
+                            {
+                                // don't highlight
+                            }
+                        }
+                    }
+                }
+                else if (CutterPatterns.Checkered == _cutterPatterns)
+                {
+                    if ((((blockMinMin.x - block.x) % 2 == 0)
+                        && ((blockMinMin.y - block.y) % 2 == 0))
+                        ||
+                        ((((blockMinMin + Vector3Int.right).x - block.x) % 2 == 0)
+                        && (((blockMinMin + Vector3Int.up).y - block.y) % 2 == 0))
+                        )
+
+                    {
+                        // add block to list for conversion to IEnumerable
+                        singleBlockList.Add(block);
+                        IEnumerable<Vector3Int> blocks = singleBlockList;
+
+                        // check if the block is on the same leveled coordinates. 
+                        foreach (Vector3Int leveledCoordinate in this._terrainAreaService.InMapLeveledCoordinates(blocks, ray))
+                        {
+                            if (!this._treeCuttingArea.IsInCuttingArea(leveledCoordinate))
+                            {
+                                this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.ConnectionHighlight);
+                            }
+                            else
+                            {
+                                // don't highlight
+                            }
+                        }
+                    }
+                }
+
+                // empty list for next block
+                singleBlockList.Clear();
+            }
         }
 
         [OnEvent]
@@ -260,6 +398,7 @@ namespace Cordial.Mods.CutterTool.Scripts
 
             _toggleTreeDict = cutterToolConfigChangeEvent.CutterToolConfig.GetTreeDict();
             _cutterPatterns = cutterToolConfigChangeEvent.CutterToolConfig.CutterPatterns;
+            _treeMarkOnly = cutterToolConfigChangeEvent.CutterToolConfig.TreeMarkOnly;
 
             _treeTypesActive.Clear();
 

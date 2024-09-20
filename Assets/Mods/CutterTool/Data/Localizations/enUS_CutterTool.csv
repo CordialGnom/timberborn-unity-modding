@@ -9,4 +9,5 @@ Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern01, All,-
 Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern02, Checkered,-
 Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern03, Lines X,-
 Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern04, Lines Y,-
-Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeAll, All,-
+Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeAll, All tree types,-
+Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeMark, Mark trees only,-
