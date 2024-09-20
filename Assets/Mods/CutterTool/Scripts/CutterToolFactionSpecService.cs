@@ -1,26 +1,14 @@
 ﻿using System.Collections.Generic;
-using System;
 using System.Collections.Immutable;
-using System.Reflection;
 using Timberborn.Buildings;
 using Timberborn.FactionSystem;
 using Timberborn.GameFactionSystem;
-using Timberborn.Localization;
-using Timberborn.Planting;
-using Timberborn.PlantingUI;
 using Timberborn.ScienceSystem;
-using Timberborn.SelectionToolSystem;
 using Timberborn.SingletonSystem;
-using Timberborn.TerrainSystem;
-using Timberborn.ToolSystem;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Timberborn.Persistence;
 using Timberborn.PrefabGroupSystem;
 using Timberborn.PrefabSystem;
-using System.Linq;
-using TimberApi.Tools.ToolSystem;
-using Timberborn.NaturalResources;
 using Timberborn.Forestry;
 
 
@@ -28,7 +16,6 @@ namespace Cordial.Mods.CutterTool.Scripts
 {
     public class CutterToolFactionSpecService : ILoadableSingleton
     {
-
 
         // to update configuration based on active faction
         private static FactionSpecificationService _factionSpecService;
@@ -172,7 +159,6 @@ namespace Cordial.Mods.CutterTool.Scripts
             {
                 if (_prefabNameMapper.TryGetPrefabName(prefabNameInp, out prefabNameOut))
                 {
-                    Debug.Log("Found: " + prefabNameOut);
                     prefabValid = true;
                 }
             }

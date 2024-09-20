@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using TimberApi.UIBuilderSystem;
 using TimberApi.UIBuilderSystem.CustomElements;
@@ -7,7 +6,6 @@ using TimberApi.UIPresets.Labels;
 using TimberApi.UIPresets.Toggles;
 using Timberborn.CoreUI;
 using Timberborn.SingletonSystem;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Cordial.Mods.CutterTool.Scripts.UI
@@ -99,7 +97,7 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             // create title label
             _labelTitle = _uiBuilder.Create<GameLabel>()
                                     .SetLocKey("Cordial.CutterTool.CutterToolPanel.Title")
-                                    .Title()
+                                    .Heading()
                                     .Build();
             _labelDescription = _uiBuilder.Create<GameLabel>().SetLocKey("Cordial.CutterTool.CutterToolPanel.Description").Small().Build();
 
@@ -147,7 +145,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             SendToggleUpdateEvent("Pattern01", true);
 
             _root.ToggleDisplayStyle(false);
-
 
             this._eventBus.Post((object)new CutterToolConfigChangeEvent(this));
 
@@ -236,9 +233,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             }
 
             // after a toggle value has changed, set event to update 
-            // patter and/or tree type usage elsewhere
+            // pattern and/or tree type usage elsewhere
             this._eventBus.Post((object)new CutterToolConfigChangeEvent(this));
-
         }
 
         private void SendToggleUpdateEvent(string name, bool newValue)
@@ -285,7 +281,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             else
             {
                 SendToggleUpdateEventWithoutNotify("TreeAll", false);
-
 
                 SendToggleUpdateEventWithoutNotify(name, value);
             }  

@@ -25,9 +25,9 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         {
             _visualElementBuilder = UIBuilder.Create<VisualElementBuilder>();
             _visualElementBuilder.AddClass(BackgroundClass);
-            _visualElementBuilder.SetPadding(new Padding(new Length(12f, LengthUnit.Pixel), // top
+            _visualElementBuilder.SetPadding(new Padding(new Length(8f, LengthUnit.Pixel), // top
                                                             new Length(20f, LengthUnit.Pixel), // right
-                                                            new Length(12f, LengthUnit.Pixel), // bottom
+                                                            new Length(8f, LengthUnit.Pixel), // bottom
                                                             new Length(20f, LengthUnit.Pixel) // left
                                                             ));
             return _visualElementBuilder.Build();

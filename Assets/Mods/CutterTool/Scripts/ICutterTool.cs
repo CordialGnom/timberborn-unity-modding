@@ -6,6 +6,5 @@ namespace Cordial.Mods.CutterTool.Scripts
     {
         void SetToolGroup(ToolGroup toolGroup);
         void PostProcessInput();
-
     }
 }

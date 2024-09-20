@@ -1,10 +1,8 @@
 ID,Text,Comment
-Cordial.CutterTool.DisplayName,Mark special tree cutting area,-
-Cordial.CutterTool.Description, configurable tree cutting area marking tool,-
-Cordial.CutterTool.KeyBindingGroup.CutterTool,Cutter Tool,-
-Cordial.CutterTool.KeyBinding.CutterToolConfigShortcut,Cutter tool configuration,-
-Cordial.CutterTool.CutterToolPanel.Title, Cutter Tool Setup,-
-Cordial.CutterTool.CutterToolPanel.Description, Configure trees and/or cutting selection area,-
+Cordial.CutterTool.DisplayName,Mark configured tree cutting area,-
+Cordial.CutterTool.Description, Use this tool to mark configured areas and/or tree types to cut down,-
+Cordial.CutterTool.CutterToolPanel.Title, Cutter Tool Configuration,-
+Cordial.CutterTool.CutterToolPanel.Description, Configure tree types to be cut and/or cutting selection area,-
 Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern01, All,-
 Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern02, Checkered,-
 Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern03, Lines X,-

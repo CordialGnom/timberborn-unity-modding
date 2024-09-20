@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cordial.Mods.CutterTool.Scripts.UI;
-using Moq;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
@@ -129,62 +129,41 @@ namespace Cordial.Mods.CutterTool.Scripts
         }
         private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-            bool boToggleAdd = false;
-            List<Vector3Int> singleBlockList = new();
+            IEnumerable<Vector3Int> patternBlocks = GetPatternCoordinates(inputBlocks, ray);
 
             // iterate over all input blocks -> toggle boolean flag for it
-            foreach (Vector3Int block in inputBlocks)
+            foreach (Vector3Int block in patternBlocks)
             {
-                boToggleAdd = (_cutterPatterns == CutterPatterns.Checkered) ? !boToggleAdd : true;
+                TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
 
-                if (boToggleAdd)
+                if (objectComponentAt != null)
                 {
-                    // add block to list for conversion to IEnumerable
-                    singleBlockList.Add(block);
-                    IEnumerable<Vector3Int> blocks = singleBlockList;
+                    string treeName = objectComponentAt.name;
+                    treeName = treeName.Replace("(Clone)", "");
+                    treeName = treeName.Replace(" ", "");
 
-                    // check if the block is on the same leveled coordinates. 
-                    foreach (Vector3Int leveledCoordinate in this._terrainAreaService.InMapLeveledCoordinates(blocks, ray))
+                    if (_treeTypesActive.Contains(treeName))
                     {
-                        if (!this._treeCuttingArea.IsInCuttingArea(leveledCoordinate))
-                        {
-                            TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(leveledCoordinate);
-
-                            if (objectComponentAt != null)
-                            {
-                                string treeName = objectComponentAt.name;
-                                treeName = treeName.Replace("(Clone)", "");
-                                treeName = treeName.Replace(" ", "");
-
-                                if (_treeTypesActive.Contains(treeName))
-                                {
-                                    //this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
-                                    //this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.SelectionToolHighlight);
-                                }
-                                else
-                                {
-                                    // ignore entry, not contained
-                                    //this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PriorityTileColor);
-                                }
-                            }
-                            else if (_treeMarkOnly == false)
-                            {
-                                //this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PriorityTileColor);
-                            }
-                            else
-                            {
-                                //this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PriorityTileColor);
-
-                            }
-                        }
+                        this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
+                        this._areaHighlightingService.DrawTile(block, this._colors.SelectionToolHighlight);
                     }
-                    // empty list for next block
-                    singleBlockList.Clear();
+                    else
+                    {
+                        // ignore entry, not contained
+                        this._areaHighlightingService.DrawTile(block, this._colors.PriorityTileColor);
+                    }
+                }
+                // no tree, yet marking enabled
+                else if (_treeMarkOnly == false)
+                {
+                    this._areaHighlightingService.DrawTile(block, this._colors.SelectionToolHighlight);
+                }
+                else
+                {
+                    this._areaHighlightingService.DrawTile(block, this._colors.PriorityTileColor);
                 }
             }
-
-            HighlightPatternLinesX(inputBlocks, ray);
-
+                
             // highlight everything added to the service above
             this._areaHighlightingService.Highlight();
         }
@@ -192,9 +171,7 @@ namespace Cordial.Mods.CutterTool.Scripts
 
         private void ActionCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-            bool boToggleAdd = false;
             List<Vector3Int> coordinatesList = new();
-            List<Vector3Int> singleBlockList = new();
 
             if (this.Locker != null)
             {
@@ -204,59 +181,41 @@ namespace Cordial.Mods.CutterTool.Scripts
             {
                 this._areaHighlightingService.UnhighlightAll();
 
+                IEnumerable<Vector3Int> patternBlocks = GetPatternCoordinates(inputBlocks, ray);
+
                 // iterate over all input blocks -> toggle boolean flag for it
-                foreach (Vector3Int block in inputBlocks)
+                foreach (Vector3Int block in patternBlocks)
                 {
-                    boToggleAdd = (_cutterPatterns == CutterPatterns.Checkered) ? !boToggleAdd : true;
+                    TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
 
-                    if (boToggleAdd)
+                    if (objectComponentAt != null)
                     {
-                        // add block to list for conversion to IEnumerable
-                        singleBlockList.Add(block);
-                        IEnumerable<Vector3Int> blocks = singleBlockList;
+                        string treeName = objectComponentAt.name;
+                        treeName = treeName.Replace("(Clone)", "");
+                        treeName = treeName.Replace(" ", "");
 
-                        // check if the block is on the same leveled coordinates. 
-                        foreach (Vector3Int leveledCoordinate in this._terrainAreaService.InMapLeveledCoordinates(blocks, ray))
+                        if (_treeTypesActive.Contains(treeName))
                         {
-                            if (!this._treeCuttingArea.IsInCuttingArea(leveledCoordinate))
-                            {
-                                TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(leveledCoordinate);
-
-                                if (objectComponentAt != null)
-                                {
-                                    string treeName = objectComponentAt.name;
-                                    treeName = treeName.Replace("(Clone)", "");
-                                    treeName = treeName.Replace(" ", "");
-
-                                    if (_treeTypesActive.Contains(treeName))
-                                    {
-                                        coordinatesList.Add(leveledCoordinate);
-                                    }
-                                    else
-                                    {
-                                        // ignore entry, not contained
-                                    }
-                                }
-                                else if (_treeMarkOnly == false)
-                                {
-                                    coordinatesList.Add(leveledCoordinate);
-                                }
-                                else
-                                {
-                                    // no tree component here, ignore
-                                }
-                            }
+                            coordinatesList.Add(block);
                         }
-
-                        // empty list for next block
-                        singleBlockList.Clear();
+                        else
+                        {
+                            // ignore entry, not contained
+                        }
+                    }
+                    // no tree, yet marking enabled
+                    else if (_treeMarkOnly == false)
+                    {
+                        coordinatesList.Add(block);
+                    }
+                    else
+                    {
+                        // no tree component here, ignore
                     }
                 }
-                IEnumerable<Vector3Int> coordinates = coordinatesList;
-                this._treeCuttingArea.AddCoordinates(coordinates);
+
+                this._treeCuttingArea.AddCoordinates(coordinatesList.AsEnumerable());
             }
-
-
         }
 
         private void ShowNoneCallback()
@@ -265,7 +224,7 @@ namespace Cordial.Mods.CutterTool.Scripts
         }
 
 
-        private void HighlightPatternLinesX(IEnumerable<Vector3Int> inputBlocks, Ray ray)
+        private IEnumerable<Vector3Int> GetPatternCoordinates(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
             Vector3Int blockMaxMax = Vector3Int.zero;
             Vector3Int blockMinMin = Vector3Int.zero;
@@ -273,6 +232,7 @@ namespace Cordial.Mods.CutterTool.Scripts
             Vector3Int blockMaxMin = Vector3Int.zero;
 
             List<Vector3Int> singleBlockList = new();
+            List<Vector3Int> blockList = new();
 
             // iterate over all input blocks to get area
             foreach (Vector3Int block in inputBlocks)
@@ -301,12 +261,10 @@ namespace Cordial.Mods.CutterTool.Scripts
                 blockMaxMin = new Vector3Int(blockMaxMax.x, blockMinMin.y, blockMaxMax.z);
             }
 
-            // get the distance X and Y (it is one less than the marked area, as the start position is not counted.
+            // get the distance X and Y. It is one less than the marked area, as the start position is not counted.
             // e.g. area 4 x 8, dist is 3 x 7.
             float distX = Vector3Int.Distance(blockMinMin, blockMaxMin);
             float distY = Vector3Int.Distance(blockMinMin, blockMinMax);
-
-            Debug.Log("Dist: X: " + distX + " - Y: " + distY);
 
             foreach (Vector3Int block in inputBlocks)
             {
@@ -324,12 +282,7 @@ namespace Cordial.Mods.CutterTool.Scripts
                         {
                             if (!this._treeCuttingArea.IsInCuttingArea(leveledCoordinate))
                             {
-                                this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.ConnectionHighlight);
-
-                            }
-                            else
-                            {
-                                // don't highlight
+                                blockList.Add(leveledCoordinate);
                             }
                         }
                     }
@@ -347,11 +300,7 @@ namespace Cordial.Mods.CutterTool.Scripts
                         {
                             if (!this._treeCuttingArea.IsInCuttingArea(leveledCoordinate))
                             {
-                                this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.ConnectionHighlight);
-                            }
-                            else
-                            {
-                                // don't highlight
+                                blockList.Add(leveledCoordinate);
                             }
                         }
                     }
@@ -375,19 +324,29 @@ namespace Cordial.Mods.CutterTool.Scripts
                         {
                             if (!this._treeCuttingArea.IsInCuttingArea(leveledCoordinate))
                             {
-                                this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.ConnectionHighlight);
-                            }
-                            else
-                            {
-                                // don't highlight
+                                blockList.Add(leveledCoordinate);
                             }
                         }
                     }
                 }
+                else // ALL
+                {
+                    // add block to list for conversion to IEnumerable
+                    singleBlockList.Add(block);
+                    IEnumerable<Vector3Int> blocks = singleBlockList;
 
+                    foreach (Vector3Int leveledCoordinate in this._terrainAreaService.InMapLeveledCoordinates(blocks, ray))
+                    {
+                        if (!this._treeCuttingArea.IsInCuttingArea(leveledCoordinate))
+                        {
+                            blockList.Add(leveledCoordinate);
+                        }
+                    }
+                }
                 // empty list for next block
                 singleBlockList.Clear();
             }
+            return blockList.AsEnumerable();
         }
 
         [OnEvent]

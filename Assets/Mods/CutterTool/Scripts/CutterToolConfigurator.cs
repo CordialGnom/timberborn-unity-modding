@@ -9,8 +9,6 @@ namespace Cordial.Mods.CutterTool.Scripts
 
         public void Configure(IContainerDefinition containerDefinition)
         {
-            containerDefinition.Bind<CutterToolSettings>().AsSingleton();
-
             containerDefinition.Bind<CutterToolInitializer>().AsSingleton();
             containerDefinition.Bind<PanelFragment>().AsSingleton();
             containerDefinition.Bind<PanelFragmentRed>().AsSingleton();
@@ -19,7 +17,6 @@ namespace Cordial.Mods.CutterTool.Scripts
 
             containerDefinition.Bind<CutterToolFactionSpecService>().AsSingleton();
 
-            //containerDefinition.Bind<CutterToolConfigPanel>().AsSingleton();
             containerDefinition.Bind<ICutterTool>().To<CutterToolService>().AsSingleton();
             containerDefinition.Bind<CutterToolService>().AsSingleton();
             containerDefinition.MultiBind<IToolFactory>().To<CutterToolFactory>().AsSingleton();

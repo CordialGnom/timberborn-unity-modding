@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using Timberborn.Beavers;
-using Timberborn.CoreUI;
+﻿using Timberborn.CoreUI;
 using Timberborn.SingletonSystem;
 using Timberborn.UILayoutSystem;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Cordial.Mods.CutterTool.Scripts.UI
