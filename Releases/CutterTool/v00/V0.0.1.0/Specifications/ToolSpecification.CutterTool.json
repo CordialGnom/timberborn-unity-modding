@@ -1,0 +1,15 @@
+{
+  "Id": "Cordial.CutterTool",
+  "Type": "CutterTool",
+  "GroupId": "TreeCutting",
+  "Layout": "brown",
+  "Order": 12,
+  "Icon": "Sprites/CutterTool/CutterToolIcon",
+  "NameLocKey": "Cordial.CutterTool.DisplayName",
+  "DescriptionLocKey": "Cordial.CutterTool.Description",
+  "DevMode": false,
+  "Hidden": false,
+  "ToolInformation": {
+    "BottomBarSection": 1
+  }
+}

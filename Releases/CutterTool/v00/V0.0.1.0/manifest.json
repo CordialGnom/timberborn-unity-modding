@@ -1,0 +1,13 @@
+{
+  "Name": "Cutter Tool",
+  "Version": "0.0.1.0",
+  "Id": "Cordial.Mods.CutterTool",
+  "MinimumGameVersion": "0.6.7.0",
+  "Description": "An update to configure tree cutting.",
+  "RequiredMods": [
+  {
+	"Id": "TimberApi",
+	"MinimumVersion": "0.7.6.0"
+  }
+  ]
+}
