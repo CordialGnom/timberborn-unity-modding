@@ -37,7 +37,7 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         
 
         // faction / tree configuration
-        CutterToolFactionSpecService _cutterToolFactionSpecService;
+        CutterToolPrefabSpecService _cutterToolPrefabSpecService;
         private readonly EventBus _eventBus;
 
         public CutterPatterns CutterPatterns => _cutterPatterns;
@@ -45,14 +45,14 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
 
         public CutterToolConfigFragment (UIBuilder uiBuilder,
-                                         CutterToolFactionSpecService cutterToolFactionSpecService,
+                                         CutterToolPrefabSpecService cutterToolPrefabSpecService,
                                          VisualElementLoader visualElementLoader,
                                          EventBus eventBus)
         {
             _eventBus = eventBus;
             _uiBuilder = uiBuilder;
             _visualElementLoader = visualElementLoader;
-            _cutterToolFactionSpecService = cutterToolFactionSpecService;
+            _cutterToolPrefabSpecService = cutterToolPrefabSpecService;
 
         }
 
@@ -81,7 +81,7 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                 .Build();
 
             // create toggle elements for all available tree types
-            ImmutableArray<string> treeList = _cutterToolFactionSpecService.GetAllTrees();
+            ImmutableArray<string> treeList = _cutterToolPrefabSpecService.GetAllTrees();
 
             for (int index = 0; index < treeList.Length; ++index )
             {

@@ -15,7 +15,7 @@ namespace Cordial.Mods.CutterTool.Scripts
             containerDefinition.Bind<PanelFragmentBlue>().AsSingleton();
             containerDefinition.Bind<CutterToolConfigFragment>().AsSingleton();
 
-            containerDefinition.Bind<CutterToolFactionSpecService>().AsSingleton();
+            containerDefinition.Bind<CutterToolPrefabSpecService>().AsSingleton();
 
             containerDefinition.Bind<ICutterTool>().To<CutterToolService>().AsSingleton();
             containerDefinition.Bind<CutterToolService>().AsSingleton();
