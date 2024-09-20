@@ -1,14 +1,14 @@
 ﻿using Timberborn.ModManagerScene;
 using UnityEngine;
 
-namespace Mods.CutterTool.Scripts {
-  internal class CutterToolLogger : IModStarter {
-
-    public void StartMod()
+namespace Cordial.Mods.CutterTool.Scripts 
+{
+    internal class CutterToolLogger : IModStarter 
     {
-         var playerLogPath = Application.persistentDataPath + "/Player.log";
-        Debug.Log("Cutter Tool, output in Player.log file at: " + playerLogPath);
-    }
 
-  }
+        public void StartMod()
+        {
+            // required to start up mod
+        }
+    }
 }

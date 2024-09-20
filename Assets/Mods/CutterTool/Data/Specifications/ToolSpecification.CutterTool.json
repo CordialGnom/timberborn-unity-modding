@@ -4,7 +4,7 @@
   "GroupId": "TreeCutting",
   "Layout": "brown",
   "Order": 12,
-  "Icon": "Sprites/BottomBar/RemoveNaturalResourcesIcon",
+  "Icon": "Sprites/CutterTool/CutterToolIcon",
   "NameLocKey": "Cordial.CutterTool.DisplayName",
   "DescriptionLocKey": "Cordial.CutterTool.Description",
   "DevMode": false,
