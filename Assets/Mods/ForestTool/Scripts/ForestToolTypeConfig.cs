@@ -1,5 +1,5 @@
 ﻿
-namespace Mods.ForestTool.Scripts
+namespace Cordial.Mods.ForestTool.Scripts
 {
     public class ForestToolTypeConfig
     {

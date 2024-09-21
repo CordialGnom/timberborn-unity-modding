@@ -7,16 +7,14 @@ using UnityEngine;
 // runtime parameter storage (initialized from Config file)
 // can be manually changed through the UI at runtime
 
-namespace Mods.ForestTool.Scripts
+namespace Cordial.Mods.ForestTool.Scripts
 {
     public static class ForestToolParam
     {
-        // todo Corial: link following to an external configuration file / or store in player data
-        public static List<string> DefaultTreeTypesAllFactions = new() { "Birch", "Pine", "Oak" };
         private static bool _DefaultActiveMangrove = false;
         private static bool _DefaultActiveEmptySpots = true;
 
-        private static ForestToolFactionSpecService _forestToolFactionSpecService;
+        private static ForestToolPrefabSpecService _forestToolPrefabSpecService;
 
 
         private static List<ForestToolTypeConfig> _ForestToolTypeConfig = new();
@@ -87,18 +85,6 @@ namespace Mods.ForestTool.Scripts
             set
             {
                 _resourceCount = value;
-            }
-        }
-
-        public static ForestToolFactionSpecService ForestToolFactionSpecService
-        {
-            get
-            {
-                return _forestToolFactionSpecService;
-            }
-            set
-            {
-                _forestToolFactionSpecService = value;
             }
         }
 
@@ -180,47 +166,23 @@ namespace Mods.ForestTool.Scripts
             // reset existing lists and referenced variables
             _ForestToolTypeConfig.Clear();
 
-            // update count of resources
-            ResourceCount = DefaultTreeTypesAllFactions.Count;
-
-            for (int index = 0; index < ResourceCount; ++index)
-            {
-                string treeName =   DefaultTreeTypesAllFactions[index];
-
-                if (ForestToolSpecificationService.VerifyPrefabName(treeName))
-                {
-                    _ForestToolTypeConfig.Add(new ForestToolTypeConfig
-                    {
-                        TreeName = treeName,
-                        TreeEnabled = true,
-                        TreeValue = 10,
-                        TreeValueRef = 10
-                    }) ;
-                }
-            }
-
-            if (null == _forestToolFactionSpecService)
+            if (null == _forestToolPrefabSpecService)
             {
                 Debug.LogError("ForestTool: No Faction Spec Service in parameters");
             }
             else
             {
-                ImmutableArray<string> factionTreeNames = ForestToolFactionSpecService.GetFactionTrees();
+                ImmutableArray<string> factionTreeNames = _forestToolPrefabSpecService.GetAllTrees();
 
                 foreach (string treeName in factionTreeNames)
                 {
-                    Debug.Log("UFC Found: " + treeName);
-
-                    if (ForestToolFactionSpecService.VerifyPrefabName(treeName))
+                    _ForestToolTypeConfig.Add(new ForestToolTypeConfig
                     {
-                        _ForestToolTypeConfig.Add(new ForestToolTypeConfig
-                        {
-                            TreeName = treeName,
-                            TreeEnabled = (treeName == "Mangrove") ? _DefaultActiveMangrove : true,
-                            TreeValue = 10,
-                            TreeValueRef = 10
-                        });
-                    }
+                        TreeName = treeName,
+                        TreeEnabled = (treeName == "Mangrove") ? _DefaultActiveMangrove : true,
+                        TreeValue = 10,
+                        TreeValueRef = 10
+                    });
                 }
             }
 

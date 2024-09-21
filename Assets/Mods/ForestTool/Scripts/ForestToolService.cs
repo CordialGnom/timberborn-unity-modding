@@ -18,16 +18,15 @@ using UnityEngine.UIElements;
 using static UnityEngine.UI.DefaultControls;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using Timberborn.BaseComponentSystem;
-using Timberborn.Modding;
+using Cordial.Mods.ForestTool.Scripts.UI.Events;
 
-namespace Mods.ForestTool.Scripts
+namespace Cordial.Mods.ForestTool.Scripts
 {
-    public class ForestTool : Tool, ILoadableSingleton, IPlantingToolGroup, IForestTool
+    public class ForestToolService : Tool, ILoadableSingleton, IPlantingToolGroup, IForestTool
     {
         private static readonly string TitleLocKey = "Cordial.ForestTool.DisplayName";
         private static readonly string DescriptionLocKey = "Cordial.ForestTool.Description";
         private static readonly string CursorKey = "PlantingCursor";
-        public static readonly string ShortcutKey = "Cordial.ForestTool.KeyBinding.ForestToolConfigShortcut";
 
         private static bool isUnlocked; 
 
@@ -52,8 +51,7 @@ namespace Mods.ForestTool.Scripts
         private BuildingUnlockingService _buildingUnlockingService;
         private BuildingService _buildingService;
 
-        private ForestToolFactionSpecService _forestToolFactionSpecService;
-        public ForestToolPanel _forestToolPanel;
+        private ForestToolPrefabSpecService _forestToolPrefabSpecService;
 
 
         //private static readonly string[] _asResource = { "Oak", "Birch", "ChestnutTree", "Pine", "Maple" };
@@ -68,7 +66,7 @@ namespace Mods.ForestTool.Scripts
         protected readonly MethodInfo EnterPlantingModeMethod;
         protected readonly MethodInfo ExitPlantingModeMethod;
 
-        public ForestTool(SelectionToolProcessorFactory selectionToolProcessorFactory,
+        public ForestToolService(SelectionToolProcessorFactory selectionToolProcessorFactory,
                             PlantingSelectionService plantingSelectionService,
                             PlantingAreaValidator plantingAreaValidator,
                             PlantingService plantingService,
@@ -80,8 +78,7 @@ namespace Mods.ForestTool.Scripts
                             EventBus eventBus,
                             BuildingService buildingService,
                             BuildingUnlockingService buildingUnlockingService,
-                            ForestToolFactionSpecService forestToolFactionSpecService,
-                            ForestToolPanel forestToolPanel )
+                            ForestToolPrefabSpecService forestToolPrefabSpecService )
         {
 
             _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
@@ -98,8 +95,7 @@ namespace Mods.ForestTool.Scripts
             _toolUnlockingService = toolUnlockingService;
             _buildingService = buildingService;
             _buildingUnlockingService = buildingUnlockingService;
-            _forestToolFactionSpecService = forestToolFactionSpecService;
-            _forestToolPanel = forestToolPanel;
+            _forestToolPrefabSpecService = forestToolPrefabSpecService;
 
 
             _eventBus = eventBus;
@@ -116,6 +112,8 @@ namespace Mods.ForestTool.Scripts
         public void Load()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
+            this._eventBus.Register((object)this);
+            
             // _buildingUnlockingService = DependencyContainer.GetInstance<BuildingUnlockingService>();
             // _buildingService = DependencyContainer.GetInstance<BuildingService>();
 
@@ -145,14 +143,10 @@ namespace Mods.ForestTool.Scripts
             // require access to either "Forester" or the "Trees". Therefore check if
             // the trees can be planted...
 
-            // get faction (forester specific building)
-            string factionName = ForestToolFactionSpecService.FactionId;
-            
-            string prefabName = "";
-
-            if ("" != factionName)
+            // get faction forester specific building
+            if ("" != _forestToolPrefabSpecService.FactionId)
             {
-                prefabName = "Forester." + factionName;
+                string prefabName = "Forester." + _forestToolPrefabSpecService.FactionId;
 
                 // create a forester to check if system is unlocked
                 Building _forester = _buildingService.GetBuildingPrefab(prefabName);
@@ -163,6 +157,7 @@ namespace Mods.ForestTool.Scripts
                 {
                     // activate tool
                     this._selectionToolProcessor.Enter();
+                    this._eventBus.Post((object)new ForestToolSelectedEvent(this));
                 }
                 else
                 {
@@ -173,15 +168,8 @@ namespace Mods.ForestTool.Scripts
             {
                 Debug.LogError("ForestTool: Faction not found");
             }
-
-            // hook for UI
-            EnterTool();
         }
 
-        public ForestToolPanel EnterTool()
-        {
-            return this._forestToolPanel;
-        }
 
         public bool IsUnlocked { get { return isUnlocked; } set { isUnlocked = value; } }
 
@@ -189,6 +177,7 @@ namespace Mods.ForestTool.Scripts
         {
             this._plantingSelectionService.UnhighlightAll();
             this._selectionToolProcessor.Exit();
+            this._eventBus.Post((object)new ForestToolUnselectedEvent(this));
         }
 
         // Preview and Action Callbacks required for selection Tool Processor Factor
@@ -264,6 +253,26 @@ namespace Mods.ForestTool.Scripts
         {
             // currently no implementation, just placeholder
             return;
+        }
+
+        [OnEvent]
+        public void OnForestToolConfigChangeEvent(ForestToolConfigChangeEvent forestToolConfigChangeEvent)
+        {
+            if (null == forestToolConfigChangeEvent)
+                return;
+
+            //_toggleTreeDict = forestToolConfigChangeEvent.ForestToolConfig.GetTreeDict();
+            //_treeMarkOnly = forestToolConfigChangeEvent.ForestToolConfig.TreeMarkOnly;
+
+            //_treeTypesActive.Clear();
+
+            //foreach (KeyValuePair<string, bool> kvp in _toggleTreeDict)
+            //{
+            //    if (kvp.Value)
+            //    {
+            //        _treeTypesActive.Add(kvp.Key);
+            //    }
+            //}
         }
     }
 }

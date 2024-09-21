@@ -1,8 +1,6 @@
 ID,Text,Comment
 Cordial.ForestTool.DisplayName,ForestTool,-
 Cordial.ForestTool.Description,Tree tool for planting diverse forests (Hold Ctrl when starting tool to open configuration pane)\n Required Building: Forester,-
-Cordial.ForestTool.KeyBindingGroup.ForestTool,ForestTool Tool,-
-Cordial.ForestTool.KeyBinding.ForestToolConfigShortcut,ForestTool Tool,-
 Cordial.ForestTool.ForestToolPanel.Title, Random Tree Setup,-
 Cordial.ForestTool.ForestToolPanel.PanelDescription, Configure trees and spots to be planted,-
 Cordial.ForestTool.ForestToolPanel.ToggleTree01, Birch,-

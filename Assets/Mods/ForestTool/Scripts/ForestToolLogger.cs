@@ -1,16 +1,12 @@
-﻿using HarmonyLib;
-using Timberborn.ModManagerScene;
-using UnityEngine;
+﻿using Timberborn.ModManagerScene;
 
-namespace Mods.ForestTool.Scripts {
-  internal class ForestToolLogger : IModStarter {
-
-    public void StartMod()
+namespace Cordial.Mods.ForestTool.Scripts
+{
+    internal class ForestToolLogger : IModStarter 
     {
-        new Harmony("Cordial.ForestTool").PatchAll();
-        var playerLogPath = Application.persistentDataPath + "/Player.log";
-        Debug.Log("ForestTool, but in the Player.log file at: " + playerLogPath);
+        public void StartMod()
+        {
+            // required to start mod
+        }
     }
-
-  }
 }

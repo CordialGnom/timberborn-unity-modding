@@ -1,7 +1,7 @@
 ﻿using TimberApi.Tools.ToolSystem;
 using Timberborn.ToolSystem;
 
-namespace Mods.ForestTool.Scripts
+namespace Cordial.Mods.ForestTool.Scripts
 {
     public class ForestToolFactory : IToolFactory
     {
