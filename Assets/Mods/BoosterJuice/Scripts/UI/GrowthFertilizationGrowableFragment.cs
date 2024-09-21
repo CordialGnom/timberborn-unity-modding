@@ -3,16 +3,14 @@
 // Author: igor.zavoychinskiy@gmail.com
 // License: Public Domain
 
-using System.Collections.Generic;
-using System.Text;
 using TimberApi.DependencyContainerSystem;
-using TimberApi.UIBuilderSystem;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
 using Timberborn.EntityPanelSystem;
 using Timberborn.Forestry;
 using Timberborn.Growing;
+using Timberborn.Localization;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -27,14 +25,25 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
         private GrowthFertilizationAreaService _growthFertilizationAreaService;
         private Vector3Int _growableCoordinates;
 
+
         VisualElement _root = new();
         Label _title = new();
         Label _growthDailyInfo = new();
         Label _growthAvgInfo = new();
 
-        public GrowthFertilizationGrowableFragment(UiFactory uiFactory)
+        // localiations
+        // _loc.T(DescriptionLocKey)
+        private readonly ILoc _loc;
+        private static readonly string TitleLocKey = "Cordial.TreeFragment.Title";
+        private static readonly string GrowthDailyLocKey = "Cordial.TreeFragment.GrowthDaily";
+        private static readonly string GrowthAvgLocKey = "Cordial.TreeFragment.GrowthAverage";
+        private static readonly string UnitDayLocKey = "Cordial.Unit.Days";
+
+        public GrowthFertilizationGrowableFragment( UiFactory uiFactory,
+                                                    ILoc loc)
         {
             _uiFactory = uiFactory;
+            _loc = loc;
         }
 
         public VisualElement InitializeFragment()
@@ -83,19 +92,19 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
                         {
                             this._growableCoordinates = blockObject.Coordinates;
 
-                            _title.text = "Growth influenced by fertilizer.";
+                            _title.text = _loc.T(TitleLocKey);
 
                             if (!growable.IsGrown)
                             {
                                 _growthDailyInfo.visible = true;
                                 _growthAvgInfo.visible = true;
 
-                                _growthDailyInfo.text = "Daily growth increased by: " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(blockObject.Coordinates).ToString("0.0") + " %");
+                                _growthDailyInfo.text = _loc.T(GrowthDailyLocKey) + " " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(blockObject.Coordinates).ToString("0.0") + " %");
 
                                 // calculate average growth reduction
                                 float growthTimeDescrease = (growable.GrowthTimeInDays * this._growthFertilizationAreaService.GetGrowthFactor() * (this._growthFertilizationAreaService.GetGrowthProgessAverage(blockObject.Coordinates) / 100.0f));
 
-                                _growthAvgInfo.text = ("Average growth decreased by: " + growthTimeDescrease.ToString("0.0") + " days");
+                                _growthAvgInfo.text = (_loc.T(GrowthAvgLocKey) + " " + growthTimeDescrease.ToString("0.0") + " " + _loc.T(UnitDayLocKey));
                             }
                             else
                             {
@@ -128,20 +137,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
                 && (this._growableCoordinates != Vector3Int.zero)
                 )
             {
-                this._growthDailyInfo.text = "Daily growth increased by: " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(this._growableCoordinates).ToString("0.0") + " %");
+                this._growthDailyInfo.text = _loc.T(GrowthDailyLocKey) + " " + (this._growthFertilizationAreaService.GetGrowthProgessDaily(this._growableCoordinates).ToString("0.0") + " %");
                 _root.ToggleDisplayStyle((bool)(Object)this._growthFertilizationTreeComponent);
-            }
-        }
-
-        private void UpdateGrowableState(Growable growable)
-        {
-            if (!(bool)(Object)this._growthFertilizationTreeComponent)
-                return;
-
-            if (growable != null)
-            {
-                // get building from area service
-                this._growthDailyInfo.text = "Growth Progress: " + growable.GrowthProgress;
             }
         }
     }

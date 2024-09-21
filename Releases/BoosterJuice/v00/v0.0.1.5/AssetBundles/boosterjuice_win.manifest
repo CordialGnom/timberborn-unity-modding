@@ -1,0 +1,116 @@
+ManifestFileVersion: 0
+UnityVersion: 6000.0.14f1
+CRC: 4039632327
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 2b9a5f2d500e186ed985ea878b7b715d
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 2e0223aa88ffc4eb19177d26a253ef42
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: ce52729183188004e5b2820fa58d9b79
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 49
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: d94f8a9b1cd73544c934187379c54fb3, type: 3}
+- Class: 114
+  Script: {fileID: 279545971, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
+- Class: 114
+  Script: {fileID: 1700995066, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
+- Class: 114
+  Script: {fileID: 1933283616, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
+- Class: 114
+  Script: {fileID: 437054131, guid: 644c1295076bbdbb604b7f96aa6be9c2, type: 3}
+- Class: 114
+  Script: {fileID: 58535385, guid: eba8ecbfe24c3ba07cc34b52f13e0eaa, type: 3}
+- Class: 114
+  Script: {fileID: -731835049, guid: b5f268a4cb31a93ed707a95d3a502b0e, type: 3}
+- Class: 114
+  Script: {fileID: 652365310, guid: b6b9d4cc3090b6fceb2eb6438dd271f1, type: 3}
+- Class: 114
+  Script: {fileID: 1163566474, guid: 0dcb2ad38d3b076633e495e358136d16, type: 3}
+- Class: 114
+  Script: {fileID: 9237227, guid: dd1baa4f323651ee41781eb84b2b1960, type: 3}
+- Class: 114
+  Script: {fileID: -730909465, guid: bcb85dd25e41826ab5a7dea12cff2430, type: 3}
+- Class: 114
+  Script: {fileID: -790041461, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
+- Class: 114
+  Script: {fileID: 1794062130, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
+- Class: 114
+  Script: {fileID: 1596376676, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
+- Class: 114
+  Script: {fileID: -455950880, guid: 71874a96862cca0445075c2f72e705bf, type: 3}
+- Class: 114
+  Script: {fileID: -1496982017, guid: 71874a96862cca0445075c2f72e705bf, type: 3}
+- Class: 114
+  Script: {fileID: 1800879565, guid: c1ff95bb5ae0e8b420075ec58add6f36, type: 3}
+- Class: 114
+  Script: {fileID: -871492198, guid: c1ff95bb5ae0e8b420075ec58add6f36, type: 3}
+- Class: 114
+  Script: {fileID: -1912839643, guid: 603f82a4140498c516499d72a9d347b6, type: 3}
+- Class: 114
+  Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
+- Class: 114
+  Script: {fileID: -598504670, guid: 6e68475ee52ce568acbd493b99ce126d, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: Timberborn.BlockSystem
+  ClassName: Timberborn.BlockSystem.BlockSpecification
+- AssemblyName: Timberborn.BlockSystem
+  ClassName: Timberborn.BlockSystem.BlocksSpecification
+- AssemblyName: Timberborn.BlockSystem
+  ClassName: Timberborn.BlockSystem.CustomPivotSpecification
+- AssemblyName: Timberborn.BlockSystem
+  ClassName: Timberborn.BlockSystem.EntranceBlockSpecification
+- AssemblyName: Timberborn.Goods
+  ClassName: Timberborn.Goods.GoodAmountSpecification
+- AssemblyName: Timberborn.SlotSystem
+  ClassName: Timberborn.SlotSystem.TransformSlotSpecification
+- AssemblyName: Timberborn.TimbermeshEditorTools
+  ClassName: Timberborn.TimbermeshEditorTools.NodeMetadata
+- AssemblyName: Timberborn.WorkSystem
+  ClassName: Timberborn.WorkSystem.WorkerTypeUnlockCost
+Assets:
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Wood/CordialFertilizerDump/Prefab/CordialFertilizerDump.FolkTails.prefab
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Wood/CordialFertilizerDump/Models/CordialFertilizerDump.Folktails.Model.timbermesh
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Science/CordialChemist/Models/CordialChemist.IronTeeth.ConstructionStage0.Model.timbermesh
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Science/CordialChemist/Prefab/ChemistIcon.png.meta.json
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Science/CordialChemist/Models/CordialChemist.IronTeeth.Model.timbermesh
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Wood/CordialFertilizerDump/FertilizerDumpIcon.png.meta.json
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Science/CordialChemist/Prefab/CordialChemist.IronTeeth.prefab
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Wood/CordialFertilizerDump/FertilizerDumpIcon.png
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Wood/CordialFertilizerDump/Prefab/CordialFertilizerDump.IronTeeth.prefab
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Science/CordialChemist/Models/CordialChemist.Folktails.Model.timbermesh
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Wood/CordialFertilizerDump/Models/CordialFertilizerDump.IronTeeth.Model.timbermesh
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Science/CordialChemist/Prefab/CordialChemist.Folktails.prefab
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Science/CordialChemist/Prefab/ChemistIcon.png
+- Assets/Mods/BoosterJuice/AssetBundles/Resources/Buildings/Wood/CordialFertilizerDump/Models/CordialFertilizerDump.IronTeeth.ConstructionStage0.Model.timbermesh
+Dependencies: []

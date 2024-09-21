@@ -332,9 +332,9 @@ MonoBehaviour:
   m_Script: {fileID: 652365310, guid: b6b9d4cc3090b6fceb2eb6438dd271f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _displayNameLocKey: Building.CordialFertilizerDump.DisplayName
-  _descriptionLocKey: Building.CordialFertilizerDump.Description
-  _flavorDescriptionLocKey: Building.CordialFertilizerDump.FlavorDescription
+  _displayNameLocKey: Cordial.Building.FertilizerDump.DisplayName
+  _descriptionLocKey: Cordial.Building.FertilizerDump.Description
+  _flavorDescriptionLocKey: Cordial.Building.FertilizerDump.FlavorDescription
   _imagePath: Buildings/Wood/CordialFertilizerDump/FertilizerDumpIcon
 --- !u!114 &-3161173505399161988
 MonoBehaviour:
