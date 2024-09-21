@@ -1,0 +1,21 @@
+{
+  "Id": "Fertilizer",
+  "BackwardCompatibleIds": [],
+  "DisplayNameLocKey": "Cordial.Good.Fertilizer.DisplayName",
+  "PluralDisplayNameLocKey": "Cordial.Good.Fertilizer.PluralDisplayName",
+  "ConsumptionEffects": [
+  ],
+  "GoodType": "Liquid",
+  "StockpileVisualization": "Liquid",
+  "VisibleContainer": {
+    "Value": "Barrel"
+  },
+  "ContainerColor": "#95006d",
+  "ContainerMaterial": "Materials/Goods/Extract",
+  "CarryingAnimation": "CarryInHands",
+  "Weight": 1,
+  "GoodGroupId": "Materials",
+  "ForceImport": false,
+  "Icon": "Sprites/Goods/FertilizerIcon",
+  "RequiredFeatureToggle": ""
+}
