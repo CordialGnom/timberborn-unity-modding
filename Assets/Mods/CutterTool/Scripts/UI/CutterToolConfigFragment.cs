@@ -85,10 +85,10 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
             for (int index = 0; index < treeList.Length; ++index )
             {
-                _toggleTreeList.Add(_uiBuilder.Create<GameTextToggle>()
+                _toggleTreeList.Add(_uiBuilder.Create<GameToggle>()
                     .SetName(treeList[index])
-                    .SetText(treeList[index])
-                    //.SetLocKey(treeList[index-1])
+                    //.SetText(treeList[index])
+                    .SetLocKey("NaturalResource." + treeList[index] + ".DisplayName")
                     .Build());
 
                 _toggleTreeDict.Add(treeList[index], _toggleTreeList[index]);
@@ -156,7 +156,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             foreach (var child in visualElement.Children())
             {
                 if ((child.GetType() == typeof(LocalizableToggle))
-                    || (child.GetType() == typeof(Toggle)))
+                    //|| (child.GetType() == typeof(Toggle))     // if GameTextToggle is used
+                    )
                 {
                     _root.Q<Toggle>(child.name).RegisterValueChangedCallback(value => ToggleValueChange(child.name, value.newValue));
                     _toggleNameList.Add(child.name);   
