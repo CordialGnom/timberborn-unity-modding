@@ -120,7 +120,6 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
             }
 
             SendToggleUpdateEvent("TreeAll", true);
-            SendToggleUpdateEvent("Pattern01", true);
 
             _root.ToggleDisplayStyle(false);
 
@@ -207,7 +206,6 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
             if (oldValue != newValue)
             {
                 _root.Q<Toggle>(name).value = newValue;
-                //_root.Q<Toggle>(name).SendEvent(ChangeEvent<bool>.GetPooled(oldValue, newValue));
             }
         }
 
