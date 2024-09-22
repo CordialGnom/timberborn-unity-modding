@@ -53,6 +53,10 @@ namespace Cordial.Mods.ForestTool.Scripts
 
         private ForestToolPrefabSpecService _forestToolPrefabSpecService;
 
+        // planting parametrization
+        Dictionary<string, bool> _treeToggleDict = new();
+        private bool _emptySpotsEnabled = false;
+
 
         //private static readonly string[] _asResource = { "Oak", "Birch", "ChestnutTree", "Pine", "Maple" };
 
@@ -116,17 +120,6 @@ namespace Cordial.Mods.ForestTool.Scripts
             
             // _buildingUnlockingService = DependencyContainer.GetInstance<BuildingUnlockingService>();
             // _buildingService = DependencyContainer.GetInstance<BuildingService>();
-
-
-            // did not achieve natural resource access through timberapi
-            // ForestToolSpecificationService.GetAll();
-            // ForestToolSpecificationService.GetDefaultTreeNames();
-
-            // only call parameter init once
-            if (false == ForestToolParam.ParamInitDone)
-            {
-                ForestToolParam.UpdateFromConfig();
-            }
         }
 
         public void SetToolGroup(ToolGroup toolGroup)
@@ -157,7 +150,6 @@ namespace Cordial.Mods.ForestTool.Scripts
                 {
                     // activate tool
                     this._selectionToolProcessor.Enter();
-                    this._eventBus.Post((object)new ForestToolSelectedEvent(this));
                 }
                 else
                 {
@@ -168,6 +160,8 @@ namespace Cordial.Mods.ForestTool.Scripts
             {
                 Debug.LogError("ForestTool: Faction not found");
             }
+
+            this._eventBus.Post((object)new ForestToolSelectedEvent(this));
         }
 
 
@@ -187,7 +181,9 @@ namespace Cordial.Mods.ForestTool.Scripts
 
             // workaround so that highlighting doesn't toggle at a high cycle, 
             // add preview of empty spots as pine trees. available to both default factions
-            if (resourceName.Equals(ForestToolParam.NameEmpty, StringComparison.OrdinalIgnoreCase))
+            if ((resourceName.Equals(ForestToolParam.NameEmpty, StringComparison.OrdinalIgnoreCase))
+                || (resourceName.Equals("",StringComparison.OrdinalIgnoreCase))
+                )
             {
                 resourceName = _defaultResource;
             }
@@ -209,8 +205,6 @@ namespace Cordial.Mods.ForestTool.Scripts
         private void Plant(IEnumerable<Vector3Int> inputBlocks, Ray ray)        // based on PlantingTool function
         {
             string resourceName; ;
-            Boolean boCanPlant;
-            Vector2Int v2coordinate;
 
             // here randomize plant name for each entry in list
 
@@ -218,24 +212,16 @@ namespace Cordial.Mods.ForestTool.Scripts
             {
                 resourceName = GetRandomPlantableName();
 
-                Debug.Log("ForestTool plant: " + resourceName);
-
-                if (resourceName.Equals(ForestToolParam.NameEmpty, StringComparison.OrdinalIgnoreCase))
+                if ((resourceName.Equals(ForestToolParam.NameEmpty, StringComparison.OrdinalIgnoreCase))
+                    || (resourceName.Equals("", StringComparison.OrdinalIgnoreCase))
+                )
                 {
-                    v2coordinate = new Vector2Int(leveledCoordinate.x, leveledCoordinate.y);
-                    boCanPlant = true; //_plantingService.IsResourceAt(v2coordinate);
-
-                    // leave empty spot in forest
-                    if (true == boCanPlant)
-                    {
-                        _plantingService.UnsetPlantingCoordinates(leveledCoordinate);
-                    }
+                    // remove possible exisiting planting coordinates
+                    _plantingService.UnsetPlantingCoordinates(leveledCoordinate);                    
                 }
                 else
                 {
-                    boCanPlant = _plantingAreaValidator.CanPlant(leveledCoordinate, resourceName);
-
-                    if (true == boCanPlant)
+                    if (_plantingAreaValidator.CanPlant(leveledCoordinate, resourceName))
                     {
                         _plantingService.SetPlantingCoordinates(leveledCoordinate, resourceName);
                     }
@@ -261,18 +247,17 @@ namespace Cordial.Mods.ForestTool.Scripts
             if (null == forestToolConfigChangeEvent)
                 return;
 
-            //_toggleTreeDict = forestToolConfigChangeEvent.ForestToolConfig.GetTreeDict();
-            //_treeMarkOnly = forestToolConfigChangeEvent.ForestToolConfig.TreeMarkOnly;
+            if (ForestToolParam.ParamInitDone)
+            {
+                _emptySpotsEnabled = forestToolConfigChangeEvent.ForestToolConfig.EmptySpotsEnabled;
+                ForestToolParam.SetResourceState(ForestToolParam.NameEmpty, _emptySpotsEnabled);
 
-            //_treeTypesActive.Clear();
-
-            //foreach (KeyValuePair<string, bool> kvp in _toggleTreeDict)
-            //{
-            //    if (kvp.Value)
-            //    {
-            //        _treeTypesActive.Add(kvp.Key);
-            //    }
-            //}
+                _treeToggleDict = forestToolConfigChangeEvent.ForestToolConfig.GetTreeDict();
+                foreach (KeyValuePair<string, bool> kvp in _treeToggleDict)
+                {
+                    ForestToolParam.SetResourceState(kvp.Key, kvp.Value);
+                }
+            }
         }
     }
 }

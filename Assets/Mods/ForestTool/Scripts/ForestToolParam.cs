@@ -11,9 +11,6 @@ namespace Cordial.Mods.ForestTool.Scripts
 {
     public static class ForestToolParam
     {
-        private static bool _DefaultActiveMangrove = false;
-        private static bool _DefaultActiveEmptySpots = true;
-
         private static ForestToolPrefabSpecService _forestToolPrefabSpecService;
 
 
@@ -43,7 +40,7 @@ namespace Cordial.Mods.ForestTool.Scripts
 
                 if (resourceName == treeConfig.TreeName)
                 {
-                    // disable resource
+                    // set resource state
                     treeConfig.TreeEnabled = setting;
 
                     // update randomization total
@@ -74,6 +71,17 @@ namespace Cordial.Mods.ForestTool.Scripts
                 resourceNames.Add(treeConfig.TreeName);
             }
             return resourceNames;
+        }
+        public static ForestToolPrefabSpecService ForestToolPrefabSpecService
+        {
+            get
+            {
+                return _forestToolPrefabSpecService;
+            }
+            set
+            {
+                _forestToolPrefabSpecService = value;
+            }
         }
 
         public static int ResourceCount
@@ -125,8 +133,6 @@ namespace Cordial.Mods.ForestTool.Scripts
             // calculate amount of numbers to be base of randomization
             foreach (ForestToolTypeConfig treeConfig in _ForestToolTypeConfig)
             {
-                Debug.Log("ForestTool config: " + treeConfig.TreeName);
-
                 if (true == treeConfig.TreeEnabled)
                 {
                     // increment randomtotal with the used value
@@ -161,7 +167,7 @@ namespace Cordial.Mods.ForestTool.Scripts
             return string.Empty;
         }
 
-        public static void UpdateFromConfig()
+        public static void InitConfigDefault()
         {
             // reset existing lists and referenced variables
             _ForestToolTypeConfig.Clear();
@@ -179,27 +185,27 @@ namespace Cordial.Mods.ForestTool.Scripts
                     _ForestToolTypeConfig.Add(new ForestToolTypeConfig
                     {
                         TreeName = treeName,
-                        TreeEnabled = (treeName == "Mangrove") ? _DefaultActiveMangrove : true,
+                        TreeEnabled = true,
                         TreeValue = 10,
                         TreeValueRef = 10
                     });
                 }
+
+                // link if empty spots are also to be handled
+                _ForestToolTypeConfig.Add(new ForestToolTypeConfig
+                {
+                    TreeName = _NameEmpty,
+                    TreeEnabled = true,
+                    TreeValue = 10,
+                    TreeValueRef = 10
+                });
+
+                // calculate Random Total
+                RandomTotalUpdate();
+
+                // set flag that init is complete
+                ParamInitDone = true;
             }
-
-            // link if empty spots are also to be handled
-            _ForestToolTypeConfig.Add(new ForestToolTypeConfig
-            {
-                TreeName = _NameEmpty,
-                TreeEnabled = _DefaultActiveEmptySpots,
-                TreeValue = 10,
-                TreeValueRef = 10
-            });
-
-            // calculate Random Total
-            RandomTotalUpdate();
-
-            // set flag that init is complete
-            ParamInitDone = true;
         }
     }
 }

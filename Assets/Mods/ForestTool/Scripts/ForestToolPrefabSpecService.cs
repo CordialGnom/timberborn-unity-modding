@@ -43,11 +43,8 @@ namespace Cordial.Mods.ForestTool.Scripts
                 _factionId = GetFactionName();
 
                 // only call parameter init once
-                if (false == ForestToolParam.ParamInitDone)
-                {
-                    ForestToolParam.UpdateFromConfig();
-                }
-
+                ForestToolParam.ForestToolPrefabSpecService = this;
+                ForestToolParam.InitConfigDefault();
             }
         }
 

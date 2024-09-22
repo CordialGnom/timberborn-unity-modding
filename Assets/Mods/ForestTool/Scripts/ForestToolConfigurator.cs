@@ -16,6 +16,7 @@ namespace Cordial.Mods.ForestTool.Scripts
             containerDefinition.Bind<PanelFragmentBlue>().AsSingleton();
             containerDefinition.Bind<PanelFragmentRed>().AsSingleton();
             containerDefinition.Bind<ForestToolConfigFragment>().AsSingleton();
+            containerDefinition.Bind<ForestToolErrorFragment>().AsSingleton();
 
             containerDefinition.Bind<ForestToolPrefabSpecService>().AsSingleton();
 
