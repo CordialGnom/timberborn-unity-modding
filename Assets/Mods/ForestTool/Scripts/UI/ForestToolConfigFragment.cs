@@ -15,19 +15,16 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
     {
         readonly UIBuilder _uiBuilder;
         private readonly VisualElementLoader _visualElementLoader;
+        private readonly VisualElement _root = new();
 
-        private VisualElement _root = new();
-
-        private bool _togglePanelUpdate = false;
-
+        // UI elements
         Label _labelTitle = new();
         Label _labelDescription = new();
 
         Toggle _toggleTreeAll = new();
-        Toggle _toggleTreeMark = new();
+        Toggle _toggleEmptySpots = new();
 
         List<Toggle> _toggleTreeList = new();
-        List<string> _toggleNameList = new();
         private readonly Dictionary<string, Toggle> _toggleTreeDict = new();
 
         
@@ -36,7 +33,7 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
         ForestToolPrefabSpecService _forestToolPrefabSpecService;
         private readonly EventBus _eventBus;
 
-        public bool TreeMarkOnly => _toggleTreeMark.value;
+        public bool EmptySpotsEnabled => _toggleEmptySpots.value;
 
 
         public ForestToolConfigFragment (UIBuilder uiBuilder,
@@ -55,15 +52,15 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
         {
 
             // add toggle for to mark only tree types
-            _toggleTreeMark = _uiBuilder.Create<GameToggle>()
-                .SetName("TreeMark")
-                .SetLocKey("Cordial.ForestTool.ForestToolPanel.TreeConfig.TreeMark")
+            _toggleEmptySpots = _uiBuilder.Create<GameToggle>()
+                .SetName("EmptySpots")
+                .SetLocKey("Cordial.ForestTool.ForestToolPanel.ToggleEmpty")
                 .Build();
             
             // add toggle for all tree types
             _toggleTreeAll = _uiBuilder.Create<GameToggle>()
                 .SetName("TreeAll")
-                .SetLocKey("Cordial.ForestTool.ForestToolPanel.TreeConfig.TreeAll")
+                .SetLocKey("Cordial.ForestTool.ForestToolPanel.ToggleTreeAll")
                 .Build();
 
             // create toggle elements for all available tree types
@@ -84,10 +81,14 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
                                     .SetLocKey("Cordial.ForestTool.ForestToolPanel.Title")
                                     .Heading()
                                     .Build();
-            _labelDescription = _uiBuilder.Create<GameLabel>().SetLocKey("Cordial.ForestTool.ForestToolPanel.Description").Small().Build();
+
+            _labelDescription = _uiBuilder.Create<GameLabel>()
+                                            .SetLocKey("Cordial.ForestTool.ForestToolPanel.Description")
+                                            .Small()
+                                            .Build();
 
             _root.Add(CreatePanelFragmentRedBuilder()
-                             .AddComponent(_labelTitle)
+                            .AddComponent(_labelTitle)
                             .BuildAndInitialize());
 
             _root.Add(CreatePanelFragmentBlueBuilder()
@@ -102,13 +103,10 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
             }
 
             _root.Add(CreateCenteredPanelFragmentBuilder()
-                    .AddComponent(_toggleTreeMark)
+                    .AddComponent(_toggleEmptySpots)
                     .AddComponent(_toggleTreeAll)
                     .AddComponent(toggleList)
                     .BuildAndInitialize());
-
-            // reset toggle name list
-            _toggleNameList.Clear();
 
             // register all toggles to name list and callbacks
             RegisterToggleCallback(_root);
@@ -116,10 +114,11 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
             // set default values of toggles 
             foreach (Toggle toggle in _toggleTreeList)
             {
-                SendToggleUpdateEvent(toggle.name, true);
+                SendToggleUpdateEventWithoutNotify(toggle.name, true);
             }
 
-            SendToggleUpdateEvent("TreeAll", true);
+            SendToggleUpdateEventWithoutNotify("TreeAll", true);
+            SendToggleUpdateEvent("EmptySpots", true);
 
             _root.ToggleDisplayStyle(false);
 
@@ -136,8 +135,7 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
                     //|| (child.GetType() == typeof(Toggle))     // if GameTextToggle is used
                     )
                 {
-                    _root.Q<Toggle>(child.name).RegisterValueChangedCallback(value => ToggleValueChange(child.name, value.newValue));
-                    _toggleNameList.Add(child.name);   
+                    _root.Q<Toggle>(child.name).RegisterValueChangedCallback(value => ToggleValueChange(child.name, value.newValue)); 
                 }
                 else
                 {
@@ -187,7 +185,8 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
 
             switch (resourceName)
             {
-                case "TreeMark":
+                case "EmptySpots":
+                    // do nothing, value handled separately, just used to trigger event
                     break;
                 default:    // tree type configuration
                     UpdateToggleTreeType(resourceName, value);

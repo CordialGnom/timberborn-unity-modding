@@ -15,41 +15,49 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
 
 
         readonly ForestToolConfigFragment _forestToolConfigFragment;
+        readonly ForestToolErrorFragment _forestToolErrorFragment;
 
-        private VisualElement _root;
-        private VisualElement _entityroot;
+        private VisualElement _rootConfig;
+        private VisualElement _rootEntity;
+        private VisualElement _rootError;
 
         public ForestToolInitializer( UILayout uiLayout, 
                                         VisualElementLoader visualElementLoader,
                                         ForestToolConfigFragment forestToolConfigFragment,
+                                        ForestToolErrorFragment forestToolErrorFragment,
                                         EventBus eventBus)
         {
             this._uiLayout = uiLayout;
             this._visualElementLoader = visualElementLoader;
             this._forestToolConfigFragment = forestToolConfigFragment;
+            this._forestToolErrorFragment = forestToolErrorFragment;
             this._eventBus = eventBus;
         }
 
         public void Load()
         {
-            this._entityroot = this._visualElementLoader.LoadVisualElement("Common/EntityPanel/EntityPanel");
+            this._rootEntity = this._visualElementLoader.LoadVisualElement("Common/EntityPanel/EntityPanel");
 
-            this._entityroot.Clear();
+            this._rootEntity.Clear();
 
-            this._root = this._forestToolConfigFragment.InitializeFragment();
+            this._rootConfig = this._forestToolConfigFragment.InitializeFragment();
 
-            this._entityroot.Add(this._root);
+            this._rootError = this._forestToolErrorFragment.InitializeFragment();
 
-            this._uiLayout.AddAbsoluteItem(this._entityroot);
+            this._rootEntity.Add(this._rootConfig);
+
+            this._uiLayout.AddAbsoluteItem(this._rootEntity);
+            this._uiLayout.AddAbsoluteItem(this._rootError);
 
             this._eventBus.Register((object)this);
 
-            this._entityroot.ToggleDisplayStyle(false);
+            this._rootEntity.ToggleDisplayStyle(false);
+            this._rootError.ToggleDisplayStyle(false);
         }
 
         public void SetVisualState(bool setActive)
         {
-            this._root.ToggleDisplayStyle(setActive);
+            this._rootConfig.ToggleDisplayStyle(setActive);
         }
 
         [OnEvent]
@@ -58,8 +66,15 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
             if (null == forestToolSelectedEvent)
                 return;
 
-            this.SetVisualState(true);
-            this._entityroot.ToggleDisplayStyle(true);
+            if (forestToolSelectedEvent.ForestToolService.IsUnlocked)
+            {
+                this.SetVisualState(true);
+                this._rootEntity.ToggleDisplayStyle(true);
+            }
+            else
+            {
+                this._rootError.ToggleDisplayStyle(true);
+            }
         }
 
         [OnEvent]
@@ -69,7 +84,8 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
                 return;
 
             this.SetVisualState(false);
-            this._entityroot.ToggleDisplayStyle(false);
+            this._rootEntity.ToggleDisplayStyle(false);
+            this._rootError.ToggleDisplayStyle(false);
         }
     }
 }
