@@ -1,0 +1,15 @@
+{
+  "Id": "Cordial.ForestTool",
+  "Type": "ForestTool",
+  "GroupId": "Forestry",
+  "Layout": "brown",
+  "Order": 19,
+  "Icon": "Sprites/ForestTool/ForestToolIcon",
+  "NameLocKey": "Cordial.ForestTool.DisplayName",
+  "DescriptionLocKey": "Cordial.ForestTool.Description",
+  "DevMode": false,
+  "Hidden": false,
+  "ToolInformation": {
+    "BottomBarSection": 1
+  }
+}
