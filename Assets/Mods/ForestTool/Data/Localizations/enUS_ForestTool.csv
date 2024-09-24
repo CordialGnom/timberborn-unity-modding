@@ -1,19 +1,9 @@
 ID,Text,Comment
 Cordial.ForestTool.DisplayName,ForestTool,-
-Cordial.ForestTool.Description,Tree tool for planting diverse forests (Hold Ctrl when starting tool to open configuration pane)\n Required Building: Forester,-
-Cordial.ForestTool.KeyBindingGroup.ForestTool,ForestTool Tool,-
-Cordial.ForestTool.KeyBinding.ForestToolConfigShortcut,ForestTool Tool,-
-Cordial.ForestTool.ForestToolPanel.Title, Random Tree Setup,-
-Cordial.ForestTool.ForestToolPanel.PanelDescription, Configure trees and spots to be planted,-
-Cordial.ForestTool.ForestToolPanel.ToggleTree01, Birch,-
-Cordial.ForestTool.ForestToolPanel.ToggleTree02, Pine,-
-Cordial.ForestTool.ForestToolPanel.ToggleTree03, Chestnut,-
-Cordial.ForestTool.ForestToolPanel.ToggleTree04, Maple,-
-Cordial.ForestTool.ForestToolPanel.ToggleTree05, Oak,-
-Cordial.ForestTool.ForestToolPanel.ToggleTree06, Empty Spots,-
-Cordial.ForestTool.ForestToolPanel.ButtonConfirm, Confirm,-
-Cordial.ForestTool.ForestToolPanel.ButtonClose, Close,-
-Cordial.ForestTool.ForestToolPanel.ButtonReset, Reset,-
-Cordial.ForestTool.ForestToolErrorUI.PanelDescription, You need to unlock Forester to plant trees,-
-Cordial.ForestTool.ForestToolErrorUi.ButtonConfirm, Confirm,-
-preview.textfields.ingame.color, ColorView,-
+Cordial.ForestTool.Description,Configurable tool for planting mixed forests.,-
+Coridal.ForestTool.Requirement,Required Building: <SolidHighlight>{0}</SolidHighlight>,{0} stands for Building.Forester.DisplayName
+Cordial.ForestTool.ForestToolPanel.Title,Forest Tool Configuration,-
+Cordial.ForestTool.ForestToolPanel.Description,Configure tree types and spots to be planted,-
+Cordial.ForestTool.ForestToolPanel.ToggleTreeAll,All tree types,-
+Cordial.ForestTool.ForestToolPanel.ToggleEmpty,Allow clearings, perhaps "enable empty spots" or something similar
+Cordial.ForestTool.ForestToolError.Description,You need to unlock <SolidHighlight>{0}</SolidHighlight> to plant trees.,{0} stands for Building.Forester.DisplayName

@@ -1,6 +1,0 @@
-<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <engine:VisualElement style="flex-grow: 1;">
-        <Timberborn.CoreUI.NineSliceLabel text="Forest Tool requires building: Forester" style="height: 40px; position: relative; align-items: stretch; justify-content: space-between; align-self: center; -unity-font-style: bold; width: 272px;" />
-        <Timberborn.CoreUI.LocalizableButton text="Confirm" text-loc-key="Cordial.ForestTool.ForestToolErrorUi.ButtonErrorConfirm" triple-click-selects-line="false" style="width: 280px; -unity-text-align: middle-center; white-space: nowrap; align-items: center; align-self: center;" />
-    </engine:VisualElement>
-</engine:UXML>

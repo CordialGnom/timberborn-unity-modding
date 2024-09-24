@@ -1,6 +1,6 @@
 ﻿using Timberborn.ToolSystem;
 
-namespace Mods.ForestTool.Scripts
+namespace Cordial.Mods.ForestTool.Scripts
 {
     public interface IForestTool
     {
