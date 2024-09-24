@@ -7,7 +7,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
 
         public void Configure(IContainerDefinition containerDefinition)
         {
-
+            containerDefinition.Bind<ForesterUpdateStateService>().AsSingleton();
         }
 
 
