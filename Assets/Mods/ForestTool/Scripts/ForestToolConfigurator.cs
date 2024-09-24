@@ -1,6 +1,7 @@
 using Bindito.Core;
 using TimberApi.Tools.ToolSystem;
 using Cordial.Mods.ForestTool.Scripts.UI;
+using Timberborn.ToolSystem;
 
 namespace Cordial.Mods.ForestTool.Scripts
 {
@@ -16,13 +17,15 @@ namespace Cordial.Mods.ForestTool.Scripts
             containerDefinition.Bind<PanelFragmentBlue>().AsSingleton();
             containerDefinition.Bind<PanelFragmentRed>().AsSingleton();
             containerDefinition.Bind<ForestToolConfigFragment>().AsSingleton();
-            containerDefinition.Bind<ForestToolErrorFragment>().AsSingleton();
+            containerDefinition.Bind<ForestToolErrorPrompt>().AsSingleton();
 
             containerDefinition.Bind<ForestToolPrefabSpecService>().AsSingleton();
 
             containerDefinition.Bind<IForestTool>().To<ForestToolService>().AsSingleton();
             containerDefinition.Bind<ForestToolService>().AsSingleton();
             containerDefinition.MultiBind<IToolFactory>().To<ForestToolFactory>().AsSingleton();
+            //containerDefinition.Bind<ForestToolUnlockedPlantableRegistry>().AsSingleton();
+            //containerDefinition.MultiBind<IToolLocker>().To<ForestToolLocker>().AsSingleton();
         }
     }
 }

@@ -26,6 +26,9 @@ namespace Cordial.Mods.ForestTool.Scripts
     {
         private static readonly string TitleLocKey = "Cordial.ForestTool.DisplayName";
         private static readonly string DescriptionLocKey = "Cordial.ForestTool.Description";
+        private static readonly string RequirementLocKey = "Coridal.ForestTool.Requirement";
+        private static readonly string ToolBuildingLocKey = "Building.Forester.DisplayName";
+
         private static readonly string CursorKey = "PlantingCursor";
 
         private static bool isUnlocked; 
@@ -82,7 +85,8 @@ namespace Cordial.Mods.ForestTool.Scripts
                             EventBus eventBus,
                             BuildingService buildingService,
                             BuildingUnlockingService buildingUnlockingService,
-                            ForestToolPrefabSpecService forestToolPrefabSpecService )
+                            ForestToolPrefabSpecService forestToolPrefabSpecService
+                                )
         {
 
             _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
@@ -115,9 +119,10 @@ namespace Cordial.Mods.ForestTool.Scripts
 
         public void Load()
         {
-            _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
+            string text = this._loc.T<string>(RequirementLocKey, _loc.T(ToolBuildingLocKey));
+            _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).AddSection(text).Build();
             this._eventBus.Register((object)this);
-            
+
             // _buildingUnlockingService = DependencyContainer.GetInstance<BuildingUnlockingService>();
             // _buildingService = DependencyContainer.GetInstance<BuildingService>();
         }
@@ -226,6 +231,7 @@ namespace Cordial.Mods.ForestTool.Scripts
                         _plantingService.SetPlantingCoordinates(leveledCoordinate, resourceName);
                     }
                 }
+
             }
             _eventBus.Post((object)new PlantingAreaMarkedEvent());
         }

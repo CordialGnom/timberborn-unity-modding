@@ -1,57 +1,37 @@
-﻿using TimberApi.UIBuilderSystem;
-using TimberApi.UIPresets.Builders;
-using TimberApi.UIPresets.Labels;
-using TimberApi.UIPresets.TextFields;
-using Timberborn.Beavers;
-using Timberborn.CoreUI;
+﻿using Timberborn.CoreUI;
 using Timberborn.Localization;
-using UnityEngine.UIElements;
+using Timberborn.PlantingUI;
 
 namespace Cordial.Mods.ForestTool.Scripts.UI
 {
-    public class ForestToolErrorFragment
+    public class ForestToolErrorPrompt
     {
-        readonly UIBuilder _uiBuilder;
-        private readonly VisualElement _root = new();
-        private readonly string ErrorLocKey = "Cordial.ForestTool.ForestToolError.Description";
 
-        // UI elements
-        Label _labelTitle = new();
+        private static readonly string UnlockPromptLocKey = "Cordial.ForestTool.ForestToolError.Description";
+        private static readonly string ToolBuildingLocKey = "Building.Forester.DisplayName";
+
 
         // localizations
         private readonly ILoc _loc;
+        private readonly DialogBoxShower _dialogBoxShower;
 
-        public ForestToolErrorFragment(UIBuilder uiBuilder,
-                                                    ILoc loc)
+        public ForestToolErrorPrompt(   DialogBoxShower dialogBoxShower,
+                                        ILoc loc)
         {
-            _uiBuilder = uiBuilder;
+            _dialogBoxShower = dialogBoxShower;
             _loc = loc;
         }
 
-        public VisualElement InitializeFragment()
+        public void ShowLockedMessage()
         {
-            _root.Add(_uiBuilder.Create<BoxBuilder>()
-                        .AddCloseButton("ButtonName")
-                        .SetWidth(250)
-                        //.AddComponent<GameLabel>("Description")
-                        .BuildAndInitialize());
-
-            // create title label
-            //_root.Q<Label>("Description").text = _loc.T(ErrorLocKey);
-
-            _root.ToggleDisplayStyle(false);
-
-            return _root;
+            string text = this._loc.T<string>(UnlockPromptLocKey, _loc.T(ToolBuildingLocKey));
+            this._dialogBoxShower.Create().SetMessage(text).SetConfirmButton( EmptyCallback ).Show();
         }
 
-        public PanelFragment CreateCenteredPanelFragmentBuilder()
+        private static void EmptyCallback()
         {
-            return _uiBuilder.Create<PanelFragment>()
-                .SetFlexDirection(FlexDirection.Column)
-                .SetWidth(new Length(250f, LengthUnit.Pixel))
-                //.SetWidth(new Length(325f, LengthUnit.Pixel))
-                //.SetHeight(new Length(111f, LengthUnit.Pixel))
-                .SetJustifyContent(Justify.Center);
+            // do nothing
         }
+
     }
 }

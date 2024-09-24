@@ -1,0 +1,9 @@
+ID,Text,Comment
+Cordial.ForestTool.DisplayName,Forest Tool,-
+Cordial.ForestTool.Description,Konfiguierbares Tool um gemischte Wälder zu pflanzen.,-
+Coridal.ForestTool.Requirement,Benötigt: <SolidHighlight>{0}</SolidHighlight>,{0} stands for Building.Forester.DisplayName
+Cordial.ForestTool.ForestToolPanel.Title,Forest Tool Konfiguration,-
+Cordial.ForestTool.ForestToolPanel.Description,Konfiguriere die Baumarten und die zu pflanzenden Stellen,-
+Cordial.ForestTool.ForestToolPanel.ToggleTreeAll,Alle Baumarten,-
+Cordial.ForestTool.ForestToolPanel.ToggleEmpty,Erlaube Lichtungen, perhaps "enable empty spots" or something similar
+Cordial.ForestTool.ForestToolError.Description,"<SolidHighlight>{0}</SolidHighlight> muss freigeschaltet werden, um Bäume zu pflanzen.",{0} stands for Building.Forester.DisplayName
