@@ -57,16 +57,27 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
 
                         if (null != building)
                         {
-                            Debug.Log("PlantBehaviour Found: " + worker.name + " - " + building.GetComponentFast<BlockObject>().Coordinates);
-
-
                             ForesterUpdateStateService updateService = DependencyContainer.GetInstance<ForesterUpdateStateService>();
 
                             if (null != updateService)
                             {
-                                bool state = updateService.GetForesterState(building.GetComponentFast<BlockObject>().Coordinates);
+                                PlantingService plantingService = DependencyContainer.GetInstance<PlantingService>();
+                                ForesterUpdatePrefabSpecService specService = DependencyContainer.GetInstance<ForesterUpdatePrefabSpecService>();
 
-                                Debug.Log("PlantBehaviour State: " + state); 
+                                if ((null != plantingService)
+                                     && (null != specService))
+                                {
+                                    string state = updateService.GetForesterState(building.GetComponentFast<BlockObject>().Coordinates);
+
+                                    if (specService.VerifyPrefabName(state))
+                                    {
+                                        plantingService.SetPlantingCoordinates(coordinates, state);
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("Invalid prefab: " + state);
+                                    }
+                                }
                             }
                         }
                     }
@@ -80,9 +91,10 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
         [HarmonyPatch(typeof(Workplace), "OnEnterFinishedState")]
         public static class WorkplaceEnterFinishedPatch
         {
-            private static bool toggleState = false;
             static bool Prefix(Workplace __instance)
             {
+                string defaultTreeType = "Birch";
+
                 // need to get access to class/object as well. 
                 if (null != __instance)
                 {
@@ -95,9 +107,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
 
                         if (null != updateService)
                         {
-                            updateService.RegisterForester(building.GetComponentFast<BlockObject>().Coordinates, toggleState);
-
-                            toggleState = !toggleState;
+                            updateService.RegisterForester(building.GetComponentFast<BlockObject>().Coordinates, defaultTreeType);
 
                             Debug.Log("WEFP: Registered Building" + building.GetComponentFast<BlockObject>().Coordinates);
                         }

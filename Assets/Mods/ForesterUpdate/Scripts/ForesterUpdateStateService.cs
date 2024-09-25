@@ -21,7 +21,6 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
         public void Load()
         {
 
-            Debug.Log("FUSS: Loaded Singleton");
         }
 
         public void Save(IEntitySaver entitySaver)
@@ -59,6 +58,22 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
         {
             _foresterRegistry.Add(coordinates, treeType);
         }
+
+        public void UpdateForester(Vector3Int coordinates, string treeType)
+        {
+            if (_foresterRegistry.ContainsKey(coordinates))
+            {
+                _foresterRegistry[coordinates] = treeType;
+
+                Debug.Log("UpdateF: " + treeType);
+            }
+            else
+            {
+                RegisterForester(coordinates, treeType );
+                Debug.Log("UpdateF: New Register");
+            }
+        }
+
 
         public string GetForesterState(Vector3Int coordinates)
         {

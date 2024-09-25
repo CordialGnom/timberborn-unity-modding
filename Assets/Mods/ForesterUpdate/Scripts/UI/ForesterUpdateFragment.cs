@@ -3,19 +3,23 @@
 // Author: igor.zavoychinskiy@gmail.com
 // License: Public Domain
 
-using System;
+using Cordial.Mods.ForesterUpdate.Scripts.UI.Events;
+using System.Collections.Generic;
+using TimberApi.DependencyContainerSystem;
 using TimberApi.UIBuilderSystem;
 using TimberApi.UIBuilderSystem.ElementBuilders;
 using TimberApi.UIPresets.Builders;
 using TimberApi.UIPresets.Dropdowns;
 using TimberApi.UIPresets.Labels;
-using TimberApi.UIPresets.Toggles;
 using Timberborn.BaseComponentSystem;
+using Timberborn.BlockSystem;
+using Timberborn.Buildings;
 using Timberborn.CoreUI;
 using Timberborn.DropdownSystem;
 using Timberborn.EntityPanelSystem;
 using Timberborn.Forestry;
 using Timberborn.Localization;
+using Timberborn.SingletonSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -28,57 +32,65 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
 
 
         VisualElement _root = new();
+        VisualElement _fragment = new();
         Label _foresterDescriptionLabel = new();
-        Toggle _foresterStateToggle = new ();
-        DropDownBuilder _capacityStateText = new();
+        Dropdown _foresterTreeDropDown = new();
+        //Toggle _foresterStateToggle = new ();
+
+        DropdownItemsSetter _dropdownItemsSetter;
+        DropdownListDrawer _dropdownListDrawer;
+        ForesterUpdateTreeDropDownProvider _dropDownProvider;
+        private readonly EventBus _eventBus;
 
         // localiations
         private readonly ILoc _loc;
-        private static readonly string ForesterDescriptionLocKey = "Cordial.Building.FertilizerDump.Consumption";
-        private static readonly string TreeCountLocKey = "Cordial.Building.FertilizerDump.TreeCount";
-        private static readonly string FertilizerNameLocKey = "Cordial.Good.Fertilizer.DisplayName";
-        private static readonly string UnitPerHourLocKey = "Cordial.Unit.PerHour";
+        private static readonly string ForesterDescriptionLocKey = "Cordial.Building.Forester.Description";
 
 
         public ForesterUpdateFragment(UIBuilder uiBuilder,
-                                                    ILoc loc)
+                                                    ILoc loc, 
+                                                    EventBus eventBus,
+                                                    DropdownItemsSetter dropdownItemsSetter,
+                                                    ForesterUpdateTreeDropDownProvider dropDownProvider,
+                                                    DropdownListDrawer dropdownListDrawer)
         {
-            _uiBuilder = uiBuilder;
+            _builder = uiBuilder;
             _loc = loc;
+
+            _eventBus = eventBus;
+            _dropdownItemsSetter = dropdownItemsSetter;
+            _dropDownProvider = dropDownProvider;
+            _dropdownListDrawer = dropdownListDrawer;
         }
 
         public VisualElement InitializeFragment()
         {
+            _eventBus.Register((object)this);
+
             _foresterDescriptionLabel =  _builder.Create<GameLabel>()
                                             .SetLocKey(ForesterDescriptionLocKey)
+                                            .Small()
                                             .Build();
 
 
-            _foresterStateToggle =  _builder.Create<GameToggle>()
-                                            .SetLocKey(ForesterDescriptionLocKey).Build();
+            //_foresterStateToggle =  _builder.Create<GameToggle>()
+            //                                .SetLocKey(ForesterDescriptionLocKey).Build();
 
             var gameDropdown = _builder.Build<GameDropdown, Dropdown>();
 
-            _dropdownItemsSetter.SetItems(gameDropdown, new TestDropdownProvider());
+            //_root = _builder.Create<VisualElementBuilder>()
+            //                    .AddComponent<FragmentBuilder>(builder => builder.AddComponent<GameLabel>(button => button.SetLocKey(ForesterDescriptionLocKey).Small()))
+            //                    //.AddComponent(_foresterDescriptionLabel)
+            //                    .AddComponent(gameDropdown)
+            //                    .BuildAndInitialize();
 
+            _root.Add(CreateCenteredPanelFragmentBuilder()
+                    .AddComponent(_foresterDescriptionLabel)
+                    .AddComponent(gameDropdown)
+                    .BuildAndInitialize());
 
+            _dropdownItemsSetter.SetItems(gameDropdown, _dropDownProvider);
 
-            _root =      _builder.Create<VisualElementBuilder>()
-                                .AddComponent<FragmentBuilder>()
-                                .AddComponent(_foresterDescriptionLabel)
-                                .AddComponent(_foresterStateToggle).Build();
-
-
-
-            // label, toggle, dropdown? 
-            _foresterDescriptionLabel = _uiBuilder.Create<GameLabel>().Build();
-
-            _foresterStateToggle = _uiBuilder.Create<GameLabel>().Build();
-            _capacityStateText = _uiBuilder.Create<GameLabel>().Build();
-
-            _root = _uiBuilder.Create<FragmentBuilder>()
-                .AddComponent(_foresterDescriptionLabel).AddComponent(_capacityStateText).AddComponent(_foresterStateToggle)
-                .BuildAndInitialize();
             _root.ToggleDisplayStyle(visible: false);
             return _root;
         }
@@ -86,14 +98,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         public void ShowFragment(BaseComponent entity)
         {
             this._forester =     entity.GetComponentFast<Forester>();
-            
-            _foresterDescriptionLabel.text = "Tree Growth Default";
-            _capacityStateText.text = "Capacity Default";
-            _foresterStateToggle.text = "Consumption Default";
-            UpdateGrowthState();
-            UpdateInventoryState();
-            UpdateConsumptionState();
-
+            UpdateForesterState(_dropDownProvider.PlantName);
             _root.ToggleDisplayStyle((bool)(Object)this._forester);
         }
 
@@ -106,31 +111,41 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         {
             if (null != _forester)
             {
-                this.UpdateGrowthState();
-                this.UpdateConsumptionState();
-                this.UpdateInventoryState();
                 _root.ToggleDisplayStyle((bool)(Object)this._forester);
             }
         }
 
-        private void UpdateInventoryState()
+        public PanelFragment CreateCenteredPanelFragmentBuilder()
         {
-            if (!(bool)(Object)this._forester)
-                return;
-            this._capacityStateText.text = _loc.T(FertilizerNameLocKey) + ": " + (this._growthFertilizationBuilding.SupplyLeft) + "/" +  (this._growthFertilizationBuilding.Capacity);
+            return _builder.Create<PanelFragment>()
+                .SetFlexDirection(FlexDirection.Column)
+                .SetWidth(new Length(100f, LengthUnit.Percent))
+                //.SetWidth(new Length(325f, LengthUnit.Pixel))
+                //.SetHeight(new Length(111f, LengthUnit.Pixel))
+                .SetAlignContent(Align.Center)  // alignment --> horizontal center
+                .SetJustifyContent(Justify.Center);
         }
-        private void UpdateConsumptionState()
+        private void UpdateForesterState(string plantName)
         {
-            if (!(bool)(Object)this._growthFertilizationBuilding)
-                return;
-            this._foresterStateToggle.text = _loc.T(ConsumptionLocKey) + " " + _growthFertilizationBuilding.ConsumptionPerHour + _loc.T(UnitPerHourLocKey);
+            if (null != _forester)
+            {
+                ForesterUpdateStateService updateService = DependencyContainer.GetInstance<ForesterUpdateStateService>();
+
+                if (null != updateService)
+                {
+                    Debug.Log("Updated Forester State: " + plantName);
+                    updateService.UpdateForester(_forester.GetComponentFast<BlockObject>().Coordinates, plantName);
+                }
+            }
         }
 
-        private void UpdateGrowthState()
+        [OnEvent]
+        public void OnForesterUpdateConfigChangeEvent(ForesterUpdateConfigChangeEvent forestUpdateConfigChangeEvent)
         {
-            if (!(bool)(Object)this._growthFertilizationBuilding)
+            if (null == forestUpdateConfigChangeEvent)
                 return;
-            this._foresterDescriptionLabel.text = _loc.T(TreeCountLocKey) + ": " + (this._growthFertilizationBuilding.TreesGrowCount) + "/" + (this._growthFertilizationBuilding.TreesTotalCount);
+            UpdateForesterState(forestUpdateConfigChangeEvent.PlantName);
         }
+
     }
 }
