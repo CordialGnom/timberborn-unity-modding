@@ -1,8 +1,8 @@
 ID,Text,Comment
-Cordial.CutterTool.DisplayName,Zu konfigurierenden Fällbereich markieren,-
-Cordial.CutterTool.Description,"Verwende dieses Werkzeug, um einen zu konfigurierenden Bereich für das Fällen von Bäumen zu markieren.",-
-Cordial.CutterTool.CutterToolPanel.Title,Cutter Tool Konfiguration,-
-Cordial.CutterTool.CutterToolPanel.Description,Konfigurieren Sie die Baumarten und/oder den Auswahlbereich für das Fällen,-
+Cordial.CutterTool.DisplayName,Konfigurierbaren Fällbereich markieren,-
+Cordial.CutterTool.Description,"Verwende dieses Werkzeug, um einen konfigurierbaren Bereich für das Fällen von Bäumen zu markieren.",-
+Cordial.CutterTool.CutterToolPanel.Title,Fällbereich Konfiguration (Cutter Tool),-
+Cordial.CutterTool.CutterToolPanel.Description,Konfiguriere die Baumarten und/oder den Auswahlbereich für das Fällen,-
 Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern01,Alle,-
 Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern02,Schachbrettmuster,-
 Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern03,Reihen X,-
