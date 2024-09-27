@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Net.Sockets;
 using Timberborn.Common;
 using Timberborn.DropdownSystem;
 using Timberborn.Localization;
@@ -18,7 +19,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         private readonly List<string> _items = new List<string>();
         private readonly ILoc _loc;
 
-        private string plantable;
+        private string plantable = String.Empty;
 
         public string PlantName => plantable;
 
@@ -44,26 +45,23 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
             {
 
                 ImmutableArray<string> allowedPlantables = this._specService.GetAllTrees();
+
                 this._items.Add(_loc.T(NoPriorityItemLocKey));
 
                 foreach (string plant in allowedPlantables)
                 {
                     this._items.Add(PlantableLocKey(plant));
-                }
 
-                Debug.Log("FUT: " + this._items.Count);
-            }
-            else
-            {
-                Debug.Log("FUT: No Building");
+                    Debug.Log("FUP: LD: " + PlantableLocKey(plant));
+                }
             }
         }
 
         public string GetValue()
         {
 
-            Debug.Log("FUT: GetValue");
-            return _loc.T((plantable == String.Empty) ? _loc.T(NoPriorityItemLocKey) : PlantableLocKey(plantable));
+            Debug.Log("FUT: GetV: " + plantable);
+            return ((plantable == String.Empty) ? _loc.T(NoPriorityItemLocKey) : PlantableLocKey(plantable));
         }
 
         public void SetValue(string value)
@@ -85,13 +83,17 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
 
         private string PlantableLocKey(string plantname)
         {
-            return _loc.T("NaturalResource." + plantname + ".DisplayName");
+            string newName = plantname.Replace(" ", "");
+            Debug.Log("PLK" + newName);
+            return _loc.T("NaturalResource." + newName + ".DisplayName");
         }
 
         private static string GetPlantFromLocKey(string locKey)
         {
             locKey.Replace("NaturalResource.", "");
             locKey.Replace(".DisplayName", "");
+
+            Debug.Log("GPFLK" + locKey);
 
             return locKey;
         }

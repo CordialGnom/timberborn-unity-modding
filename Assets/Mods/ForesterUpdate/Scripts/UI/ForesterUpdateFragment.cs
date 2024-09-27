@@ -37,6 +37,9 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         Dropdown _foresterTreeDropDown = new();
         //Toggle _foresterStateToggle = new ();
 
+        // store coordinates to check if "updateFragment" changes source
+        Vector3Int _foresterCoordOld = new Vector3Int();
+
         DropdownItemsSetter _dropdownItemsSetter;
         DropdownListDrawer _dropdownListDrawer;
         ForesterUpdateTreeDropDownProvider _dropDownProvider;
@@ -51,8 +54,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
                                                     ILoc loc, 
                                                     EventBus eventBus,
                                                     DropdownItemsSetter dropdownItemsSetter,
-                                                    ForesterUpdateTreeDropDownProvider dropDownProvider,
-                                                    DropdownListDrawer dropdownListDrawer)
+                                                    ForesterUpdateTreeDropDownProvider dropDownProvider )
         {
             _builder = uiBuilder;
             _loc = loc;
@@ -60,7 +62,6 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
             _eventBus = eventBus;
             _dropdownItemsSetter = dropdownItemsSetter;
             _dropDownProvider = dropDownProvider;
-            _dropdownListDrawer = dropdownListDrawer;
         }
 
         public VisualElement InitializeFragment()
@@ -76,7 +77,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
             //_foresterStateToggle =  _builder.Create<GameToggle>()
             //                                .SetLocKey(ForesterDescriptionLocKey).Build();
 
-            var gameDropdown = _builder.Build<GameDropdown, Dropdown>();
+            _foresterTreeDropDown = _builder.Build<GameDropdown, Dropdown>();
 
             //_root = _builder.Create<VisualElementBuilder>()
             //                    .AddComponent<FragmentBuilder>(builder => builder.AddComponent<GameLabel>(button => button.SetLocKey(ForesterDescriptionLocKey).Small()))
@@ -86,10 +87,10 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
 
             _root.Add(CreateCenteredPanelFragmentBuilder()
                     .AddComponent(_foresterDescriptionLabel)
-                    .AddComponent(gameDropdown)
+                    .AddComponent(_foresterTreeDropDown)
                     .BuildAndInitialize());
 
-            _dropdownItemsSetter.SetItems(gameDropdown, _dropDownProvider);
+            _dropdownItemsSetter.SetItems(_foresterTreeDropDown, _dropDownProvider);
 
             _root.ToggleDisplayStyle(visible: false);
             return _root;
@@ -98,8 +99,14 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         public void ShowFragment(BaseComponent entity)
         {
             this._forester =     entity.GetComponentFast<Forester>();
-            UpdateForesterState(_dropDownProvider.PlantName);
+
+            _foresterCoordOld = _forester.GetComponentFast<BlockObject>().Coordinates;
+            _dropDownProvider.SetValue(GetForesterState());
+            _foresterTreeDropDown.RefreshContent();
+
             _root.ToggleDisplayStyle((bool)(Object)this._forester);
+
+            Debug.Log("Show Fragment: " + _foresterCoordOld);
         }
 
         public void ClearFragment()
@@ -111,6 +118,12 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         {
             if (null != _forester)
             {
+                if (_foresterCoordOld != _forester.GetComponentFast<BlockObject>().Coordinates)
+                {
+                    _dropDownProvider.SetValue(GetForesterState());
+                    _foresterTreeDropDown.RefreshContent();
+                }
+
                 _root.ToggleDisplayStyle((bool)(Object)this._forester);
             }
         }
@@ -139,12 +152,31 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
             }
         }
 
+        private string GetForesterState()
+        {
+            string plantname = string.Empty;
+
+            if (null != _forester)
+            {
+                ForesterUpdateStateService updateService = DependencyContainer.GetInstance<ForesterUpdateStateService>();
+
+                if (null != updateService)
+                {
+                    plantname = updateService.GetForesterState(_forester.GetComponentFast<BlockObject>().Coordinates);
+
+                    Debug.Log("GEt Forester State: " + plantname);
+                }
+            }
+            return plantname;
+        }
+
         [OnEvent]
         public void OnForesterUpdateConfigChangeEvent(ForesterUpdateConfigChangeEvent forestUpdateConfigChangeEvent)
         {
             if (null == forestUpdateConfigChangeEvent)
                 return;
             UpdateForesterState(forestUpdateConfigChangeEvent.PlantName);
+
         }
 
     }

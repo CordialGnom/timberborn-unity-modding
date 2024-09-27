@@ -67,11 +67,15 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
                                 if ((null != plantingService)
                                      && (null != specService))
                                 {
-                                    string state = updateService.GetForesterState(building.GetComponentFast<BlockObject>().Coordinates);
+                                    string state = updateService.GetForesterState(building.GetComponentFast<BlockObject>().Coordinates).Replace(" ", "");
 
                                     if (specService.VerifyPrefabName(state))
                                     {
                                         plantingService.SetPlantingCoordinates(coordinates, state);
+                                    }
+                                    else if (state == string.Empty)
+                                    {
+                                        // ignore
                                     }
                                     else
                                     {
@@ -93,7 +97,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
         {
             static bool Prefix(Workplace __instance)
             {
-                string defaultTreeType = "Birch";
+                string defaultTreeType = string.Empty;
 
                 // need to get access to class/object as well. 
                 if (null != __instance)
