@@ -38,7 +38,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         //Toggle _foresterStateToggle = new ();
 
         // store coordinates to check if "updateFragment" changes source
-        Vector3Int _foresterCoordOld = new Vector3Int();
+        Vector3Int _foresterCoordOld = Vector3Int.zero;
 
         DropdownItemsSetter _dropdownItemsSetter;
         DropdownListDrawer _dropdownListDrawer;
@@ -98,15 +98,26 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
 
         public void ShowFragment(BaseComponent entity)
         {
-            this._forester =     entity.GetComponentFast<Forester>();
+            Forester forester =     entity.GetComponentFast<Forester>();
 
-            _foresterCoordOld = _forester.GetComponentFast<BlockObject>().Coordinates;
-            _dropDownProvider.SetValue(GetForesterState());
-            _foresterTreeDropDown.RefreshContent();
+            if (null != forester)
+            {
+                this._forester = forester;
 
-            _root.ToggleDisplayStyle((bool)(Object)this._forester);
+                _foresterCoordOld = _forester.GetComponentFast<BlockObject>().Coordinates;
+                _dropDownProvider.SetValue(GetForesterState());
+                _foresterTreeDropDown.RefreshContent();
 
-            Debug.Log("Show Fragment: " + _foresterCoordOld);
+                _root.ToggleDisplayStyle((bool)(Object)this._forester);
+
+                Debug.Log("Show Fragment: " + _foresterCoordOld);
+            }
+            else
+            {
+                this._forester = null;
+                _root.ToggleDisplayStyle((bool)false);
+            }
+            
         }
 
         public void ClearFragment()
@@ -149,6 +160,10 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
                     Debug.Log("Updated Forester State: " + plantName);
                     updateService.UpdateForester(_forester.GetComponentFast<BlockObject>().Coordinates, plantName);
                 }
+            }
+            else
+            {
+                Debug.Log("No forester found to update");
             }
         }
 
