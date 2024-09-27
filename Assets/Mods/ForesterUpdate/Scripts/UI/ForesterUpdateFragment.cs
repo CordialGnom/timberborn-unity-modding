@@ -73,10 +73,6 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
                                             .Small()
                                             .Build();
 
-
-            //_foresterStateToggle =  _builder.Create<GameToggle>()
-            //                                .SetLocKey(ForesterDescriptionLocKey).Build();
-
             _foresterTreeDropDown = _builder.Build<GameDropdown, Dropdown>();
 
             //_root = _builder.Create<VisualElementBuilder>()
@@ -109,8 +105,6 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
                 _foresterTreeDropDown.RefreshContent();
 
                 _root.ToggleDisplayStyle((bool)(Object)this._forester);
-
-                Debug.Log("Show Fragment: " + _foresterCoordOld);
             }
             else
             {
@@ -157,7 +151,6 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
 
                 if (null != updateService)
                 {
-                    Debug.Log("Updated Forester State: " + plantName);
                     updateService.UpdateForester(_forester.GetComponentFast<BlockObject>().Coordinates, plantName);
                 }
             }
@@ -178,8 +171,6 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
                 if (null != updateService)
                 {
                     plantname = updateService.GetForesterState(_forester.GetComponentFast<BlockObject>().Coordinates);
-
-                    Debug.Log("GEt Forester State: " + plantname);
                 }
             }
             return plantname;

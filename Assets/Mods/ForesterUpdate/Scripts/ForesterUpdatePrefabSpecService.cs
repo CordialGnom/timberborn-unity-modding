@@ -25,7 +25,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
         {
             if (null == _prefabService)
             {
-                Debug.LogError("ForestTool: Missing Service");
+                Debug.LogError("PO: Missing Service");
             }
         }
 
@@ -61,6 +61,12 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
                 }
             }
             return prefabValid;
+        }
+        public bool CheckIsTree(string prefabNameInp)
+        {
+            ImmutableArray<string> treeTypes = GetAllTrees();
+
+            return treeTypes.Contains(prefabNameInp);
         }
     }
 }

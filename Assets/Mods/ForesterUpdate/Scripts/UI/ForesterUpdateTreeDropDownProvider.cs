@@ -30,8 +30,6 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
             _specService = specService;
             _eventBus = eventBus;
             _loc = loc;
-
-            Debug.Log("ModCreated");
         }
 
         public IReadOnlyList<string> Items
@@ -51,22 +49,17 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
                 foreach (string plant in allowedPlantables)
                 {
                     this._items.Add(PlantableLocKey(plant));
-
-                    Debug.Log("FUP: LD: " + PlantableLocKey(plant));
                 }
             }
         }
 
         public string GetValue()
         {
-
-            Debug.Log("FUT: GetV: " + plantable);
             return ((plantable == String.Empty) ? _loc.T(NoPriorityItemLocKey) : PlantableLocKey(plantable));
         }
 
         public void SetValue(string value)
         {
-            Debug.Log("FUT: SetValue: " + value);
             if ((value != NoPriorityItemLocKey)
                 && (value != _loc.T(NoPriorityItemLocKey)))
             {
@@ -84,7 +77,6 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         private string PlantableLocKey(string plantname)
         {
             string newName = plantname.Replace(" ", "");
-            Debug.Log("PLK" + newName);
             return _loc.T("NaturalResource." + newName + ".DisplayName");
         }
 
@@ -92,9 +84,6 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         {
             locKey.Replace("NaturalResource.", "");
             locKey.Replace(".DisplayName", "");
-
-            Debug.Log("GPFLK" + locKey);
-
             return locKey;
         }
     }

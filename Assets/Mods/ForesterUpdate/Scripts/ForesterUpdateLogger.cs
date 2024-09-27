@@ -1,12 +1,10 @@
 ﻿using HarmonyLib;
-using System.Collections.Generic;
 using TimberApi.DependencyContainerSystem;
 using Timberborn.BehaviorSystem;
 using Timberborn.BlockSystem;
-using Timberborn.Buildings;
+using Timberborn.Common;
 using Timberborn.Forestry;
 using Timberborn.ModManagerScene;
-using Timberborn.Persistence;
 using Timberborn.Planting;
 using Timberborn.WorkSystem;
 using UnityEngine;
@@ -15,28 +13,10 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
 {
     internal class ForesterUpdateLogger : IModStarter 
     {
-        private static int foresterCount = 1;
-        private static string foresterPrefix = "Forester";
-
         public void StartMod()
         {
-            // required to start up mod
-
-
-            // requires entitypanel access for Forester
-            // --> see booster juice
-            // requries "service" or config handler for what is set in forester
-
-
-            // requires Harmony to access the planting event, or the cutting event to replace the "plantable". 
-            // --> planting behaviour, get coordinate, check if coordinate is in building range, resp. which building the worker belongs to. 
-            // yep. 
-
             var harmony = new Harmony("Cordial.Mods.ForesterUpdate");
             harmony.PatchAll();
-
-            Debug.Log("Forester Update Started");
-
         }
 
         [HarmonyPatch(typeof(PlantBehavior), "Plant")]
@@ -67,19 +47,25 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
                                 if ((null != plantingService)
                                      && (null != specService))
                                 {
-                                    string state = updateService.GetForesterState(building.GetComponentFast<BlockObject>().Coordinates).Replace(" ", "");
+                                    // before replacing plant, ensure it is a tree (not a bush)
+                                    string oldResource = plantingService.GetResourceAt(coordinates.XY());
 
-                                    if (specService.VerifyPrefabName(state))
+                                    if (specService.CheckIsTree(oldResource))
                                     {
-                                        plantingService.SetPlantingCoordinates(coordinates, state);
-                                    }
-                                    else if (state == string.Empty)
-                                    {
-                                        // ignore
-                                    }
-                                    else
-                                    {
-                                        Debug.Log("Invalid prefab: " + state);
+                                        string state = updateService.GetForesterState(building.GetComponentFast<BlockObject>().Coordinates).Replace(" ", "");
+
+                                        if (specService.VerifyPrefabName(state))
+                                        {
+                                            plantingService.SetPlantingCoordinates(coordinates, state);
+                                        }
+                                        else if (state == string.Empty)
+                                        {
+                                            // ignore
+                                        }
+                                        else
+                                        {
+                                            Debug.Log("PO: Invalid prefab: " + state);
+                                        }
                                     }
                                 }
                             }
@@ -112,18 +98,12 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
                         if (null != updateService)
                         {
                             updateService.RegisterForester(building.GetComponentFast<BlockObject>().Coordinates, defaultTreeType);
-
-                            Debug.Log("WEFP: Registered Building" + building.GetComponentFast<BlockObject>().Coordinates);
                         }
                     }
                 }
-
                 // always return true, as function should execute
                 return true;
-
             }
-
-
         }
     }
 }
