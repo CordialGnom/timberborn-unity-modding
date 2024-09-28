@@ -22,13 +22,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
         Label _labelTitle = new();
         Label _labelDescription = new();
 
-        Toggle _toggleArea01 = new();
-        Toggle _toggleArea02 = new();
-        Toggle _toggleArea03 = new();
-        Toggle _toggleArea04 = new();
-        Toggle _toggleTreeAll = new();
-        Toggle _toggleTreeMark = new();
-
         List<Toggle> _toggleTreeList = new();
         List<string> _toggleNameList = new();
         private readonly Dictionary<string, Toggle> _toggleTreeDict = new();
@@ -40,8 +33,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
         PlantingOverridePrefabSpecService _PlantingOverridePrefabSpecService;
         private readonly EventBus _eventBus;
 
-        public CutterPatterns CutterPatterns => _cutterPatterns;
-        public bool TreeMarkOnly => _toggleTreeMark.value;
 
 
         public PlantingOverrideToolConfigFragment (UIBuilder uiBuilder,
@@ -58,28 +49,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
 
         public VisualElement InitializeFragment()
         {
-
-            _toggleArea01 = _uiBuilder.Create<GameToggle>()
-                .SetName("Pattern01")
-                .SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.AreaConfig.Pattern01")
-                .Build();
-
-            _toggleArea02 = _uiBuilder.Create<GameToggle>().SetName("Pattern02").SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.AreaConfig.Pattern02").Build();
-            _toggleArea03 = _uiBuilder.Create<GameToggle>().SetName("Pattern03").SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.AreaConfig.Pattern03").Build();
-            _toggleArea04 = _uiBuilder.Create<GameToggle>().SetName("Pattern04").SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.AreaConfig.Pattern04").Build();
-
-            // add toggle for to mark only tree types
-            _toggleTreeMark = _uiBuilder.Create<GameToggle>()
-                .SetName("TreeMark")
-                .SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.TreeConfig.TreeMark")
-                .Build();
-            
-            // add toggle for all tree types
-            _toggleTreeAll = _uiBuilder.Create<GameToggle>()
-                .SetName("TreeAll")
-                .SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.TreeConfig.TreeAll")
-                .Build();
-
             // create toggle elements for all available tree types
             ImmutableArray<string> treeList = _PlantingOverridePrefabSpecService.GetAllTrees();
 
@@ -109,13 +78,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
                              .AddComponent(_labelDescription)
                              .BuildAndInitialize());
 
-            _root.Add(CreateCenteredPanelFragmentBuilder()
-                            .AddComponent(_toggleArea01)
-                            .AddComponent(_toggleArea02)
-                            .AddComponent(_toggleArea03)
-                            .AddComponent(_toggleArea04)
-                            .BuildAndInitialize());
-
             VisualElement toggleList = new();
 
             foreach (Toggle toggle in _toggleTreeList)
@@ -124,8 +86,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             }
 
             _root.Add(CreateCenteredPanelFragmentBuilder()
-                    .AddComponent(_toggleTreeMark)
-                    .AddComponent(_toggleTreeAll)
                     .AddComponent(toggleList)
                     .BuildAndInitialize());
 
@@ -135,14 +95,8 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             // register all toggles to name list and callbacks
             RegisterToggleCallback(_root);
 
-            // set default values of toggles 
-            foreach (Toggle toggle in _toggleTreeList)
-            {
-                SendToggleUpdateEvent(toggle.name, true);
-            }
-
-            SendToggleUpdateEvent("TreeAll", true);
-            SendToggleUpdateEvent("Pattern01", true);
+            // set one element as true
+            SendToggleUpdateEvent(_toggleTreeList[0].name, true);
 
             _root.ToggleDisplayStyle(false);
 
@@ -207,32 +161,8 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
 
         private void ToggleValueChange(string resourceName, bool value)
         {
-
-            switch (resourceName)
-            {
-                case "Pattern01":
-                    _cutterPatterns = CutterPatterns.All;
-                    UpdateTogglePattern(true, false, false, false);
-                    break;
-                case "Pattern02":
-                    _cutterPatterns = CutterPatterns.Checkered;
-                    UpdateTogglePattern(false, true, false, false);
-                    break;
-                case "Pattern03":
-                    _cutterPatterns = CutterPatterns.LinesX;
-                    UpdateTogglePattern(false, false, true, false);
-                    break;
-                case "Pattern04":
-                    _cutterPatterns = CutterPatterns.LinesY;
-                    UpdateTogglePattern(false, false, false, true);
-                    break;
-                case "TreeMark":
-                    break;
-                default:    // tree type configuration
-                    UpdateToggleTreeType(resourceName, value);
-                    break;
-            }
-
+            UpdateToggleTreeType(resourceName, value);
+            
             // after a toggle value has changed, set event to update 
             // pattern and/or tree type usage elsewhere
             this._eventBus.Post((object)new PlantingOverrideToolConfigChangeEvent(this));
@@ -258,33 +188,23 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
                 _root.Q<Toggle>(name).SetValueWithoutNotify(newValue);
             }
         }
-        private void UpdateTogglePattern(bool pattern01, bool pattern02, bool pattern03, bool pattern04 )
-        {
-            SendToggleUpdateEventWithoutNotify("Pattern01", pattern01);
-            SendToggleUpdateEventWithoutNotify("Pattern02", pattern02);
-            SendToggleUpdateEventWithoutNotify("Pattern03", pattern03);
-            SendToggleUpdateEventWithoutNotify("Pattern04", pattern04);
-        }
+
         private void UpdateToggleTreeType(string name, bool value)
         {
-            if (name == "TreeAll")
+            if (true == value)
             {
-                SendToggleUpdateEventWithoutNotify("TreeAll", value);
-
-                if (true == value)
+                foreach (var toggle in _toggleTreeList)
                 {
-                    foreach (var toggle in _toggleTreeList)
-                    {
-                        SendToggleUpdateEventWithoutNotify(toggle.name, value);
+                    if (toggle.name != name)
+                    { 
+                        SendToggleUpdateEventWithoutNotify(toggle.name, false);
                     }
                 }
             }
-            else
+            else // keep true, can't deactivate
             {
-                SendToggleUpdateEventWithoutNotify("TreeAll", false);
-
-                SendToggleUpdateEventWithoutNotify(name, value);
-            }  
+                SendToggleUpdateEventWithoutNotify(name, true);
+            }
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Cordial.Mods.PlantingOverrideTool.Scripts.UI;
-using Moq;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
@@ -41,9 +39,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
 
         // configuration
         private Dictionary<string, bool> _toggleTreeDict = new();
-        private CutterPatterns _cutterPatterns;
         private List<string> _treeTypesActive = new();
-        private bool _treeMarkOnly = false;
 
         // input handling
         private readonly InputService _inputService;        // to check keybinding and mouse state
@@ -147,11 +143,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
                    this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
                    this._areaHighlightingService.DrawTile(block, this._colors.SelectionToolHighlight);
                 }
-                // no tree, yet marking enabled
-                else if (_treeMarkOnly == false)
-                {
-                    this._areaHighlightingService.DrawTile(block, this._colors.SelectionToolHighlight);
-                }
                 else
                 {
                     this._areaHighlightingService.DrawTile(block, this._colors.PriorityTileColor);
@@ -181,11 +172,14 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
 
                     if (objectComponentAt != null)
                     {
-                        string treeName = "Birch";
-
-                        Debug.Log("Plant Birch");
-                        
-                        _plantingService.SetPlantingCoordinates(block, treeName);
+                        if (_treeTypesActive.Count == 1)
+                        {
+                            _plantingService.SetPlantingCoordinates(block, _treeTypesActive[0]);
+                        }
+                        else
+                        {
+                            Debug.Log("Incorrect tree count");
+                        }
                     }
                     else
                     {
@@ -208,8 +202,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
                 return;
 
             _toggleTreeDict = PlantingOverrideToolConfigChangeEvent.PlantingOverrideToolConfig.GetTreeDict();
-            _cutterPatterns = PlantingOverrideToolConfigChangeEvent.PlantingOverrideToolConfig.CutterPatterns;
-            _treeMarkOnly = PlantingOverrideToolConfigChangeEvent.PlantingOverrideToolConfig.TreeMarkOnly;
 
             _treeTypesActive.Clear();
 

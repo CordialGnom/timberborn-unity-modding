@@ -5,14 +5,6 @@ using UnityEngine.UIElements;
 
 namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
 {
-    public enum CutterPatterns
-    {
-        All = 0,
-        Checkered, 
-        LinesX,
-        LinesY
-    }
-
     public class PlantingOverrideToolInitializer : ILoadableSingleton 
     {
 
