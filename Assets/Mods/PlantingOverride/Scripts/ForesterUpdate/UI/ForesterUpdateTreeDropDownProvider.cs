@@ -1,20 +1,19 @@
 ﻿using Cordial.Mods.ForesterUpdate.Scripts.UI.Events;
+using Cordial.Mods.PlantingOverride.Scripts.Common;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Net.Sockets;
 using Timberborn.Common;
 using Timberborn.DropdownSystem;
 using Timberborn.Localization;
 using Timberborn.SingletonSystem;
-using UnityEngine;
 
 namespace Cordial.Mods.ForesterUpdate.Scripts.UI
 {
     public class ForesterUpdateTreeDropDownProvider : IDropdownProvider, ILoadableSingleton
     {
         private static readonly string NoPriorityItemLocKey = "Cordial.ForesterUpdate.Fragment.NoUpdateOption";
-        private readonly ForesterUpdatePrefabSpecService _specService;
+        private readonly PlantingOverridePrefabSpecService _specService;
         private readonly EventBus _eventBus;
         private readonly List<string> _items = new List<string>();
         private readonly ILoc _loc;
@@ -23,7 +22,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
 
         public string PlantName => plantable;
 
-        public ForesterUpdateTreeDropDownProvider(  ForesterUpdatePrefabSpecService specService,
+        public ForesterUpdateTreeDropDownProvider(  PlantingOverridePrefabSpecService specService,
                                                     EventBus eventBus, 
                                                     ILoc loc )
         {

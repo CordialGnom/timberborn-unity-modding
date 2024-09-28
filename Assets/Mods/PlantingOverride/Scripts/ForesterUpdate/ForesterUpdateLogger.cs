@@ -8,6 +8,7 @@ using Timberborn.ModManagerScene;
 using Timberborn.Planting;
 using Timberborn.WorkSystem;
 using UnityEngine;
+using Cordial.Mods.PlantingOverride.Scripts.Common;
 
 namespace Cordial.Mods.ForesterUpdate.Scripts 
 {
@@ -42,7 +43,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
                             if (null != updateService)
                             {
                                 PlantingService plantingService = DependencyContainer.GetInstance<PlantingService>();
-                                ForesterUpdatePrefabSpecService specService = DependencyContainer.GetInstance<ForesterUpdatePrefabSpecService>();
+                                PlantingOverridePrefabSpecService specService = DependencyContainer.GetInstance<PlantingOverridePrefabSpecService>();
 
                                 if ((null != plantingService)
                                      && (null != specService))

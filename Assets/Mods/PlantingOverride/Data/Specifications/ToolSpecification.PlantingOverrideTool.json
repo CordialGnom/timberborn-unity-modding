@@ -1,0 +1,15 @@
+{
+  "Id": "Cordial.PlantingOverrideTool",
+  "Type": "PlantingOverrideTool",
+  "GroupId": "Forestry",
+  "Layout": "brown",
+  "Order": 50,
+  "Icon": "Sprites/Bottombar/NaturalResourcesIcon",
+  "NameLocKey": "Cordial.PlantingOverrideTool.DisplayName",
+  "DescriptionLocKey": "Cordial.PlantingOverrideTool.Description",
+  "DevMode": false,
+  "Hidden": false,
+  "ToolInformation": {
+    "BottomBarSection": 1
+  }
+}

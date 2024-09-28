@@ -10,7 +10,7 @@ using TimberApi.UIBuilderSystem.StylingElements;
 using Timberborn.CoreUI;
 using UnityEngine.UIElements;
 
-namespace Cordial.Mods.ForesterUpdate.Scripts.UI
+namespace Cordial.Mods.PlantingOverride.Scripts.Common.UI
 {
 
     /// <summary>Fragment for the UI panel.</summary>
@@ -20,17 +20,17 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         protected override PanelFragment BuilderInstance => this;
     }
 
-/// <summary>Builder class for a panel fragment.</summary>
-/// <typeparam name="TBuilder">the type to build.</typeparam>
+    /// <summary>Builder class for a panel fragment.</summary>
+    /// <typeparam name="TBuilder">the type to build.</typeparam>
     public abstract class PanelFragmentBuilder<TBuilder> : BaseBuilder<TBuilder, NineSliceVisualElement>
-        where TBuilder : BaseBuilder<TBuilder, NineSliceVisualElement> 
+        where TBuilder : BaseBuilder<TBuilder, NineSliceVisualElement>
     {
         const string BackgroundClass = nameof(PanelFragment);
 
         VisualElementBuilder _visualElementBuilder;
 
-      /// <inheritdoc />
-        protected override NineSliceVisualElement InitializeRoot() 
+        /// <inheritdoc />
+        protected override NineSliceVisualElement InitializeRoot()
         {
             _visualElementBuilder = UIBuilder.Create<VisualElementBuilder>();
             _visualElementBuilder.AddClass(BackgroundClass);
@@ -43,21 +43,21 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         }
 
         /// <summary>Adds a component to the panel.</summary>
-        public TBuilder AddComponent(VisualElement visualElement) 
+        public TBuilder AddComponent(VisualElement visualElement)
         {
             Root.Add(visualElement);
             return BuilderInstance;
         }
 
         /// <summary>Sets the flex direction of the panel.</summary>
-        public TBuilder SetFlexDirection(FlexDirection direction) 
+        public TBuilder SetFlexDirection(FlexDirection direction)
         {
             Root.style.flexDirection = direction;
             return BuilderInstance;
         }
 
         /// <summary>Sets the width of the panel.</summary>
-        public TBuilder SetWidth(Length width) 
+        public TBuilder SetWidth(Length width)
         {
             Root.style.width = width;
             return BuilderInstance;
@@ -71,7 +71,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
 
 
         /// <summary>Sets how the content is justified.</summary>
-        public TBuilder SetJustifyContent(Justify justify) 
+        public TBuilder SetJustifyContent(Justify justify)
         {
             Root.style.justifyContent = justify;
             return BuilderInstance;
@@ -84,7 +84,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         }
 
         /// <inheritdoc />
-        protected override void InitializeStyleSheet(StyleSheetBuilder styleSheetBuilder) 
+        protected override void InitializeStyleSheet(StyleSheetBuilder styleSheetBuilder)
         {
             styleSheetBuilder.AddNineSlicedBackgroundClass(BackgroundClass, "ui/images/backgrounds/bg-3", 9f, 0.5f);
         }

@@ -8,15 +8,15 @@ using TimberApi.DependencyContainerSystem;
 using Timberborn.Modding;
 
 
-namespace Cordial.Mods.ForesterUpdate.Scripts
+namespace Cordial.Mods.PlantingOverride.Scripts.Common
 {
-    public class ForesterUpdatePrefabSpecService : ILoadableSingleton
+    public class PlantingOverridePrefabSpecService : ILoadableSingleton
     {
 
         // access to specs
         private static PrefabService _prefabService;
 
-        public ForesterUpdatePrefabSpecService( PrefabService prefabService)
+        public PlantingOverridePrefabSpecService( PrefabService prefabService)
         {
             _prefabService = prefabService;
         }
