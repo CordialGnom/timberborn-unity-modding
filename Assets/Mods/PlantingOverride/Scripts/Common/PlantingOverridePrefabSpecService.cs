@@ -5,7 +5,7 @@ using UnityEngine;
 using Timberborn.PrefabSystem;
 using Timberborn.Forestry;
 using TimberApi.DependencyContainerSystem;
-using Timberborn.Modding;
+using Timberborn.Fields;
 
 
 namespace Cordial.Mods.PlantingOverride.Scripts.Common
@@ -68,5 +68,30 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
 
             return treeTypes.Contains(prefabNameInp);
         }
+
+        public ImmutableArray<string> GetAllCrops()
+        {
+            List<string> cropTypes = new();
+
+            if (null != _prefabService)
+            {
+                var cropComponents = _prefabService.GetAll<Crop>();
+
+                //todo Cordial: Load a prefab group
+                foreach (var crop in cropComponents)
+                {
+                    cropTypes.Add(crop.name);
+                }
+            }
+            return cropTypes.ToImmutableArray<string>();
+        }
+
+        public bool CheckIsCrop(string prefabNameInp)
+        {
+            ImmutableArray<string> cropTypes = GetAllCrops();
+
+            return cropTypes.Contains(prefabNameInp);
+        }
+
     }
 }

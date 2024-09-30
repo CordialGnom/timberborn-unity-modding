@@ -3,3 +3,5 @@ Cordial.Building.Forester.Description,Force planting of:,-
 Cordial.ForesterUpdate.Fragment.NoUpdateOption,None,-
 Cordial.PlantingOverrideTool.DisplayName,"Planting Override Tool",-
 Cordial.PlantingOverrideTool.Description,"Override existing planting",-
+Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Title,"Planting Override Configuration",-
+Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description,"Override existing plant:",-

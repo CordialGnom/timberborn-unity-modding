@@ -22,54 +22,41 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
         Label _labelTitle = new();
         Label _labelDescription = new();
 
-        List<Toggle> _toggleTreeList = new();
-        List<string> _toggleNameList = new();
+        private readonly List<Toggle> _toggleTreeList = new();
+        private readonly List<Toggle> _toggleCropList = new();
         private readonly Dictionary<string, Toggle> _toggleTreeDict = new();
+        private readonly Dictionary<string, Toggle> _toggleCropDict = new();
 
-        private CutterPatterns _cutterPatterns;
-        
 
-        // faction / tree configuration
-        PlantingOverridePrefabSpecService _PlantingOverridePrefabSpecService;
+        // faction / crop configuration
+        private readonly PlantingOverridePrefabSpecService _plantingOverridePrefabSpecService;
         private readonly EventBus _eventBus;
 
 
 
-        public PlantingOverrideToolConfigFragment (UIBuilder uiBuilder,
-                                         PlantingOverridePrefabSpecService PlantingOverridePrefabSpecService,
-                                         VisualElementLoader visualElementLoader,
-                                         EventBus eventBus)
+        public PlantingOverrideToolConfigFragment(UIBuilder uiBuilder,
+                                                 PlantingOverridePrefabSpecService plantingOverridePrefabSpecService,
+                                                 VisualElementLoader visualElementLoader,
+                                                 EventBus eventBus)
         {
             _eventBus = eventBus;
             _uiBuilder = uiBuilder;
             _visualElementLoader = visualElementLoader;
-            _PlantingOverridePrefabSpecService = PlantingOverridePrefabSpecService;
-
+            _plantingOverridePrefabSpecService = plantingOverridePrefabSpecService;
         }
 
         public VisualElement InitializeFragment()
         {
-            // create toggle elements for all available tree types
-            ImmutableArray<string> treeList = _PlantingOverridePrefabSpecService.GetAllTrees();
-
-            for (int index = 0; index < treeList.Length; ++index )
-            {
-                _toggleTreeList.Add(_uiBuilder.Create<GameToggle>()
-                    .SetName(treeList[index])
-                    //.SetText(treeList[index])
-                    .SetLocKey("NaturalResource." + treeList[index] + ".DisplayName")
-                    .Build());
-
-                _toggleTreeDict.Add(treeList[index], _toggleTreeList[index]);
-            }
-
             // create title label
             _labelTitle = _uiBuilder.Create<GameLabel>()
                                     .SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Title")
                                     .Heading()
                                     .Build();
-            _labelDescription = _uiBuilder.Create<GameLabel>().SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description").Small().Build();
 
+            // create description
+            _labelDescription = _uiBuilder.Create<GameLabel>().SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description").Small().Build();
+            
+            
             _root.Add(CreatePanelFragmentRedBuilder()
                              .AddComponent(_labelTitle)
                             .BuildAndInitialize());
@@ -78,25 +65,15 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
                              .AddComponent(_labelDescription)
                              .BuildAndInitialize());
 
-            VisualElement toggleList = new();
+            CreateTreeFragment(_root);
 
-            foreach (Toggle toggle in _toggleTreeList)
-            {
-                toggleList.Add(toggle);
-            }
+            CreateCropFragment(_root);
 
-            _root.Add(CreateCenteredPanelFragmentBuilder()
-                    .AddComponent(toggleList)
-                    .BuildAndInitialize());
-
-            // reset toggle name list
-            _toggleNameList.Clear();
-
-            // register all toggles to name list and callbacks
+            // register all  list and callbacks
             RegisterToggleCallback(_root);
 
-            // set one element as true
-            SendToggleUpdateEvent(_toggleTreeList[0].name, true);
+            InitializeTreeFragment();
+            InitializeCropFragment();
 
             _root.ToggleDisplayStyle(false);
 
@@ -105,6 +82,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             return _root;
         }
 
+        
         private void RegisterToggleCallback(VisualElement visualElement )
         {
             foreach (var child in visualElement.Children())
@@ -113,8 +91,14 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
                     //|| (child.GetType() == typeof(Toggle))     // if GameTextToggle is used
                     )
                 {
-                    _root.Q<Toggle>(child.name).RegisterValueChangedCallback(value => ToggleValueChange(child.name, value.newValue));
-                    _toggleNameList.Add(child.name);   
+                    if (child.name.Contains("Crop"))
+                    {
+                        _root.Q<Toggle>(child.name).RegisterValueChangedCallback(value => UpdateToggleCropType(child.name, value.newValue));
+                    }
+                    else // assume Tree
+                    {
+                        _root.Q<Toggle>(child.name).RegisterValueChangedCallback(value => UpdateToggleTreeType(child.name, value.newValue));
+                    }
                 }
                 else
                 {
@@ -148,6 +132,16 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
                 ;
         }
 
+        public void SetTreeFragmentState(bool state)
+        {
+            _root.Q<VisualElement>("TreePanel").ToggleDisplayStyle(state);
+        }
+
+        public void SetCropFragmentState(bool state)
+        {
+            _root.Q<VisualElement>("CropPanel").ToggleDisplayStyle(state);
+        }
+
         public Dictionary<string, bool> GetTreeDict()
         {
             Dictionary<string, bool> dict = new();
@@ -158,14 +152,15 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             }
             return dict;
         }
-
-        private void ToggleValueChange(string resourceName, bool value)
+        public Dictionary<string, bool> GetCropDict()
         {
-            UpdateToggleTreeType(resourceName, value);
-            
-            // after a toggle value has changed, set event to update 
-            // pattern and/or tree type usage elsewhere
-            this._eventBus.Post((object)new PlantingOverrideToolConfigChangeEvent(this));
+            Dictionary<string, bool> dict = new();
+
+            foreach (KeyValuePair<string, Toggle> kvp in _toggleCropDict)
+            {
+                dict.Add(kvp.Key, kvp.Value.value);
+            }
+            return dict;
         }
 
         private void SendToggleUpdateEvent(string name, bool newValue)
@@ -188,6 +183,41 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
                 _root.Q<Toggle>(name).SetValueWithoutNotify(newValue);
             }
         }
+        private void CreateTreeFragment(VisualElement root)
+        {
+            VisualElement toggleList = new();
+
+            // create toggle elements for all available tree types
+            ImmutableArray<string> treeList = _plantingOverridePrefabSpecService.GetAllTrees();
+
+            for (int index = 0; index < treeList.Length; ++index)
+            {
+                _toggleTreeList.Add(_uiBuilder.Create<GameToggle>()
+                    .SetName(treeList[index])
+                    //.SetText(treeList[index])
+                    .SetLocKey("NaturalResource." + treeList[index] + ".DisplayName")
+                    .Build());
+
+                _toggleTreeDict.Add(treeList[index], _toggleTreeList[index]);
+            }
+
+
+            foreach (Toggle toggle in _toggleTreeList)
+            {
+                toggleList.Add(toggle);
+            }
+
+            root.Add(CreateCenteredPanelFragmentBuilder()
+                    .AddComponent(toggleList)
+                    .SetName("TreePanel")
+                    .BuildAndInitialize());
+        }
+
+        private void InitializeTreeFragment()
+        {
+            // set one element as true
+            SendToggleUpdateEvent(_toggleTreeList[0].name, true);
+        }
 
         private void UpdateToggleTreeType(string name, bool value)
         {
@@ -200,6 +230,64 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
                         SendToggleUpdateEventWithoutNotify(toggle.name, false);
                     }
                 }
+
+                // after a toggle value has changed, set event to update
+                this._eventBus.Post((object)new PlantingOverrideToolConfigChangeEvent(this));
+            }
+            else // keep true, can't deactivate
+            {
+                SendToggleUpdateEventWithoutNotify(name, true);
+            }
+        }
+
+        private void CreateCropFragment(VisualElement root)
+        {
+            VisualElement toggleList = new();
+
+            // create toggle elements for all available crop types
+            ImmutableArray<string> cropList = _plantingOverridePrefabSpecService.GetAllCrops();
+
+            for (int index = 0; index < cropList.Length; ++index)
+            {
+                _toggleCropList.Add(_uiBuilder.Create<GameToggle>()
+                    .SetName("Crop." + cropList[index])
+                    //.SetText(cropList[index])
+                    .SetLocKey("NaturalResource." + cropList[index] + ".DisplayName")
+                    .Build());
+
+                _toggleCropDict.Add(cropList[index], _toggleCropList[index]);
+            }
+
+
+            foreach (Toggle toggle in _toggleCropList)
+            {
+                toggleList.Add(toggle);
+            }
+
+            root.Add(CreateCenteredPanelFragmentBuilder()
+                    .AddComponent(toggleList)
+                    .SetName("CropPanel")
+                    .BuildAndInitialize());
+        }
+        private void InitializeCropFragment()
+        {
+            // set one element as true
+            SendToggleUpdateEvent(_toggleCropList[0].name, true);
+        }
+
+        private void UpdateToggleCropType(string name, bool value)
+        {
+            if (true == value)
+            {
+                foreach (var toggle in _toggleCropList)
+                {
+                    if (toggle.name != name)
+                    {
+                        SendToggleUpdateEventWithoutNotify(toggle.name, false);
+                    }
+                }
+                // after a toggle value has changed, set event to update
+                this._eventBus.Post((object)new PlantingOverrideToolConfigChangeEvent(this));
             }
             else // keep true, can't deactivate
             {

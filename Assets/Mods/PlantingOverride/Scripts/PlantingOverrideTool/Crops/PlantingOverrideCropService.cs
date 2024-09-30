@@ -4,8 +4,7 @@ using Cordial.Mods.PlantingOverrideTool.Scripts.UI;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
-using Timberborn.Forestry;
-using Timberborn.InputSystem;
+using Timberborn.Fields;
 using Timberborn.Localization;
 using Timberborn.Planting;
 using Timberborn.SelectionSystem;
@@ -17,7 +16,7 @@ using UnityEngine;
 
 namespace Cordial.Mods.PlantingOverrideTool.Scripts
 {
-    public class PlantingOverrideToolService : Tool, ILoadableSingleton, IPlantingOverrideTool, IPriorityInputProcessor, IInputProcessor
+    public class PlantingOverrideCropService : Tool, ILoadableSingleton, IPlantingOverrideCropTool
     {
         // tool descriptions
         private static readonly string TitleLocKey = "Cordial.PlantingOverrideTool.DisplayName";
@@ -34,15 +33,10 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
 
         // UI setup
         private PlantingOverrideToolInitializer _PlantingOverrideToolInitializer;
-        //private PlantingOverrideToolConfigPanel _PlantingOverrideToolConfigPanel;
-        //private PlantingOverrideToolSettings _PlantingOverrideToolSettings;
 
         // configuration
-        private Dictionary<string, bool> _toggleTreeDict = new();
-        private List<string> _treeTypesActive = new();
-
-        // input handling
-        private readonly InputService _inputService;        // to check keybinding and mouse state
+        private Dictionary<string, bool> _toggleCropDict = new();
+        private List<string> _cropTypesActive = new();
 
         // highlighting
         private readonly Colors _colors;
@@ -57,19 +51,16 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
         private readonly BlockService _blockService;
 
 
-        public PlantingOverrideToolService( SelectionToolProcessorFactory selectionToolProcessorFactory,
+        public PlantingOverrideCropService( SelectionToolProcessorFactory selectionToolProcessorFactory,
                                             PlantingOverrideToolInitializer PlantingOverrideToolInitializer,
-                                            //PlantingOverrideToolSettings PlantingOverrideToolSettings,
                                             PlantingService plantingService,
                                             ToolUnlockingService toolUnlockingService,
                                             Colors colors,
                                             ILoc loc,
                                             AreaHighlightingService areaHighlightingService,
                                             TerrainAreaService terrainAreaService,
-                                            //TreeCuttingArea treeCuttingArea,
                                             BlockService blockService,
-                                            InputService inputService,
-                                            EventBus eventBus ) 
+                                            EventBus eventBus) 
         {
             _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
                                                                                     Ray>(this.PreviewCallback),
@@ -79,18 +70,16 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
                                                                                     CursorKey);
 
             _areaHighlightingService = areaHighlightingService;
+            _terrainAreaService = terrainAreaService;
+
             _PlantingOverrideToolInitializer = PlantingOverrideToolInitializer;
             _toolUnlockingService = toolUnlockingService;
-            //_PlantingOverrideToolSettings = PlantingOverrideToolSettings;
-            _terrainAreaService = terrainAreaService;
-            //_treeCuttingArea =  treeCuttingArea;
+
             _plantingService = plantingService;
             _blockService = blockService;
-            _inputService = inputService;
             _eventBus = eventBus;
             _colors = colors;
             _loc = loc; 
-
         }
 
         public void Load()
@@ -102,21 +91,12 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
         {
             // activate tool
             this._selectionToolProcessor.Enter();
-            this._eventBus.Post((object)new PlantingOverrideToolSelectedEvent(this) );
+            this._eventBus.Post((object)new PlantingOverrideCropSelectedEvent(this));
         }
         public override void Exit()
         {
             this._selectionToolProcessor.Exit();
-            this._eventBus.Post((object)new PlantingOverrideToolUnselectedEvent(this));
-        }
-        void IPriorityInputProcessor.ProcessInput()
-        {
-            _inputService.AddInputProcessor((IInputProcessor)this);
-        }
-
-        bool IInputProcessor.ProcessInput()
-        {
-            return false;
+            this._eventBus.Post((object)new PlantingOverrideCropUnselectedEvent(this));
         }
 
         public void SetToolGroup(ToolGroup toolGroup)
@@ -136,7 +116,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
             // iterate over all input blocks -> toggle boolean flag for it
             foreach (Vector3Int block in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
             {
-                TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
+                Crop objectComponentAt = this._blockService.GetBottomObjectComponentAt<Crop>(block);
 
                 if (objectComponentAt != null)
                 {
@@ -153,7 +133,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
             this._areaHighlightingService.Highlight();
         }
 
-
         private void ActionCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
             List<Vector3Int> coordinatesList = new();
@@ -168,13 +147,13 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
 
                 foreach (Vector3Int block in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
                 {                
-                    TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
+                    Crop objectComponentAt = this._blockService.GetBottomObjectComponentAt<Crop>(block);
 
                     if (objectComponentAt != null)
                     {
-                        if (_treeTypesActive.Count == 1)
+                        if (_cropTypesActive.Count == 1)
                         {
-                            _plantingService.SetPlantingCoordinates(block, _treeTypesActive[0]);
+                            _plantingService.SetPlantingCoordinates(block, _cropTypesActive[0]);
                         }
                         else
                         {
@@ -201,15 +180,14 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
             if (null == PlantingOverrideToolConfigChangeEvent)
                 return;
 
-            _toggleTreeDict = PlantingOverrideToolConfigChangeEvent.PlantingOverrideToolConfig.GetTreeDict();
+            _toggleCropDict = PlantingOverrideToolConfigChangeEvent.PlantingOverrideToolConfig.GetCropDict();
+            _cropTypesActive.Clear();
 
-            _treeTypesActive.Clear();
-
-            foreach (KeyValuePair<string, bool> kvp in _toggleTreeDict)
+            foreach (KeyValuePair<string, bool> kvp in _toggleCropDict)
             {
                 if (kvp.Value)
                 {
-                    _treeTypesActive.Add(kvp.Key);
+                    _cropTypesActive.Add(kvp.Key);
                 }
             }
         }

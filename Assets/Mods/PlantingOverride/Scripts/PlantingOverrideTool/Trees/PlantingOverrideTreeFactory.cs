@@ -3,11 +3,11 @@ using Timberborn.ToolSystem;
 
 namespace Cordial.Mods.PlantingOverrideTool.Scripts
 {
-    public class PlantingOverrideToolFactory : IToolFactory
+    public class PlantingOverrideTreeToolFactory : IToolFactory
     {
-        private readonly IPlantingOverrideTool _PlantingOverrideTool;
-        public string Id => "PlantingOverrideTool";
-        public PlantingOverrideToolFactory(IPlantingOverrideTool PlantingOverrideTool)
+        private readonly IPlantingOverrideTreeTool _PlantingOverrideTool;
+        public string Id => "PlantingOverrideToolTrees";
+        public PlantingOverrideTreeToolFactory(IPlantingOverrideTreeTool PlantingOverrideTool)
         {
             _PlantingOverrideTool = PlantingOverrideTool;
         }

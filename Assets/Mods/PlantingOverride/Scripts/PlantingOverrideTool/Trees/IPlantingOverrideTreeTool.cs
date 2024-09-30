@@ -2,7 +2,7 @@
 
 namespace Cordial.Mods.PlantingOverrideTool.Scripts
 {
-    public interface IPlantingOverrideTool
+    public interface IPlantingOverrideTreeTool
     {
         void SetToolGroup(ToolGroup toolGroup);
         void PostProcessInput();

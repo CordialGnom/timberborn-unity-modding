@@ -22,9 +22,12 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
 
             containerDefinition.Bind<PlantingOverridePrefabSpecService>().AsSingleton();
 
-            containerDefinition.Bind<IPlantingOverrideTool>().To<PlantingOverrideToolService>().AsSingleton();
-            containerDefinition.MultiBind<IToolFactory>().To<PlantingOverrideToolFactory>().AsSingleton();
-            containerDefinition.Bind<PlantingOverrideToolService>().AsSingleton();
+            containerDefinition.Bind<IPlantingOverrideTreeTool>().To<PlantingOverrideTreeService>().AsSingleton();
+            containerDefinition.Bind<IPlantingOverrideCropTool>().To<PlantingOverrideCropService>().AsSingleton();
+            containerDefinition.MultiBind<IToolFactory>().To<PlantingOverrideTreeToolFactory>().AsSingleton();
+            containerDefinition.MultiBind<IToolFactory>().To<PlantingOverrideCropToolFactory>().AsSingleton();
+            containerDefinition.Bind<PlantingOverrideTreeService>().AsSingleton();
+            containerDefinition.Bind<PlantingOverrideCropService>().AsSingleton();
 
 
             containerDefinition.Bind<ForesterUpdateStateService>().AsSingleton();

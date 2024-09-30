@@ -44,6 +44,8 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             this._eventBus.Register((object)this);
 
             this._entityroot.ToggleDisplayStyle(false);
+            this.SetTreeConfigState(false);
+            this.SetCropConfigState(false);
         }
 
         public void SetVisualState(bool setActive)
@@ -51,22 +53,54 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             this._root.ToggleDisplayStyle(setActive);
         }
 
+        private void SetTreeConfigState(bool setActive)
+        {
+            this._PlantingOverrideToolConfigFragment.SetTreeFragmentState(setActive);
+        }
+        private void SetCropConfigState(bool setActive)
+        {
+            this._PlantingOverrideToolConfigFragment.SetCropFragmentState(setActive);
+        }
+
         [OnEvent]
-        public void OnPlantingOverrideToolSelectedEvent( PlantingOverrideToolSelectedEvent PlantingOverrideToolSelectedEvent)
+        public void OnPlantingOverrideTreeSelectedEvent( PlantingOverrideTreeSelectedEvent PlantingOverrideToolSelectedEvent)
         {
             if (null == PlantingOverrideToolSelectedEvent)
                 return;
-
+            this.SetTreeConfigState(true);
             this.SetVisualState(true);
             this._entityroot.ToggleDisplayStyle(true);
         }
 
         [OnEvent]
-        public void OnPlantingOverrideToolUnselectedEvent(PlantingOverrideToolUnselectedEvent PlantingOverrideToolUnselectedEvent )
+        public void OnPlantingOverrideTreeUnselectedEvent(PlantingOverrideTreeUnselectedEvent PlantingOverrideToolUnselectedEvent )
         {
             if (null == PlantingOverrideToolUnselectedEvent)
                 return;
 
+            this.SetTreeConfigState(false);
+            this.SetVisualState(false);
+            this._entityroot.ToggleDisplayStyle(false);
+        }
+
+        [OnEvent]
+        public void OnPlantingOverrideCropSelectedEvent(PlantingOverrideCropSelectedEvent PlantingOverrideToolSelectedEvent)
+        {
+            if (null == PlantingOverrideToolSelectedEvent)
+                return;
+
+            this.SetCropConfigState(true);
+            this.SetVisualState(true);
+            this._entityroot.ToggleDisplayStyle(true);
+        }
+
+        [OnEvent]
+        public void OnPlantingOverrideCropUnselectedEvent(PlantingOverrideCropUnselectedEvent PlantingOverrideToolUnselectedEvent)
+        {
+            if (null == PlantingOverrideToolUnselectedEvent)
+                return;
+
+            this.SetCropConfigState(false);
             this.SetVisualState(false);
             this._entityroot.ToggleDisplayStyle(false);
         }
