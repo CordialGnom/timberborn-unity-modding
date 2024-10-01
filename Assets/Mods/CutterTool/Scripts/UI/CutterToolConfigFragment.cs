@@ -4,6 +4,7 @@ using TimberApi.UIBuilderSystem;
 using TimberApi.UIBuilderSystem.CustomElements;
 using TimberApi.UIPresets.Labels;
 using TimberApi.UIPresets.Toggles;
+using Timberborn.Common;
 using Timberborn.CoreUI;
 using Timberborn.SingletonSystem;
 using UnityEngine.UIElements;
@@ -13,11 +14,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
     public class CutterToolConfigFragment
     {
         readonly UIBuilder _uiBuilder;
-        private readonly VisualElementLoader _visualElementLoader;
 
-        private VisualElement _root = new();
-
-        private bool _togglePanelUpdate = false;
+        private readonly VisualElement _root = new();
 
         Label _labelTitle = new();
         Label _labelDescription = new();
@@ -29,15 +27,15 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         Toggle _toggleTreeAll = new();
         Toggle _toggleTreeMark = new();
 
-        List<Toggle> _toggleTreeList = new();
-        List<string> _toggleNameList = new();
+        private readonly List<Toggle> _toggleTreeList = new();
+        private readonly List<string> _toggleNameList = new();
         private readonly Dictionary<string, Toggle> _toggleTreeDict = new();
 
         private CutterPatterns _cutterPatterns;
-        
+
 
         // faction / tree configuration
-        CutterToolPrefabSpecService _cutterToolPrefabSpecService;
+        private readonly CutterToolPrefabSpecService _cutterToolPrefabSpecService;
         private readonly EventBus _eventBus;
 
         public CutterPatterns CutterPatterns => _cutterPatterns;
@@ -46,14 +44,11 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
         public CutterToolConfigFragment (UIBuilder uiBuilder,
                                          CutterToolPrefabSpecService cutterToolPrefabSpecService,
-                                         VisualElementLoader visualElementLoader,
                                          EventBus eventBus)
         {
             _eventBus = eventBus;
             _uiBuilder = uiBuilder;
-            _visualElementLoader = visualElementLoader;
             _cutterToolPrefabSpecService = cutterToolPrefabSpecService;
-
         }
 
         public VisualElement InitializeFragment()
@@ -245,7 +240,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             if (oldValue != newValue)
             {
                 _root.Q<Toggle>(name).value = newValue;
-                //_root.Q<Toggle>(name).SendEvent(ChangeEvent<bool>.GetPooled(oldValue, newValue));
             }
         }
 
