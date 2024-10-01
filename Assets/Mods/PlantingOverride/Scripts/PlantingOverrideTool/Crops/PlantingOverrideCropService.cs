@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cordial.Mods.ForesterUpdate.Scripts.UI.Events;
 using Cordial.Mods.PlantingOverrideTool.Scripts.UI;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
@@ -189,6 +190,20 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
                 {
                     _cropTypesActive.Add(kvp.Key);
                 }
+            }
+        }
+
+
+        [OnEvent]
+        public void OnPlantingOverrideConfigChangeEvent(PlantingOverrideConfigChangeEvent PlantingOverrideConfigChangeEvent)
+        {
+            if (null == PlantingOverrideConfigChangeEvent)
+                return;
+
+            if (!PlantingOverrideConfigChangeEvent.IsTree)
+            {
+                _cropTypesActive.Clear();
+                _cropTypesActive.Add(PlantingOverrideConfigChangeEvent.PlantName);
             }
         }
     }

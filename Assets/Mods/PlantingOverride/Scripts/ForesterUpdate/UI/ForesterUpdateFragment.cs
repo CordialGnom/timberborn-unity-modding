@@ -37,9 +37,8 @@ namespace Cordial.Mods.ForesterUpdate.Scripts.UI
         // store coordinates to check if "updateFragment" changes source
         Vector3Int _foresterCoordOld = Vector3Int.zero;
 
-        DropdownItemsSetter _dropdownItemsSetter;
-        DropdownListDrawer _dropdownListDrawer;
-        ForesterUpdateTreeDropDownProvider _dropDownProvider;
+        private readonly DropdownItemsSetter _dropdownItemsSetter;
+        private readonly ForesterUpdateTreeDropDownProvider _dropDownProvider;
         private readonly EventBus _eventBus;
 
         // localiations

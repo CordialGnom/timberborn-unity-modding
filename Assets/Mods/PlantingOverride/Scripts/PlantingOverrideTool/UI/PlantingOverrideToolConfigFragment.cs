@@ -4,11 +4,14 @@ using TimberApi.UIBuilderSystem;
 using TimberApi.UIBuilderSystem.CustomElements;
 using TimberApi.UIPresets.Labels;
 using TimberApi.UIPresets.Toggles;
+using TimberApi.UIPresets.Dropdowns;
+using Timberborn.DropdownSystem;
 using Timberborn.CoreUI;
 using Timberborn.SingletonSystem;
-using UnityEngine.UIElements;
 using Cordial.Mods.PlantingOverride.Scripts.Common;
 using Cordial.Mods.PlantingOverride.Scripts.Common.UI;
+using UnityEngine.UIElements;
+using Cordial.Mods.ForesterUpdate.Scripts.UI;
 
 namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
 {
@@ -22,6 +25,8 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
         Label _labelTitle = new();
         Label _labelDescription = new();
 
+        Dropdown _plantingOverrideDropDown = new();
+
         private readonly List<Toggle> _toggleTreeList = new();
         private readonly List<Toggle> _toggleCropList = new();
         private readonly Dictionary<string, Toggle> _toggleTreeDict = new();
@@ -33,20 +38,29 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
         private readonly EventBus _eventBus;
 
 
+        private readonly DropdownItemsSetter _dropdownItemsSetter;
+        private readonly PlantingOverrideDropDownProvider _dropDownProvider;
 
         public PlantingOverrideToolConfigFragment(UIBuilder uiBuilder,
                                                  PlantingOverridePrefabSpecService plantingOverridePrefabSpecService,
                                                  VisualElementLoader visualElementLoader,
+                                                 DropdownItemsSetter dropdownItemsSetter,
+                                                 PlantingOverrideDropDownProvider dropDownProvider,
                                                  EventBus eventBus)
         {
             _eventBus = eventBus;
             _uiBuilder = uiBuilder;
             _visualElementLoader = visualElementLoader;
             _plantingOverridePrefabSpecService = plantingOverridePrefabSpecService;
+
+            _dropdownItemsSetter = dropdownItemsSetter;
+            _dropDownProvider = dropDownProvider;
         }
 
         public VisualElement InitializeFragment()
         {
+            _eventBus.Register((object)this);
+
             // create title label
             _labelTitle = _uiBuilder.Create<GameLabel>()
                                     .SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Title")
@@ -55,8 +69,8 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
 
             // create description
             _labelDescription = _uiBuilder.Create<GameLabel>().SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description").Small().Build();
-            
-            
+
+
             _root.Add(CreatePanelFragmentRedBuilder()
                              .AddComponent(_labelTitle)
                             .BuildAndInitialize());
@@ -64,6 +78,14 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             _root.Add(CreatePanelFragmentBlueBuilder()
                              .AddComponent(_labelDescription)
                              .BuildAndInitialize());
+
+            // create drop down
+            _plantingOverrideDropDown = _uiBuilder.Build<GameDropdown, Dropdown>();
+
+
+            _root.Add(CreateCenteredPanelFragmentBuilder()
+                            .AddComponent(_plantingOverrideDropDown)
+                            .BuildAndInitialize());
 
             CreateTreeFragment(_root);
 
@@ -74,6 +96,9 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
 
             InitializeTreeFragment();
             InitializeCropFragment();
+
+            _dropdownItemsSetter.SetItems(_plantingOverrideDropDown, _dropDownProvider);
+
 
             _root.ToggleDisplayStyle(false);
 
@@ -134,11 +159,18 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
 
         public void SetTreeFragmentState(bool state)
         {
+            _dropDownProvider.ReloadAsTree();
+            _dropdownItemsSetter.SetItems(_plantingOverrideDropDown, _dropDownProvider);
+
             _root.Q<VisualElement>("TreePanel").ToggleDisplayStyle(state);
         }
 
         public void SetCropFragmentState(bool state)
         {
+            _dropDownProvider.ReloadAsCrop();
+            _dropdownItemsSetter.SetItems(_plantingOverrideDropDown, _dropDownProvider);
+            
+            
             _root.Q<VisualElement>("CropPanel").ToggleDisplayStyle(state);
         }
 

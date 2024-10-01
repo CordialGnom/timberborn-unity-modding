@@ -20,6 +20,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
             containerDefinition.Bind<PanelFragmentBlue>().AsSingleton();
             containerDefinition.Bind<PlantingOverrideToolConfigFragment>().AsSingleton();
 
+            containerDefinition.Bind<PlantingOverrideDropDownProvider>().AsSingleton();
             containerDefinition.Bind<PlantingOverridePrefabSpecService>().AsSingleton();
 
             containerDefinition.Bind<IPlantingOverrideTreeTool>().To<PlantingOverrideTreeService>().AsSingleton();
