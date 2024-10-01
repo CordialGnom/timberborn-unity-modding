@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace Cordial.Mods.CutterTool.Scripts
 {
-    public class CutterToolService : Tool, ILoadableSingleton, ICutterTool, IPriorityInputProcessor, IInputProcessor
+    public class CutterToolService : Tool, ILoadableSingleton, ICutterTool
     {
         // tool descriptions
         private static readonly string TitleLocKey = "Cordial.CutterTool.DisplayName";
@@ -26,25 +26,19 @@ namespace Cordial.Mods.CutterTool.Scripts
 
         // tool setup
         private readonly ILoc _loc;
-        private readonly ToolButtonService _toolButtonService;  // todo check if required
-        private ToolDescription _toolDescription;               // is used
+        private ToolDescription _toolDescription;      // is used
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly SelectionToolProcessor _selectionToolProcessor;
         private EventBus _eventBus;
 
         // UI setup
-        private CutterToolInitializer _cutterToolInitializer;
-        //private CutterToolConfigPanel _cutterToolConfigPanel;
-        //private CutterToolSettings _cutterToolSettings;
+        //private CutterToolInitializer _cutterToolInitializer;
 
         // configuration
         private Dictionary<string, bool> _toggleTreeDict = new();
         private CutterPatterns _cutterPatterns;
-        private List<string> _treeTypesActive = new();
+        private readonly List<string> _treeTypesActive = new();
         private bool _treeMarkOnly = false;
-
-        // input handling
-        private readonly InputService _inputService;        // to check keybinding and mouse state
 
         // highlighting
         private readonly Colors _colors;
@@ -57,8 +51,6 @@ namespace Cordial.Mods.CutterTool.Scripts
 
 
         public CutterToolService(   SelectionToolProcessorFactory selectionToolProcessorFactory,
-                                    CutterToolInitializer cutterToolInitializer,
-                                    //CutterToolSettings cutterToolSettings,
                                     ToolUnlockingService toolUnlockingService,
                                     Colors colors,
                                     ILoc loc,
@@ -66,7 +58,6 @@ namespace Cordial.Mods.CutterTool.Scripts
                                     TerrainAreaService terrainAreaService,
                                     TreeCuttingArea treeCuttingArea,
                                     BlockService blockService,
-                                    InputService inputService,
                                     EventBus eventBus ) 
         {
             _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
@@ -77,13 +68,10 @@ namespace Cordial.Mods.CutterTool.Scripts
                                                                                     CursorKey);
 
             _areaHighlightingService = areaHighlightingService;
-            _cutterToolInitializer = cutterToolInitializer;
             _toolUnlockingService = toolUnlockingService;
-            //_cutterToolSettings = cutterToolSettings;
             _terrainAreaService = terrainAreaService;
             _treeCuttingArea =  treeCuttingArea;
             _blockService = blockService;
-            _inputService = inputService;
             _eventBus = eventBus;
             _colors = colors;
             _loc = loc; 
@@ -106,27 +94,13 @@ namespace Cordial.Mods.CutterTool.Scripts
             this._selectionToolProcessor.Exit();
             this._eventBus.Post((object)new CutterToolUnselectedEvent(this));
         }
-        void IPriorityInputProcessor.ProcessInput()
-        {
-            _inputService.AddInputProcessor((IInputProcessor)this);
-        }
-
-        bool IInputProcessor.ProcessInput()
-        {
-            return false;
-        }
-
+        
         public void SetToolGroup(ToolGroup toolGroup)
         {
             ToolGroup = toolGroup;
         }
         public override ToolDescription Description() => _toolDescription;
 
-        public void PostProcessInput()      // originally virtual (to be called elsewhere)
-        {
-            // currently no implementation, just placeholder
-            return;
-        }
         private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
             IEnumerable<Vector3Int> patternBlocks = GetPatternCoordinates(inputBlocks, ray);
@@ -223,13 +197,9 @@ namespace Cordial.Mods.CutterTool.Scripts
             this._areaHighlightingService.UnhighlightAll();
         }
 
-
         private IEnumerable<Vector3Int> GetPatternCoordinates(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-            Vector3Int blockMaxMax = Vector3Int.zero;
             Vector3Int blockMinMin = Vector3Int.zero;
-            Vector3Int blockMinMax = Vector3Int.zero;
-            Vector3Int blockMaxMin = Vector3Int.zero;
 
             List<Vector3Int> singleBlockList = new();
             List<Vector3Int> blockList = new();
@@ -237,16 +207,6 @@ namespace Cordial.Mods.CutterTool.Scripts
             // iterate over all input blocks to get area
             foreach (Vector3Int block in inputBlocks)
             {
-                // get the min/max positions of the area
-                if (blockMaxMax == Vector3Int.zero)
-                {
-                    blockMaxMax = block;
-                }
-                else
-                {
-                    blockMaxMax = Vector3Int.Max(blockMaxMax, block);
-                }
-
                 if (blockMinMin == Vector3Int.zero)
                 {
                     blockMinMin = block;
@@ -255,16 +215,7 @@ namespace Cordial.Mods.CutterTool.Scripts
                 {
                     blockMinMin = Vector3Int.Min(blockMinMin, block);
                 }
-
-                // get the 4 corner positions of the area
-                blockMinMax = new Vector3Int(blockMinMin.x, blockMaxMax.y, blockMaxMax.z);
-                blockMaxMin = new Vector3Int(blockMaxMax.x, blockMinMin.y, blockMaxMax.z);
             }
-
-            // get the distance X and Y. It is one less than the marked area, as the start position is not counted.
-            // e.g. area 4 x 8, dist is 3 x 7.
-            float distX = Vector3Int.Distance(blockMinMin, blockMaxMin);
-            float distY = Vector3Int.Distance(blockMinMin, blockMinMax);
 
             foreach (Vector3Int block in inputBlocks)
             {
