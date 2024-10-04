@@ -44,8 +44,8 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             this._eventBus.Register((object)this);
 
             this._entityroot.ToggleDisplayStyle(false);
-            this.SetTreeConfigState(false);
-            this.SetCropConfigState(false);
+            this.SetTreeConfigState();
+            this.SetCropConfigState();
         }
 
         public void SetVisualState(bool setActive)
@@ -53,13 +53,13 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             this._root.ToggleDisplayStyle(setActive);
         }
 
-        private void SetTreeConfigState(bool setActive)
+        private void SetTreeConfigState()
         {
-            this._PlantingOverrideToolConfigFragment.SetTreeFragmentState(setActive);
+            this._PlantingOverrideToolConfigFragment.SetTreeFragmentState();
         }
-        private void SetCropConfigState(bool setActive)
+        private void SetCropConfigState()
         {
-            this._PlantingOverrideToolConfigFragment.SetCropFragmentState(setActive);
+            this._PlantingOverrideToolConfigFragment.SetCropFragmentState();
         }
 
         [OnEvent]
@@ -67,7 +67,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
         {
             if (null == PlantingOverrideToolSelectedEvent)
                 return;
-            this.SetTreeConfigState(true);
+            this.SetTreeConfigState();
             this.SetVisualState(true);
             this._entityroot.ToggleDisplayStyle(true);
         }
@@ -78,7 +78,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             if (null == PlantingOverrideToolUnselectedEvent)
                 return;
 
-            this.SetTreeConfigState(false);
             this.SetVisualState(false);
             this._entityroot.ToggleDisplayStyle(false);
         }
@@ -89,7 +88,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             if (null == PlantingOverrideToolSelectedEvent)
                 return;
 
-            this.SetCropConfigState(true);
+            this.SetCropConfigState();
             this.SetVisualState(true);
             this._entityroot.ToggleDisplayStyle(true);
         }
@@ -100,7 +99,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             if (null == PlantingOverrideToolUnselectedEvent)
                 return;
 
-            this.SetCropConfigState(false);
             this.SetVisualState(false);
             this._entityroot.ToggleDisplayStyle(false);
         }

@@ -1,7 +1,9 @@
 ID,Text,Comment
 Cordial.Building.Forester.Description,Force planting of:,-
 Cordial.ForesterUpdate.Fragment.NoUpdateOption,None,-
-Cordial.PlantingOverrideTool.DisplayName,"Planting Override Tool",-
-Cordial.PlantingOverrideTool.Description,"Override existing planting",-
+Cordial.PlantingOverrideTool.Crop.DisplayName,"Crop Planting Override Tool",-
+Cordial.PlantingOverrideTool.Crop.Description,"Override planting of existing crops",-
+Cordial.PlantingOverrideTool.Tree.DisplayName,"Tree Planting Override Tool",-
+Cordial.PlantingOverrideTool.Tree.Description,"Override planting of existing trees",-
 Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Title,"Planting Override Configuration",-
-Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description,"Override existing plant:",-
+Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description,"Replace existing plant with:",-

@@ -1,10 +1,10 @@
 {
   "Id": "Cordial.PlantingOverrideToolCrops",
   "Type": "PlantingOverrideToolCrops",
-  "GroupId": "Forestry",
+  "GroupId": "Fields",
   "Layout": "brown",
   "Order": 60,
-  "Icon": "Sprites/Bottombar/NaturalResourcesIcon",
+  "Icon": "Sprites/PlantingOverride/PlantingOverrideCropIcon",
   "NameLocKey": "Cordial.PlantingOverrideTool.DisplayName",
   "DescriptionLocKey": "Cordial.PlantingOverrideTool.Description",
   "DevMode": false,

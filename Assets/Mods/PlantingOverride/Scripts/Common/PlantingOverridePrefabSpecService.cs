@@ -66,7 +66,8 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
         {
             ImmutableArray<string> treeTypes = GetAllTrees();
 
-            return treeTypes.Contains(prefabNameInp);
+
+            return treeTypes.Contains(prefabNameInp.Replace(" ", ""));
         }
 
         public ImmutableArray<string> GetAllCrops()
@@ -90,7 +91,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
         {
             ImmutableArray<string> cropTypes = GetAllCrops();
 
-            return cropTypes.Contains(prefabNameInp);
+            return cropTypes.Contains(prefabNameInp.Replace(" ", ""));
         }
 
     }

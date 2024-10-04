@@ -36,7 +36,7 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
 
                 if (foresterCoordinates.Count != foresterTypes.Count)
                 {
-                    Debug.Log("Did not load forester States");
+                    Debug.Log("PO: Did not load forester States");
                 }
                 else
                 {
@@ -44,11 +44,9 @@ namespace Cordial.Mods.ForesterUpdate.Scripts
                     {
                         if (!_foresterRegistry.TryAdd(foresterCoordinates[i], foresterTypes[i]))
                         {
-                            Debug.Log("OP: FUS: " + foresterCoordinates[i] + " - " + foresterTypes[i] + " - " + _foresterRegistry[foresterCoordinates[i]]);
                             _foresterRegistry[foresterCoordinates[i]] = foresterTypes[i];
                         }
                     }
-                    Debug.Log("Loaded Forester States: " + foresterCoordinates.Count);
                 }
             }
         }

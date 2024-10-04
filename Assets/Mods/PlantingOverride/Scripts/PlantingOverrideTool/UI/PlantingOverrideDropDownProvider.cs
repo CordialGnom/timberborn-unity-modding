@@ -101,6 +101,11 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             }
         }
 
+        public bool ItemSetIsTree()
+        {
+            return this._specService.CheckIsTree(plantable);
+        }
+
         private string PlantableLocKey(string plantname)
         {
             string newName = plantname.Replace(" ", "");

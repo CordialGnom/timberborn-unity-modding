@@ -20,24 +20,22 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
     public class PlantingOverrideCropService : Tool, ILoadableSingleton, IPlantingOverrideCropTool
     {
         // tool descriptions
-        private static readonly string TitleLocKey = "Cordial.PlantingOverrideTool.DisplayName";
-        private static readonly string DescriptionLocKey = "Cordial.PlantingOverrideTool.Description";
+        private static readonly string TitleLocKey = "Cordial.PlantingOverrideTool.Crop.DisplayName";
+        private static readonly string DescriptionLocKey = "Cordial.PlantingOverrideTool.Crop.Description";
         private static readonly string CursorKey = "PlantingCursor";
 
         // tool setup
         private readonly ILoc _loc;
-        private readonly ToolButtonService _toolButtonService;  // todo check if required
         private ToolDescription _toolDescription;               // is used
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly SelectionToolProcessor _selectionToolProcessor;
-        private EventBus _eventBus;
+        private readonly EventBus _eventBus;
 
         // UI setup
         private PlantingOverrideToolInitializer _PlantingOverrideToolInitializer;
 
         // configuration
-        private Dictionary<string, bool> _toggleCropDict = new();
-        private List<string> _cropTypesActive = new();
+        private readonly List<string> _cropTypesActive = new();
 
         // highlighting
         private readonly Colors _colors;
@@ -45,10 +43,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
         private readonly TerrainAreaService _terrainAreaService;
 
         // planting area / selection
-        private PlantingService _plantingService;
-
-        // cutting area
-        //private readonly TreeCuttingArea _treeCuttingArea;
+        private readonly PlantingService _plantingService;
         private readonly BlockService _blockService;
 
 
@@ -106,11 +101,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
         }
         public override ToolDescription Description() => _toolDescription;
 
-        public void PostProcessInput()      // originally virtual (to be called elsewhere)
-        {
-            // currently no implementation, just placeholder
-            return;
-        }
         private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
 
@@ -122,7 +112,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
                 if (objectComponentAt != null)
                 {
                    this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
-                   this._areaHighlightingService.DrawTile(block, this._colors.SelectionToolHighlight);
+                   this._areaHighlightingService.DrawTile(block, this._colors.PlantingToolTile);
                 }
                 else
                 {
@@ -136,8 +126,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
 
         private void ActionCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-            List<Vector3Int> coordinatesList = new();
-
             if (this.Locker != null)
             {
                 this._toolUnlockingService.TryToUnlock((Tool)this);
@@ -158,7 +146,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
                         }
                         else
                         {
-                            Debug.Log("Incorrect tree count");
+                            Debug.Log("PO: Incorrect crop count");
                         }
                     }
                     else
@@ -174,26 +162,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
             this._areaHighlightingService.UnhighlightAll();
         }
 
-
-        [OnEvent]
-        public void OnPlantingOverrideToolConfigChangeEvent(PlantingOverrideToolConfigChangeEvent PlantingOverrideToolConfigChangeEvent)
-        {
-            if (null == PlantingOverrideToolConfigChangeEvent)
-                return;
-
-            _toggleCropDict = PlantingOverrideToolConfigChangeEvent.PlantingOverrideToolConfig.GetCropDict();
-            _cropTypesActive.Clear();
-
-            foreach (KeyValuePair<string, bool> kvp in _toggleCropDict)
-            {
-                if (kvp.Value)
-                {
-                    _cropTypesActive.Add(kvp.Key);
-                }
-            }
-        }
-
-
         [OnEvent]
         public void OnPlantingOverrideConfigChangeEvent(PlantingOverrideConfigChangeEvent PlantingOverrideConfigChangeEvent)
         {
@@ -203,7 +171,9 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
             if (!PlantingOverrideConfigChangeEvent.IsTree)
             {
                 _cropTypesActive.Clear();
-                _cropTypesActive.Add(PlantingOverrideConfigChangeEvent.PlantName);
+
+                string plantName = PlantingOverrideConfigChangeEvent.PlantName.Replace(" ", "");
+                _cropTypesActive.Add(plantName);
             }
         }
     }
