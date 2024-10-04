@@ -19,6 +19,11 @@ using static UnityEngine.UI.DefaultControls;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using Timberborn.BaseComponentSystem;
 using Cordial.Mods.ForestTool.Scripts.UI.Events;
+using System.Security;
+using Timberborn.CoreUI;
+using Timberborn.SelectionSystem;
+using Timberborn.BlockSystem;
+using Moq;
 
 namespace Cordial.Mods.ForestTool.Scripts
 {
@@ -50,6 +55,10 @@ namespace Cordial.Mods.ForestTool.Scripts
         private PlantingService _plantingService;
         private TerrainAreaService _terrainAreaService;
 
+        // highlighting
+        private readonly Colors _colors;
+        private readonly AreaHighlightingService _areaHighlightingService;
+
         // availability 
         private BuildingUnlockingService _buildingUnlockingService;
         private BuildingService _buildingService;
@@ -76,6 +85,8 @@ namespace Cordial.Mods.ForestTool.Scripts
         public ForestToolService(SelectionToolProcessorFactory selectionToolProcessorFactory,
                             PlantingSelectionService plantingSelectionService,
                             PlantingAreaValidator plantingAreaValidator,
+                            AreaHighlightingService areaHighlightingService,
+                            Colors colors,
                             PlantingService plantingService,
                             TerrainAreaService terrainAreaService,
                             ToolUnlockingService toolUnlockingService,
@@ -106,15 +117,15 @@ namespace Cordial.Mods.ForestTool.Scripts
             _forestToolPrefabSpecService = forestToolPrefabSpecService;
 
 
+            _areaHighlightingService = areaHighlightingService;
+            _colors = colors;
+
             _eventBus = eventBus;
             _loc = loc;
             _toolManager = toolManager;
             _toolButtonService = toolButtonService;
             _root = new VisualElement();
 
-
-            EnterPlantingModeMethod = typeof(PlantingModeService).GetMethod("EnterPlantingMode", BindingFlags.NonPublic | BindingFlags.Instance);
-            ExitPlantingModeMethod = typeof(PlantingModeService).GetMethod("ExitPlantingMode", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         public void Load()
@@ -122,9 +133,6 @@ namespace Cordial.Mods.ForestTool.Scripts
             string text = this._loc.T<string>(RequirementLocKey, _loc.T(ToolBuildingLocKey));
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).AddSection(text).Build();
             this._eventBus.Register((object)this);
-
-            // _buildingUnlockingService = DependencyContainer.GetInstance<BuildingUnlockingService>();
-            // _buildingService = DependencyContainer.GetInstance<BuildingService>();
         }
 
         public void SetToolGroup(ToolGroup toolGroup)
@@ -156,10 +164,6 @@ namespace Cordial.Mods.ForestTool.Scripts
                     // activate tool
                     this._selectionToolProcessor.Enter();
                 }
-                else
-                {
-                    Debug.LogError("ForestTool: Requirements not met");
-                }
             }
             else
             {
@@ -182,18 +186,30 @@ namespace Cordial.Mods.ForestTool.Scripts
         // Preview and Action Callbacks required for selection Tool Processor Factor
         private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-            string resourceName = GetRandomPlantableName();
+            //string resourceName = GetRandomPlantableName();
+            //Debug.Log("RN: " + resourceName);
 
-            // workaround so that highlighting doesn't toggle at a high cycle, 
-            // add preview of empty spots as pine trees. available to both default factions
-            if ((resourceName.Equals(ForestToolParam.NameEmpty, StringComparison.OrdinalIgnoreCase))
-                || (resourceName.Equals("",StringComparison.OrdinalIgnoreCase))
-                )
+            foreach (Vector3Int leveledCoordinate in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
             {
-                resourceName = _defaultResource;
+                this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PlantingToolTile);
             }
 
-            this._plantingSelectionService.HighlightMarkableArea(inputBlocks, ray, resourceName);
+            //    // workaround so that highlighting doesn't toggle at a high cycle, 
+            //    // add preview of empty spots as pine trees. available to both default factions
+            //    if ((resourceName.Equals(ForestToolParam.NameEmpty, StringComparison.OrdinalIgnoreCase))
+            //    || (resourceName.Equals(string.Empty,StringComparison.OrdinalIgnoreCase))
+            //    )
+            //{
+            //    Debug.Log("RS: " + resourceName+ " - " + _defaultResource);
+            //    resourceName = _defaultResource;
+            //}
+
+            //this._areaHighlightingService.DrawTile(inputBlocks, this._colors.SelectionToolHighlight);
+
+            //this._plantingSelectionService.HighlightMarkableArea(inputBlocks, ray, resourceName);
+
+            // highlight everything added to the service above
+            this._areaHighlightingService.Highlight();
         }
 
         private void ActionCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
@@ -201,10 +217,12 @@ namespace Cordial.Mods.ForestTool.Scripts
             if (this.Locker != null)
                 this._toolUnlockingService.TryToUnlock((Tool)this);
             else
+                this._areaHighlightingService.UnhighlightAll();
                 this.Plant(inputBlocks, ray);
         }
-        private static void ShowNoneCallback()
+        private void ShowNoneCallback()
         {
+            this._areaHighlightingService.UnhighlightAll();
         }
 
         private void Plant(IEnumerable<Vector3Int> inputBlocks, Ray ray)        // based on PlantingTool function
