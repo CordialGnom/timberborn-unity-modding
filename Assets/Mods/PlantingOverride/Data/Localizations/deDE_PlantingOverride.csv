@@ -1,9 +1,10 @@
 ID,Text,Comment
-Cordial.Building.Forester.Description,Erzwinge nachpflanzen durch:,-
+Cordial.Building.Forester.Description,Erzwinge Anpflanzen von:,-
 Cordial.ForesterUpdate.Fragment.NoUpdateOption,Keine,-
-Cordial.PlantingOverrideTool.Crop.DisplayName,"Nutzpflanzen Ersetzen",-
-Cordial.PlantingOverrideTool.Crop.Description,"Nachpflanzen bestehender Nutzpflanzen ersetzen",-
-Cordial.PlantingOverrideTool.Tree.DisplayName,"Baumbeflanzung Ersetzen",-
-Cordial.PlantingOverrideTool.Tree.Description,"Nachpflanzen bestehender Bäume ersetzen",-
-Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Title,"Konfiguration der Nachpflanzung",-
-Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description,"Ersetze bestehende Pflanzen durch:",-
+Cordial.PlantingOverrideTool.Crop.DisplayName,Ersetze Nutzpflanzen,-
+Cordial.PlantingOverrideTool.Crop.Description,"Verwende dieses Werkzeug, um einen bisherigen Pflanzbereich zu ersetzen.",-
+Cordial.PlantingOverrideTool.Tree.DisplayName,Ersetze Bäume,-
+Cordial.PlantingOverrideTool.Tree.Description,"Verwende dieses Werkzeug, um einen bisherigen Pflanzbereich zu ersetzen.",-
+Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Title,"Pflanzbereich Konfiguration
+(Planting Override)",-
+Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description,Ersetze bisherigen Pfanzbereich (Bäume/Nutzpflanzen) mit:,-
