@@ -7,6 +7,7 @@ using Timberborn.Common;
 using Timberborn.DropdownSystem;
 using Timberborn.Localization;
 using Timberborn.SingletonSystem;
+using UnityEngine;
 
 namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
 {
@@ -15,6 +16,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
         private readonly PlantingOverridePrefabSpecService _specService;
         private readonly EventBus _eventBus;
         private readonly List<string> _items = new();
+        private readonly List<string> _gameItemName = new();
         private readonly ILoc _loc;
 
         private string plantable = "Birch";
@@ -39,19 +41,23 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
         {
             if (this._specService != null)
             {
-
                 ImmutableArray<string> allowedPlantables = this._specService.GetAllTrees();
 
                 foreach (string plant in allowedPlantables)
                 {
                     this._items.Add(PlantableLocKey(plant));
+                    this._gameItemName.Add(plant);
                 }
             }
         }
 
+
+
+
         public void ReloadAsTree()
         {
             this._items.Clear();
+            this._gameItemName.Clear();
 
             if (this._specService != null)
             {
@@ -61,7 +67,8 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
                 foreach (string plant in allowedPlantables)
                 {
                     this._items.Add(PlantableLocKey(plant));
-                    plantable = PlantableLocKey(plant);
+                    this._gameItemName.Add(plant);
+                    plantable = plant;
                 }
             }
         }
@@ -69,6 +76,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
         public void ReloadAsCrop()
         {
             this._items.Clear();
+            this._gameItemName.Clear();
 
             if (this._specService != null)
             {
@@ -77,7 +85,8 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
                 foreach (string plant in allowedPlantables)
                 {
                     this._items.Add(PlantableLocKey(plant));
-                    plantable = PlantableLocKey(plant);
+                    this._gameItemName.Add(plant);
+                    plantable = plant;
                 }
             }
         }
@@ -85,12 +94,14 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
 
         public string GetValue()
         {
+            // return (translated) name
             return PlantableLocKey(plantable);
         }
 
+        // value is the translated name, find and set corresponding prefab name
         public void SetValue(string value)
         {
-            plantable = GetPlantFromLocKey(value);
+            plantable = GetNamedPlantable(value);
 
             bool isTree = this._specService.CheckIsTree(plantable);
             bool isCrop = this._specService.CheckIsCrop(plantable);
@@ -112,11 +123,20 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             return _loc.T("NaturalResource." + newName + ".DisplayName");
         }
 
-        private static string GetPlantFromLocKey(string locKey)
+        // converts string value to plantable based on the value being compared to each entry
+        private string GetNamedPlantable(string value)
         {
-            locKey.Replace("NaturalResource.", "");
-            locKey.Replace(".DisplayName", "");
-            return locKey;
+            // value contains the translated name
+            // compare each entry in game items to find which value has been set. 
+            foreach (string item in this._gameItemName)
+            {
+                // convert string item to loc key
+                if (value == PlantableLocKey((string)item))
+                {
+                    return item;
+                }
+            }
+            return String.Empty;
         }
     }
 }
