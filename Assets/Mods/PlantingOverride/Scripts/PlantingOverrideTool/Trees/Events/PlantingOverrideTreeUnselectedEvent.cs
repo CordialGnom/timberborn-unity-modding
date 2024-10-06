@@ -1,5 +1,5 @@
 ﻿
-namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
+namespace Cordial.Mods.PlantingOverride.Scripts.UI
 {
     public class PlantingOverrideTreeUnselectedEvent
     {

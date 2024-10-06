@@ -1,5 +1,5 @@
 ﻿
-namespace Cordial.Mods.ForesterUpdate.Scripts.UI.Events
+namespace Cordial.Mods.PlantingOverride.Scripts.UI
 {
     public class PlantingOverrideConfigChangeEvent
     {

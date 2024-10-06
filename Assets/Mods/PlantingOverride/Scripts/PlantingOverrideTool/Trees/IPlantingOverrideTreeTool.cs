@@ -1,6 +1,6 @@
 ﻿using Timberborn.ToolSystem;
 
-namespace Cordial.Mods.PlantingOverrideTool.Scripts
+namespace Cordial.Mods.PlantingOverride.Scripts
 {
     public interface IPlantingOverrideTreeTool
     {

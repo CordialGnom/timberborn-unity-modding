@@ -1,5 +1,4 @@
-﻿using Cordial.Mods.ForesterUpdate.Scripts.UI.Events;
-using Cordial.Mods.PlantingOverride.Scripts.Common;
+﻿using Cordial.Mods.PlantingOverride.Scripts.Common;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -7,9 +6,8 @@ using Timberborn.Common;
 using Timberborn.DropdownSystem;
 using Timberborn.Localization;
 using Timberborn.SingletonSystem;
-using UnityEngine;
 
-namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
+namespace Cordial.Mods.PlantingOverride.Scripts.UI
 {
     public class PlantingOverrideDropDownProvider : IDropdownProvider, ILoadableSingleton
     {
@@ -51,9 +49,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             }
         }
 
-
-
-
         public void ReloadAsTree()
         {
             this._items.Clear();
@@ -90,7 +85,6 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
                 }
             }
         }
-
 
         public string GetValue()
         {
