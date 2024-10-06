@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cordial.Mods.ForesterUpdate.Scripts.UI.Events;
+using Cordial.Mods.PlantingOverride.Scripts.Common;
 using Cordial.Mods.PlantingOverrideTool.Scripts.UI;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
@@ -34,6 +35,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
 
         // configuration
         private readonly List<string> _treeTypesActive = new();
+        private readonly PlantingOverridePrefabSpecService _specService;
 
         // highlighting
         private readonly Colors _colors;
@@ -46,6 +48,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
 
 
         public PlantingOverrideTreeService( SelectionToolProcessorFactory selectionToolProcessorFactory,
+                                            PlantingOverridePrefabSpecService specService,
                                             PlantingService plantingService,
                                             ToolUnlockingService toolUnlockingService,
                                             Colors colors,
@@ -67,6 +70,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
             _terrainAreaService = terrainAreaService;
             _plantingService = plantingService;
             _blockService = blockService;
+            _specService = specService;
             _eventBus = eventBus;
             _colors = colors;
             _loc = loc; 
@@ -134,15 +138,18 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
                 {                
                     TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
 
+                    _specService.VerifyPrefabName(_treeTypesActive[0]);
+
                     if (objectComponentAt != null)
                     {
-                        if (_treeTypesActive.Count == 1)
+                        if ((_treeTypesActive.Count == 1)
+                            && (_specService.VerifyPrefabName(_treeTypesActive[0])))
                         {
                             _plantingService.SetPlantingCoordinates(block, _treeTypesActive[0]);
                         }
                         else
                         {
-                            Debug.Log("PO: Incorrect tree count");
+                            Debug.Log("PO: Unknown Tree");
                         }
                     }
                     else

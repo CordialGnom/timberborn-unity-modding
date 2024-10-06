@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cordial.Mods.ForesterUpdate.Scripts.UI.Events;
+using Cordial.Mods.PlantingOverride.Scripts.Common;
 using Cordial.Mods.PlantingOverrideTool.Scripts.UI;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
@@ -31,11 +32,10 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
         private readonly SelectionToolProcessor _selectionToolProcessor;
         private readonly EventBus _eventBus;
 
-        // UI setup
-        private PlantingOverrideToolInitializer _PlantingOverrideToolInitializer;
 
         // configuration
         private readonly List<string> _cropTypesActive = new();
+        private readonly PlantingOverridePrefabSpecService _specService;
 
         // highlighting
         private readonly Colors _colors;
@@ -48,7 +48,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
 
 
         public PlantingOverrideCropService( SelectionToolProcessorFactory selectionToolProcessorFactory,
-                                            PlantingOverrideToolInitializer PlantingOverrideToolInitializer,
+                                            PlantingOverridePrefabSpecService specService,
                                             PlantingService plantingService,
                                             ToolUnlockingService toolUnlockingService,
                                             Colors colors,
@@ -67,8 +67,7 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
 
             _areaHighlightingService = areaHighlightingService;
             _terrainAreaService = terrainAreaService;
-
-            _PlantingOverrideToolInitializer = PlantingOverrideToolInitializer;
+            _specService = specService;
             _toolUnlockingService = toolUnlockingService;
 
             _plantingService = plantingService;
@@ -140,13 +139,14 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts
 
                     if (objectComponentAt != null)
                     {
-                        if (_cropTypesActive.Count == 1)
+                        if ((_cropTypesActive.Count == 1)
+                           && (_specService.VerifyPrefabName(_cropTypesActive[0])))
                         {
                             _plantingService.SetPlantingCoordinates(block, _cropTypesActive[0]);
                         }
                         else
                         {
-                            Debug.Log("PO: Incorrect crop count");
+                            Debug.Log("PO: Unknown Crop");
                         }
                     }
                     else
