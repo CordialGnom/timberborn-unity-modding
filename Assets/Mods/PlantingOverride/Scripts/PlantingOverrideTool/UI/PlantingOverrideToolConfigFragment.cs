@@ -1,20 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using TimberApi.UIBuilderSystem;
-using TimberApi.UIBuilderSystem.CustomElements;
+﻿using TimberApi.UIBuilderSystem;
 using TimberApi.UIPresets.Labels;
-using TimberApi.UIPresets.Toggles;
 using TimberApi.UIPresets.Dropdowns;
 using Timberborn.DropdownSystem;
 using Timberborn.CoreUI;
 using Timberborn.SingletonSystem;
-using Cordial.Mods.PlantingOverride.Scripts.Common;
 using Cordial.Mods.PlantingOverride.Scripts.Common.UI;
 using UnityEngine.UIElements;
-using Cordial.Mods.ForesterUpdate.Scripts.UI;
-using Cordial.Mods.ForesterUpdate.Scripts.UI.Events;
 
-namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
+namespace Cordial.Mods.PlantingOverride.Scripts.UI
 {
     public class PlantingOverrideToolConfigFragment
     {
@@ -68,6 +61,8 @@ namespace Cordial.Mods.PlantingOverrideTool.Scripts.UI
             _root.Add(CreatePanelFragmentBlueBuilder()
                              .AddComponent(_labelDescription)
                              .BuildAndInitialize());
+
+            // add a toggle for cutting area
 
             // create drop down
             _plantingOverrideDropDown = _uiBuilder.Build<GameDropdown, Dropdown>();

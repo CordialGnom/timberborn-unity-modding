@@ -1,11 +1,8 @@
 using Bindito.Core;
 using TimberApi.Tools.ToolSystem;
 using Cordial.Mods.PlantingOverride.Scripts.Common.UI;
-using Cordial.Mods.ForesterUpdate.Scripts.UI;
-using Cordial.Mods.ForesterUpdate.Scripts;
-using Cordial.Mods.PlantingOverrideTool.Scripts;
-using Cordial.Mods.PlantingOverrideTool.Scripts.UI;
-using Timberborn.EntityPanelSystem;
+using Cordial.Mods.PlantingOverride.Scripts;
+using Cordial.Mods.PlantingOverride.Scripts.UI;
 
 namespace Cordial.Mods.PlantingOverride.Scripts.Common
 {
@@ -29,29 +26,6 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
             containerDefinition.MultiBind<IToolFactory>().To<PlantingOverrideCropToolFactory>().AsSingleton();
             containerDefinition.Bind<PlantingOverrideTreeService>().AsSingleton();
             containerDefinition.Bind<PlantingOverrideCropService>().AsSingleton();
-
-
-            containerDefinition.Bind<ForesterUpdateStateService>().AsSingleton();
-            containerDefinition.Bind<ForesterUpdateFragment>().AsSingleton();
-            containerDefinition.Bind<ForesterUpdateTreeDropDownProvider>().AsSingleton();
-            containerDefinition.MultiBind<EntityPanelModule>().ToProvider<PlantingOverrideConfigurator.EntityPanelModuleProvider>().AsSingleton();
-        }
-
-        private class EntityPanelModuleProvider : IProvider<EntityPanelModule>
-        {
-            readonly ForesterUpdateFragment _foresterUpdateFragment;
-
-            public EntityPanelModuleProvider(ForesterUpdateFragment foresterUpdateFragment)
-            {
-                _foresterUpdateFragment = foresterUpdateFragment;
-            }
-
-            public EntityPanelModule Get()
-            {
-                var builder = new EntityPanelModule.Builder();
-                builder.AddBottomFragment(_foresterUpdateFragment);
-                return builder.Build();
-            }
         }
     }
 }

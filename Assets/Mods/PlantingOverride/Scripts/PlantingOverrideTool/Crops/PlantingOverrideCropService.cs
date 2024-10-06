@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cordial.Mods.ForesterUpdate.Scripts.UI.Events;
 using Cordial.Mods.PlantingOverride.Scripts.Common;
-using Cordial.Mods.PlantingOverrideTool.Scripts.UI;
+using Cordial.Mods.PlantingOverride.Scripts.UI;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
@@ -16,7 +15,7 @@ using Timberborn.TerrainSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
 
-namespace Cordial.Mods.PlantingOverrideTool.Scripts
+namespace Cordial.Mods.PlantingOverride.Scripts
 {
     public class PlantingOverrideCropService : Tool, ILoadableSingleton, IPlantingOverrideCropTool
     {

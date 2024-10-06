@@ -1,7 +1,7 @@
 ﻿using TimberApi.Tools.ToolSystem;
 using Timberborn.ToolSystem;
 
-namespace Cordial.Mods.PlantingOverrideTool.Scripts
+namespace Cordial.Mods.PlantingOverride.Scripts
 {
     public class PlantingOverrideCropToolFactory : IToolFactory
     {
