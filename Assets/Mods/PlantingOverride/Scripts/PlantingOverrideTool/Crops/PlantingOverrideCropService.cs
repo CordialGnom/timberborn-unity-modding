@@ -129,6 +129,8 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         public void Save(ISingletonSaver singletonSaver)
         {
+            Debug.Log("Crops Saved");
+
             singletonSaver.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Set(PlantingOverrideCropCoordKey, _cropRegistry.Keys);
             singletonSaver.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Set(PlantingOverrideCropTypeKey, _cropRegistry.Values);
         }
@@ -243,6 +245,29 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         public bool HasEntryAtCoord( Vector3Int coord, out string cropName)
         {
             return _cropRegistry.TryGetValue(coord, out cropName);
+        }
+
+        [OnEvent]
+        public void OnPlantingOverridePlantingEvent(PlantingOverridePlantingEvent PlantingOverridePlantingEvent)
+        {
+            if (null == PlantingOverridePlantingEvent)
+                return;
+
+
+            if (HasEntryAtCoord(PlantingOverridePlantingEvent.Coordinates, out string resourceName))
+            {
+                // remove entry in any case. Possibly the planting was reset by using the "standard" tool
+                RemoveEntryAtCoord(PlantingOverridePlantingEvent.Coordinates);
+
+                //if (resourceName == PlantingOverridePlantingEvent.PlantName)
+                //{
+                //    RemoveEntryAtCoord(PlantingOverridePlantingEvent.Coordinates);
+                //}
+                //else
+                //{
+                //    Debug.Log("PO: T: Mismatch: " + resourceName + " - " + PlantingOverridePlantingEvent.PlantName);
+                //}
+            }
         }
     }
 }
