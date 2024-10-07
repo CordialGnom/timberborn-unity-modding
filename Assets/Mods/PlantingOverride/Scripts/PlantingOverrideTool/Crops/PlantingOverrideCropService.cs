@@ -7,6 +7,7 @@ using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
 using Timberborn.Fields;
 using Timberborn.Localization;
+using Timberborn.Persistence;
 using Timberborn.Planting;
 using Timberborn.SelectionSystem;
 using Timberborn.SelectionToolSystem;
@@ -17,7 +18,7 @@ using UnityEngine;
 
 namespace Cordial.Mods.PlantingOverride.Scripts
 {
-    public class PlantingOverrideCropService : Tool, ILoadableSingleton, IPlantingOverrideCropTool
+    public class PlantingOverrideCropService : Tool, ISaveableSingleton, IPostLoadableSingleton, IPlantingOverrideCropTool
     {
         // tool descriptions
         private static readonly string TitleLocKey = "Cordial.PlantingOverrideTool.Crop.DisplayName";
@@ -30,7 +31,6 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly SelectionToolProcessor _selectionToolProcessor;
         private readonly EventBus _eventBus;
-
 
         // configuration
         private readonly List<string> _cropTypesActive = new();
@@ -45,17 +45,27 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         private readonly PlantingService _plantingService;
         private readonly BlockService _blockService;
 
+        // configuration storage
+        private readonly ISingletonLoader _singletonLoader;
+        private static Dictionary<Vector3Int, string> _cropRegistry = new();
+
+        private static readonly SingletonKey PlantingOverrideCropServiceKey = new SingletonKey("Cordial.PlantingOverrideCropService");
+        private static readonly ListKey<Vector3Int> PlantingOverrideCropCoordKey = new ListKey<Vector3Int>("Cordial.PlantingOverrideCropCoordKey");
+        private static readonly ListKey<string> PlantingOverrideCropTypeKey = new ListKey<string>("Cordial.PlantingOverrideCropTypeKey");
+
+
 
         public PlantingOverrideCropService( SelectionToolProcessorFactory selectionToolProcessorFactory,
-                                            PlantingOverridePrefabSpecService specService,
-                                            PlantingService plantingService,
-                                            ToolUnlockingService toolUnlockingService,
-                                            Colors colors,
-                                            ILoc loc,
                                             AreaHighlightingService areaHighlightingService,
+                                            PlantingOverridePrefabSpecService specService,
+                                            ToolUnlockingService toolUnlockingService,
                                             TerrainAreaService terrainAreaService,
+                                            ISingletonLoader singletonLoader,
+                                            PlantingService plantingService,
                                             BlockService blockService,
-                                            EventBus eventBus) 
+                                            EventBus eventBus,
+                                            Colors colors,
+                                            ILoc loc ) 
         {
             _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
                                                                                     Ray>(this.PreviewCallback),
@@ -65,22 +75,64 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                                                                                     CursorKey);
 
             _areaHighlightingService = areaHighlightingService;
-            _terrainAreaService = terrainAreaService;
-            _specService = specService;
             _toolUnlockingService = toolUnlockingService;
-
+            _terrainAreaService = terrainAreaService;
             _plantingService = plantingService;
+            _singletonLoader = singletonLoader;
             _blockService = blockService;
+            _specService = specService;
             _eventBus = eventBus;
             _colors = colors;
             _loc = loc; 
+
         }
 
-        public void Load()
+        public void PostLoad()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
             this._eventBus.Register((object)this);
+
+            if (this._singletonLoader.HasSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey))
+            {
+                List<string> cropTypes = _singletonLoader.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Get(PlantingOverrideCropService.PlantingOverrideCropTypeKey);
+                List<Vector3Int> cropCoordinates = _singletonLoader.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Get(PlantingOverrideCropService.PlantingOverrideCropCoordKey);
+
+                if (cropCoordinates.Count != cropTypes.Count)
+                {
+                    Debug.Log("PO: Did not load planting override crop configuration");
+                }
+                else
+                {
+                    for (int i = 0; i < cropTypes.Count; i++)
+                    {
+                        if (!_cropRegistry.TryAdd(cropCoordinates[i], cropTypes[i]))
+                        {
+                            _cropRegistry[cropCoordinates[i]] = cropTypes[i];
+                        }
+                    }
+
+                    foreach (var kvp in _cropRegistry)
+                    {
+                        Crop objectComponentAt = this._blockService.GetBottomObjectComponentAt<Crop>(kvp.Key);
+
+                        if (objectComponentAt != null)
+                        {
+                            if (_specService.VerifyPrefabName(kvp.Value))
+                            {
+                                _plantingService.SetPlantingCoordinates(kvp.Key, kvp.Value);
+                            }
+                        }
+                    }
+                }
+            }
         }
+
+        public void Save(ISingletonSaver singletonSaver)
+        {
+            singletonSaver.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Set(PlantingOverrideCropCoordKey, _cropRegistry.Keys);
+            singletonSaver.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Set(PlantingOverrideCropTypeKey, _cropRegistry.Values);
+        }
+
         public override void Enter()
         {
             // activate tool
@@ -101,7 +153,6 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-
             // iterate over all input blocks -> toggle boolean flag for it
             foreach (Vector3Int block in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
             {
@@ -142,6 +193,15 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                            && (_specService.VerifyPrefabName(_cropTypesActive[0])))
                         {
                             _plantingService.SetPlantingCoordinates(block, _cropTypesActive[0]);
+
+                            if (_cropRegistry.ContainsKey(block))
+                            {
+                                _cropRegistry[block] = _cropTypesActive[0];
+                            }
+                            else
+                            {
+                                _cropRegistry.Add(block, _cropTypesActive[0]);
+                            }
                         }
                         else
                         {
@@ -150,7 +210,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                     }
                     else
                     {
-                        // no tree component here, ignore
+                        // no crop component here, ignore
                     }
                 }
             }
@@ -174,6 +234,15 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                 string plantName = PlantingOverrideConfigChangeEvent.PlantName.Replace(" ", "");
                 _cropTypesActive.Add(plantName);
             }
+        }
+
+        public void RemoveEntryAtCoord( Vector3Int coord)
+        {
+            _cropRegistry.Remove(coord);
+        }
+        public bool HasEntryAtCoord( Vector3Int coord, out string cropName)
+        {
+            return _cropRegistry.TryGetValue(coord, out cropName);
         }
     }
 }
