@@ -210,10 +210,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
             return this._blockObjectRange.GetBlocksOnTerrainInRectangularRadius(this._growthFertilizationRadius);
         }
 
-        public IEnumerable<string> RangeNames()
-        {
-            yield return this._prefab.PrefabName;
-        }
+        public string RangeName => this._prefab.PrefabName;
 
         public IEnumerable<Yielder> YieldersInArea()
         {
