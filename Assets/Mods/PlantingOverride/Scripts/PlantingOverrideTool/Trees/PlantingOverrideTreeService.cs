@@ -247,5 +247,28 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         {
             return _treeRegistry.TryGetValue(coord, out treeName);
         }
+
+        [OnEvent]
+        public void OnPlantingOverridePlantingEvent(PlantingOverridePlantingEvent PlantingOverridePlantingEvent)
+        {
+            if (null == PlantingOverridePlantingEvent)
+                return;
+
+
+            if (HasEntryAtCoord(PlantingOverridePlantingEvent.Coordinates, out string resourceName))
+            {
+                // remove entry in any case. Possibly the planting was reset by using the "standard" tool
+                RemoveEntryAtCoord(PlantingOverridePlantingEvent.Coordinates);
+
+                //if (resourceName == PlantingOverridePlantingEvent.PlantName)
+                //{
+                //    RemoveEntryAtCoord(PlantingOverridePlantingEvent.Coordinates);
+                //}
+                //else
+                //{
+                //    Debug.Log("PO: T: Mismatch: " + resourceName + " - " + PlantingOverridePlantingEvent.PlantName);
+                //}
+            }
+        }
     }
 }
