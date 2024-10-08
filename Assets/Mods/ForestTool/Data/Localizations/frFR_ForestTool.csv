@@ -1,0 +1,9 @@
+ID,Text,Comment
+Cordial.ForestTool.DisplayName,Outil forestier,-
+Cordial.ForestTool.Description,Outil configurable pour la plantation de forêts mixtes.,-
+Coridal.ForestTool.Requirement,Bâtiment requis : <SolidHighlight>{0}</SolidHighlight>,{0} stands for Building.Forester.DisplayName
+Cordial.ForestTool.ForestToolPanel.Title,Configuration de l'outil forestier,-
+Cordial.ForestTool.ForestToolPanel.Description,Configurer les types d'arbres et les endroits à planter,-
+Cordial.ForestTool.ForestToolPanel.ToggleTreeAll,Tous types d'arbres,-
+Cordial.ForestTool.ForestToolPanel.ToggleEmpty,Autoriser les clairières, perhaps "enable empty spots" or something similar
+Cordial.ForestTool.ForestToolError.Description,Vous devez débloquer <SolidHighlight>{0}</SolidHighlight> pour planter des arbres.,{0} stands for Building.Forester.DisplayName

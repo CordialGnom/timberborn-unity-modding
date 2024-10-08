@@ -1,6 +1,6 @@
 {
   "Name": "Forest Tool",
-  "Version": "0.0.1.1",
+  "Version": "0.0.1.2",
   "Id": "Cordial.ForestTool",
   "MinimumGameVersion": "0.6.7.0",
   "Description": "Tools for (re)forestation.",

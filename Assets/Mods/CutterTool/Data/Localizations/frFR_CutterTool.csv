@@ -1,0 +1,11 @@
+ID,Text,Comment
+Cordial.CutterTool.DisplayName,Sélectionner la zone d'arbres à couper  Configurable,-
+Cordial.CutterTool.Description,Utilisez cet outil pour configurer les zones et les types d'arbres à abattre.,-
+Cordial.CutterTool.CutterToolPanel.Title,Configuration de l'outil de coupe,-
+Cordial.CutterTool.CutterToolPanel.Description, Configurer les zones et les types d'arbres à abattre.,-
+Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern01, Tous,-
+Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern02, Damier,-
+Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern03, Lignes X,-
+Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern04, Lignes Y,-
+Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeAll, Tous types d'arbres,-
+Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeMark, Marquer les arbres uniquement,-
