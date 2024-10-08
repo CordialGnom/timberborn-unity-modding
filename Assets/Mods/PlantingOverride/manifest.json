@@ -1,0 +1,17 @@
+{
+  "Name": "Planting Override",
+  "Version": "0.0.2.0",
+  "Id": "Cordial.Mods.PlantingOverride",
+  "MinimumGameVersion": "0.6.7.0",
+  "Description": "Allows overriding the replanting of crops and trees",
+  "RequiredMods": [
+	{
+		"Id": "TimberApi",
+		"MinimumVersion": "0.7.7.0"
+	},
+	{
+		"Id": "Harmony",
+		"MinimumVersion": "0.0.0.1"
+	}
+  ]
+}
