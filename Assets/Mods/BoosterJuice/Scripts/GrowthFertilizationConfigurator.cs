@@ -16,6 +16,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts
         public void Configure(IContainerDefinition containerDefinition)
         {
             containerDefinition.Bind<GrowthFertilizationInventoryService>().AsSingleton();
+            containerDefinition.Bind<YieldFertilizationService>().AsSingleton();
             containerDefinition.MultiBind<TemplateModule>().ToProvider<GrowthFertilizationConfigurator.TemplateModuleProvider>().AsSingleton();
         }
 

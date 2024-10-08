@@ -108,7 +108,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         private int _buildingId = 0;
 
         private TreeCuttingArea _treeCuttingArea;
-        private GrowthFertilizationAreaService _growththFertilizationAreaService;
+        private GrowthFertilizationAreaService _growthFertilizationAreaService;
+        private YieldFertilizationService _yieldFertilizationService;
         private BlockService _blockService;
         private BlockObjectRange _blockObjectRange;
 
@@ -129,11 +130,13 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                                         TreeCuttingArea treeCuttingArea,
                                         ITimeTriggerFactory timeTriggerFactory,
                                         GrowthFertilizationAreaService growthFertilizationAreaService,
+                                        YieldFertilizationService yieldFertilizationService,
                                         EventBus eventBus )
         {
             this._treeCuttingArea = treeCuttingArea;
             this._blockService = blockService;
-            this._growththFertilizationAreaService = growthFertilizationAreaService;
+            this._growthFertilizationAreaService = growthFertilizationAreaService;
+            this._yieldFertilizationService = yieldFertilizationService;
             this._timeTriggerFactory = timeTriggerFactory;
             this._eventBus = eventBus;
         }
@@ -146,7 +149,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
             this._timeTrigger = this._timeTriggerFactory.Create(new Action(this.FertilizeNearbyGrowingTrees), _timeTriggerCallCountPerDay);
 
             // add building to area service for other UIs/Classes to access range of all GrowthFertilization
-            _buildingId =   this._growththFertilizationAreaService.AddBuilding(this);
+            _buildingId =   this._growthFertilizationAreaService.AddBuilding(this);
 
             // access working hours / productivity
             this._workplaceWorkingHours = this.GetComponentFast<WorkplaceWorkingHours>();
@@ -220,7 +223,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         public void OnEnterFinishedState()
         {
             // register building area
-            this._growththFertilizationAreaService.UpdateBuildingArea(_buildingId);
+            this._growthFertilizationAreaService.UpdateBuildingArea(_buildingId);
 
             this._timeTrigger.Resume();
             this.Inventory.Enable();
@@ -230,7 +233,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         public void OnExitFinishedState()
         {
             // un-register building area
-            this._growththFertilizationAreaService.RemoveBuildingArea(_buildingId);
+            this._growthFertilizationAreaService.RemoveBuildingArea(_buildingId);
 
             this._timeTrigger.Pause();
             this.Inventory.Disable();
@@ -314,6 +317,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         {
             this.UpdateNearbyGrowingTrees();
 
+            this._yieldFertilizationService.UpdateRegisteredYielders(1.0f);
+
             // check if working day has finished
             if (this._workplaceWorkingHours.AreWorkingHours && (0 < this._workshop.NumberOfWorkersWorking))
             {
@@ -366,7 +371,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
             _treesInRangeCount = 0;
 
-            foreach (Vector3Int coordinates in this._growththFertilizationAreaService.GetRegisteredFertilizationArea(_buildingId))
+            foreach (Vector3Int coordinates in this._growthFertilizationAreaService.GetRegisteredFertilizationArea(_buildingId))
             {
                 TreeComponent treeComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(coordinates);
 
@@ -380,6 +385,11 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                         if (growable.GrowthInProgress)
                         {
                             this._nearbyGrowingTrees.Add(growable);
+                        }
+                        else if (growable.IsGrown)
+                        {
+                            // register growable with Yielder Service
+                            this._yieldFertilizationService.RegisterGrownTreeComponent(treeComponentAt);
                         }
                     }
                     _treesInRangeCount++;
