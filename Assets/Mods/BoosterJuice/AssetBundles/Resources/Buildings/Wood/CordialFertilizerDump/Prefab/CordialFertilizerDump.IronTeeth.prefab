@@ -431,7 +431,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _growthFactor: 0.5
-  _yieldFactor: 1.25
+  _yieldFactor: 0.5
   _growthFertilizationRadius: 8
   _capacity: 30
   _supply: Fertilizer
