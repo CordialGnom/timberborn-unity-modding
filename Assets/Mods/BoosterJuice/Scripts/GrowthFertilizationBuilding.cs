@@ -114,7 +114,6 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         private TreeCuttingArea _treeCuttingArea;
         private GrowthFertilizationAreaService _growthFertilizationAreaService;
-        private YieldFertilizationService _yieldFertilizationService;
         private BlockService _blockService;
         private BlockObjectRange _blockObjectRange;
 
@@ -135,13 +134,11 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                                         TreeCuttingArea treeCuttingArea,
                                         ITimeTriggerFactory timeTriggerFactory,
                                         GrowthFertilizationAreaService growthFertilizationAreaService,
-                                        YieldFertilizationService yieldFertilizationService,
                                         EventBus eventBus )
         {
             this._treeCuttingArea = treeCuttingArea;
             this._blockService = blockService;
             this._growthFertilizationAreaService = growthFertilizationAreaService;
-            this._yieldFertilizationService = yieldFertilizationService;
             this._timeTriggerFactory = timeTriggerFactory;
             this._eventBus = eventBus;
         }
