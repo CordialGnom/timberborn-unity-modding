@@ -8,6 +8,7 @@ using Timberborn.Persistence;
 using Timberborn.SingletonSystem;
 using Timberborn.Yielding;
 using UnityEngine;
+using Timberborn.Gathering;
 
 namespace Cordial.Mods.BoosterJuice.Scripts
 {
@@ -72,25 +73,33 @@ namespace Cordial.Mods.BoosterJuice.Scripts
             foreach (TreeComponent treeComponent in m_GrownTreeDict.Values)
             {
                 treeComponent.TryGetComponentFast<Cuttable>( out Cuttable cuttable);
+                treeComponent.TryGetComponentFast<GatherableYieldGrower>(out GatherableYieldGrower yieldGrower);
 
-                if ((cuttable != null))
+                if ((cuttable != null)
+                    && (yieldGrower != null))
                 {
-                    Debug.Log("Got TreeComponent: " + treeComponent.GetComponentFast<BlockObject>().Coordinates );
-                    cuttable.TryGetComponentFast<GoodStack>(out GoodStack goodstack);
-                    cuttable.TryGetComponentFast<Yielder>(out Yielder yielder);
+                    float growthProgress =  yieldGrower.GrowthProgress;
 
-                    if ((goodstack != null)
-                     && (yielder != null))
-                    {
-                        string goodId = yielder.Yield.GoodId;
+                    yieldGrower.FastForwardGrowth(yieldProgress);
 
-                        GoodAmount goodAmount = new(goodId, 5);
+                    Debug.Log("Yield: " + growthProgress + " --> " + yieldGrower.GrowthProgress);
 
-                        goodstack.Inventory.GiveIgnoringCapacityReservation(goodAmount);
 
-                        Debug.Log("Gave Goods: " + goodAmount + " - Y: " + yielder.Yield.Amount);
+                    //cuttable.TryGetComponentFast<GoodStack>(out GoodStack goodstack);
+                    //cuttable.TryGetComponentFast<Yielder>(out Yielder yielder);
 
-                    }
+                    //if ((goodstack != null)
+                    // && (yielder != null))
+                    //{
+                    //    string goodId = yielder.Yield.GoodId;
+
+                    //    GoodAmount goodAmount = new(goodId, 5);
+
+                    //    goodstack.Inventory.GiveIgnoringCapacityReservation(goodAmount);
+
+                    //    Debug.Log("Gave Goods: " + goodAmount + " - Y: " + yielder.Yield.Amount);
+
+                    //}
                 }
             }
         }
@@ -112,6 +121,23 @@ namespace Cordial.Mods.BoosterJuice.Scripts
                     m_GrownTreeDict[coordinates] = treeComponent;
                 }
             }
+        }
+
+        public bool CheckCoordinates(Vector3Int coordinates)
+        {
+            foreach (Vector3Int coord in m_GrownTreeDict.Keys)
+            {
+                if (coord == coordinates)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        public bool RemoveCoordinates(Vector3Int coordinates)
+        {
+            return m_GrownTreeDict.Remove(coordinates);
         }
     }
 }
