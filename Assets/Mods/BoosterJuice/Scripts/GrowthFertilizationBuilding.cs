@@ -20,6 +20,7 @@ using Cordial.Mods.BoosterJuice.Scripts.UI;
 using Timberborn.WorkSystem;
 using Timberborn.Workshops;
 using Timberborn.SingletonSystem;
+using Timberborn.Gathering;
 
 namespace Cordial.Mods.BoosterJuice.Scripts {
   public class GrowthFertilizationBuilding : BaseComponent, 
@@ -60,6 +61,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         // tree handling
         private readonly List<Growable> _nearbyGrowingTrees = new List<Growable>();
+        private readonly List<TreeComponent> _nearbyYieldTrees = new List<TreeComponent>();
 
         public Inventory Inventory { get; private set; }
 
@@ -69,6 +71,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         public int TreesTotalCount => this._treesInRangeCount;
         public int TreesGrowCount => this._nearbyGrowingTrees.Count;
+        public int TreesYieldCount => this._nearbyYieldTrees.Count;
 
         public IEnumerable<Growable> GrowingTrees => this._nearbyGrowingTrees;
 
@@ -101,6 +104,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         private float _consumptionPerHour = 0.0f;
         private float _dailyGrowth = 0.0f;
         private float _averageGrowth = 0.0f;
+        private float _dailyYieldInc = 0.0f;
+        private float _averageYieldInc = 0.0f;
 
         // fertilization handling
         private readonly float _timeTriggerCallCountPerDay = 1/24f;  // call the trigger every hour;
@@ -190,8 +195,23 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
             _averageGrowth = (_averageGrowth + _dailyGrowth) / 2.0f;
 
+            if (_averageYieldInc == 0)
+            {
+                if (_dailyYieldInc > 1)
+                {
+                    _averageYieldInc = 1;
+                }
+                else
+                {
+                    _averageYieldInc = _dailyYieldInc;
+                }
+            }
+
+            _averageYieldInc = (_averageYieldInc + _dailyYieldInc) / 2.0f;
+
             // reset daily growth
             _dailyGrowth = 0.0f;
+            _dailyYieldInc = 0.0f;
         }
 
         public IEnumerable<BaseComponent> GetObjectsInRange()
@@ -317,7 +337,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         {
             this.UpdateNearbyGrowingTrees();
 
-            this._yieldFertilizationService.UpdateRegisteredYielders(1.0f);
+            //this._yieldFertilizationService.UpdateRegisteredYielders(0.1f);
 
             // check if working day has finished
             if (this._workplaceWorkingHours.AreWorkingHours && (0 < this._workshop.NumberOfWorkersWorking))
@@ -325,21 +345,21 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 _workHoursPassed++; // increment for each hour worker is actively there
                 _consumptionPerHour = 0;
                 float growthTimeOffsetCycle = 0.0f;
-                float growthTimeTotal_d =   0.0f; 
+                float growthTimeTotal_d =   0.0f;
+                float growthTimeTgt_d = 0.0f;
+                float growthTimeOffset = 0.0f;
+                float growthFertilizerConsumption = 0.0f;
 
                 foreach (Growable growable in this._nearbyGrowingTrees)
                 {
-                    // get actual growth (1.0 is considered 100% in game)
-                    float growth = growable.GrowthProgress;
-
                     // get original growth time
                     growthTimeTotal_d = growable.GrowthTimeInDays;
 
                     // calculate targeted growth time 
-                    float growthTimeTgt_d = growthTimeTotal_d * _growthFactor;
+                    growthTimeTgt_d = growthTimeTotal_d * _growthFactor;
 
                     // calculate offset to be applied to growable each day
-                    float growthTimeOffset = (((1.0f / growthTimeTgt_d) - (1.0f / growthTimeTotal_d)) / 100.0f);
+                    growthTimeOffset = (((1.0f / growthTimeTgt_d) - (1.0f / growthTimeTotal_d)) / 100.0f);
 
                     // add proportional effect that growth effect diminishes during the day
                     // x =  ((hoursInDay+1) - workHour) * (growthTimeOffset * !HoursOfDay)
@@ -347,7 +367,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                     growthTimeOffsetCycle = ((25.0f - (float)_workHoursPassed) * (growthTimeOffset / 300.0f));
 
                     // calculate consumption
-                    float growthFertilizerConsumption = _consumptionFactor * growthTimeOffset * _timeTriggerCallCountPerDay;
+                    growthFertilizerConsumption = _consumptionFactor * growthTimeOffset * _timeTriggerCallCountPerDay;
 
                     _consumptionPerHour += growthFertilizerConsumption;
 
@@ -359,7 +379,44 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 }
 
                 // growth increase in this cycle, reference as percentage of the whole growth time
-                _dailyGrowth += ((growthTimeOffsetCycle / (1/growthTimeTotal_d)) * 100.0f);
+                _dailyGrowth += ((growthTimeOffsetCycle / (1 / growthTimeTotal_d)) * 100.0f);
+
+                foreach (TreeComponent treeComponent in this._nearbyYieldTrees)
+                {
+                    // get original yield growth time
+                    treeComponent.TryGetComponentFast<GatherableYieldGrower>(out GatherableYieldGrower yieldGrower );
+                    treeComponent.TryGetComponentFast<Gatherable>(out Gatherable gatherable);
+
+                    if ((null != gatherable)
+                        && (null != yieldGrower))
+                    {
+                        growthTimeTotal_d = gatherable.YieldGrowthTimeInDays;
+
+                        growthTimeTgt_d = growthTimeTotal_d * _yieldFactor;
+
+                        growthTimeOffset = (((1.0f / growthTimeTgt_d) - (1.0f / growthTimeTotal_d)) / 100.0f);
+
+                        growthFertilizerConsumption = _consumptionFactor * growthTimeOffset;
+
+                        _consumptionPerHour += growthFertilizerConsumption;
+
+                        float growthProgress = yieldGrower.GrowthProgress;
+
+                        if (UpdateConsumption(growthFertilizerConsumption))
+                        {
+                            // update growth
+                            yieldGrower.FastForwardGrowth(growthTimeOffset);
+                        }
+
+                        Debug.Log("Yield: " + growthProgress + " --> " + yieldGrower.GrowthProgress);
+
+                    }
+                }
+
+                // yield growth increase in this cycle, reference as percentage of the whole growth time
+                _dailyYieldInc += ((growthTimeOffset / (1 / growthTimeTotal_d)) * 100.0f);
+
+
             }
             this._timeTrigger.Reset();
             this._timeTrigger.Resume();
@@ -368,6 +425,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         private void UpdateNearbyGrowingTrees()
         {
             this._nearbyGrowingTrees.Clear();
+            this._nearbyYieldTrees.Clear();
 
             _treesInRangeCount = 0;
 
@@ -388,8 +446,16 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                         }
                         else if (growable.IsGrown)
                         {
-                            // register growable with Yielder Service
-                            this._yieldFertilizationService.RegisterGrownTreeComponent(treeComponentAt);
+                            treeComponentAt.TryGetComponentFast<GatherableYieldGrower>(out GatherableYieldGrower yieldGrower);
+
+                            if (yieldGrower != null)
+                            {
+                                if (yieldGrower.GrowthProgress < 1.0f)
+                                {
+                                    this._nearbyYieldTrees.Add(treeComponentAt);
+                                }
+                            }
+
                         }
                     }
                     _treesInRangeCount++;
