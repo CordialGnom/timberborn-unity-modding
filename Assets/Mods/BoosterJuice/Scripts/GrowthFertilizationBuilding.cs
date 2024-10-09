@@ -34,7 +34,13 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         private float _growthFactor;
 
         [SerializeField]
+        private float _growthConsumptionFactor;
+
+        [SerializeField]
         private float _yieldFactor;
+
+        [SerializeField]
+        private float _yieldConsumptionFactor;
 
         [SerializeField]
         private int _growthFertilizationRadius;
@@ -44,9 +50,6 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         [SerializeField]
         private string _supply;
-
-        [SerializeField]
-        private float _consumptionFactor;
 
         private static readonly ComponentKey GrowthFertilizationBuildingKey = new ComponentKey(nameof(GrowthFertilizationBuilding));
         private static readonly PropertyKey<float> SupplyLeftKey = new PropertyKey<float>("SupplyLeft");
@@ -364,7 +367,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                     growthTimeOffsetCycle = ((25.0f - (float)_workHoursPassed) * (growthTimeOffset / 300.0f));
 
                     // calculate consumption
-                    growthFertilizerConsumption = _consumptionFactor * growthTimeOffset * _timeTriggerCallCountPerDay;
+                    growthFertilizerConsumption = _growthConsumptionFactor * growthTimeOffset * _timeTriggerCallCountPerDay;
 
                     _consumptionPerHour += growthFertilizerConsumption;
 
@@ -389,11 +392,13 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                     {
                         growthTimeTotal_d = gatherable.YieldGrowthTimeInDays;
 
-                        growthTimeTgt_d = growthTimeTotal_d * _yieldFactor;
+                        float growthTimeTotal_h = growthTimeTotal_d * 24.0f;
+                        float growthTimePerHourDflt_pc = 1.0f / growthTimeTotal_h;
+                        float growthTimePerHourComb_pc = growthTimePerHourDflt_pc / _yieldFactor;
 
-                        growthTimeOffset = (((1.0f / growthTimeTgt_d) - (1.0f / growthTimeTotal_d)) / 100.0f);
+                        growthTimeOffset = growthTimePerHourComb_pc - growthTimePerHourDflt_pc;
 
-                        growthFertilizerConsumption = _consumptionFactor * growthTimeOffset;
+                        growthFertilizerConsumption = _yieldConsumptionFactor * growthTimeOffset;
 
                         _consumptionPerHour += growthFertilizerConsumption;
 
@@ -405,13 +410,15 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                             yieldGrower.FastForwardGrowth(growthTimeOffset);
                         }
 
-                        Debug.Log("Yield: " + growthProgress + " --> " + yieldGrower.GrowthProgress);
+                        Debug.Log("Yield: " + growthTimeTotal_d + " - " + growthTimeTotal_h + " / " + growthTimePerHourDflt_pc + " / " + growthTimePerHourComb_pc + " / " + growthTimeOffset + " -- " + _yieldFactor);
 
                     }
                 }
 
                 // yield growth increase in this cycle, reference as percentage of the whole growth time
                 _dailyYieldInc += ((growthTimeOffset / (1 / growthTimeTotal_d)) * 100.0f);
+
+                Debug.Log("Daily: " + _dailyYieldInc);
 
 
             }
