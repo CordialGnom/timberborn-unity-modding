@@ -10,9 +10,11 @@ Cordial.Building.FertilizerDump.Description,Distributes fertilizer to planted tr
 Cordial.Building.FertilizerDump.DisplayName,Fertilizer Dump,-
 Cordial.Building.FertilizerDump.FlavorDescription,"Fertilizer for trees improves growth and yield.",-
 Cordial.Building.FertilizerDump.Consumption,Fertilizer consumption, the ": " is part of the code
-Cordial.Building.FertilizerDump.TreeCount,Trees growing, the ": " is part of the code
+Cordial.Building.FertilizerDump.TreeCount,Trees affected, the ": " is part of the code
+Cordial.Building.FertilizerDump.FertilizeYield,Apply fertilizer to tree gatherables, 
 Cordial.TreeFragment.Title,Growth is influenced by fertilizer.,-
 Cordial.TreeFragment.GrowthDaily,Daily growth increased by,-
 Cordial.TreeFragment.GrowthAverage,Average growth decreased by,-
+Cordial.TreeFragment.YieldAverage,Average yield growth decreased by,-
 Cordial.Unit.Days,days, plural of day as a unit
 Cordial.Unit.PerHour,/h,-
