@@ -21,6 +21,7 @@ using Timberborn.WorkSystem;
 using Timberborn.Workshops;
 using Timberborn.SingletonSystem;
 using Timberborn.Gathering;
+using Cordial.Mods.BoosterJuice.Scripts.Events;
 
 namespace Cordial.Mods.BoosterJuice.Scripts {
   public class GrowthFertilizationBuilding : BaseComponent, 
@@ -56,6 +57,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         private static readonly PropertyKey<float> DailyGrowthKey = new PropertyKey<float>("DailyGrowth");
         private static readonly PropertyKey<float> AverageGrowthKey = new PropertyKey<float>("AverageGrowth");
         private static readonly PropertyKey<int> WorkHoursPassed = new PropertyKey<int>("WorkHoursPassed");
+        private static readonly PropertyKey<float> DailyYieldKey = new PropertyKey<float>("DailyYield");
+        private static readonly PropertyKey<float> AverageYieldKey = new PropertyKey<float>("AverageYield");
 
         // from GoodConsumingBuilding
         private BlockableBuilding _blockableBuilding;
@@ -73,8 +76,9 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         public bool ConsumptionPaused { get; private set; }
 
         public int TreesTotalCount => this._treesInRangeCount;
-        public int TreesGrowCount => this._nearbyGrowingTrees.Count;
+        public int TreesGrowCount => (FertilizeYieldActive) ? (this._nearbyGrowingTrees.Count + this._nearbyYieldTrees.Count) : this._nearbyGrowingTrees.Count;
         public int TreesYieldCount => this._nearbyYieldTrees.Count;
+        public bool FertilizeYieldActive { get; private set; }  
 
         public IEnumerable<Growable> GrowingTrees => this._nearbyGrowingTrees;
 
@@ -91,9 +95,11 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         }
         public float DailyGrowth => (this._dailyGrowth * 100.0f);
 
-        public float AverageGrowth => (this._averageGrowth * 100.0f);
+        public float AverageGrowth => (this._averageGrowth);
 
         public float GrowthFactor => (this._growthFactor);
+        public float YieldFactor => (this._yieldFactor);
+        public float AverageYieldInc => (this._averageYieldInc);
 
         public bool IsReadyToFertilize => (double)this.SupplyAmount > 0.0;
 
@@ -262,17 +268,17 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         public void Save(IEntitySaver entitySaver)
         {
-            entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey)
-                .Set(GrowthFertilizationBuilding.SupplyLeftKey, this._supplyLeft);
+            IObjectSaver saver = entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey);
 
-            entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey)
-                .Set(GrowthFertilizationBuilding.DailyGrowthKey, this._dailyGrowth);
-
-            entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey)
-                .Set(GrowthFertilizationBuilding.AverageGrowthKey, this._averageGrowth);
-
-            entitySaver.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey)
-                .Set(GrowthFertilizationBuilding.WorkHoursPassed, this._workHoursPassed);
+            if (saver != null)
+            {
+                saver.Set(GrowthFertilizationBuilding.SupplyLeftKey, this._supplyLeft);
+                saver.Set(GrowthFertilizationBuilding.DailyGrowthKey, this._dailyGrowth);
+                saver.Set(GrowthFertilizationBuilding.AverageGrowthKey, this._averageGrowth);
+                saver.Set(GrowthFertilizationBuilding.DailyYieldKey, this._dailyYieldInc);
+                saver.Set(GrowthFertilizationBuilding.AverageYieldKey, this._averageYieldInc);
+                saver.Set(GrowthFertilizationBuilding.WorkHoursPassed, this._workHoursPassed);
+            }
         }
 
         public void Load(IEntityLoader entityLoader)
@@ -280,21 +286,34 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
             if (!entityLoader.HasComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey))
                 return;
 
-            // update supply from save if available
-            float? valueOrNullable = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).GetValueOrNullable(GrowthFertilizationBuilding.SupplyLeftKey);
-            this._supplyLeft = valueOrNullable.GetValueOrDefault();
+            IObjectLoader loader = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey);
 
-            // update growth from save if available
-            valueOrNullable = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).GetValueOrNullable(GrowthFertilizationBuilding.DailyGrowthKey);
-            this._dailyGrowth = valueOrNullable.GetValueOrDefault();
+            if (loader != null)
+            {
+                // update supply from save if available
+                float? valueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.SupplyLeftKey);
+                this._supplyLeft = valueOrNullable.GetValueOrDefault();
 
-            // update average growth from save if available
-            valueOrNullable = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).GetValueOrNullable(GrowthFertilizationBuilding.AverageGrowthKey);
-            this._averageGrowth = valueOrNullable.GetValueOrDefault();
+                // update growth from save if available
+                valueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.DailyGrowthKey);
+                this._dailyGrowth = valueOrNullable.GetValueOrDefault();
 
-            // update passed work hours from save if available
-            int? intValueOrNullable = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey).GetValueOrNullable(GrowthFertilizationBuilding.WorkHoursPassed);
-            this._workHoursPassed = intValueOrNullable.GetValueOrDefault();
+                // update average growth from save if available
+                valueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.AverageGrowthKey);
+                this._averageGrowth = valueOrNullable.GetValueOrDefault();
+
+                // update yield from save if available
+                valueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.DailyYieldKey);
+                this._dailyYieldInc = valueOrNullable.GetValueOrDefault();
+
+                // update average yield from save if available
+                valueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.AverageYieldKey);
+                this._averageYieldInc = valueOrNullable.GetValueOrDefault();
+
+                // update passed work hours from save if available
+                int? intValueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.WorkHoursPassed);
+                this._workHoursPassed = intValueOrNullable.GetValueOrDefault();
+            }
         }
 
         public GoodConsumingToggle GetGoodConsumingToggle()
@@ -337,9 +356,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         {
             this.UpdateNearbyGrowingTrees();
 
-            //this._yieldFertilizationService.UpdateRegisteredYielders(0.1f);
-
-            // check if working day has finished
+            // check if working day is in progress
             if (this._workplaceWorkingHours.AreWorkingHours && (0 < this._workshop.NumberOfWorkersWorking))
             {
                 _workHoursPassed++; // increment for each hour worker is actively there
@@ -350,6 +367,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 float growthTimeOffset = 0.0f;
                 float growthFertilizerConsumption = 0.0f;
 
+                // apply fertilizer to growing trees
                 foreach (Growable growable in this._nearbyGrowingTrees)
                 {
                     // get original growth time
@@ -381,45 +399,47 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 // growth increase in this cycle, reference as percentage of the whole growth time
                 _dailyGrowth += ((growthTimeOffsetCycle / (1 / growthTimeTotal_d)) * 100.0f);
 
-                foreach (TreeComponent treeComponent in this._nearbyYieldTrees)
+                if (FertilizeYieldActive)
                 {
-                    // get original yield growth time
-                    treeComponent.TryGetComponentFast<GatherableYieldGrower>(out GatherableYieldGrower yieldGrower );
-                    treeComponent.TryGetComponentFast<Gatherable>(out Gatherable gatherable);
-
-                    if ((null != gatherable)
-                        && (null != yieldGrower))
+                    // apply fertilizer to "yielding" trees
+                    foreach (TreeComponent treeComponent in this._nearbyYieldTrees)
                     {
-                        growthTimeTotal_d = gatherable.YieldGrowthTimeInDays;
+                        // get original yield growth time
+                        treeComponent.TryGetComponentFast<GatherableYieldGrower>(out GatherableYieldGrower yieldGrower);
+                        treeComponent.TryGetComponentFast<Gatherable>(out Gatherable gatherable);
 
-                        float growthTimeTotal_h = growthTimeTotal_d * 24.0f;
-                        float growthTimePerHourDflt_pc = 1.0f / growthTimeTotal_h;
-                        float growthTimePerHourComb_pc = growthTimePerHourDflt_pc / _yieldFactor;
-
-                        growthTimeOffset = growthTimePerHourComb_pc - growthTimePerHourDflt_pc;
-
-                        growthFertilizerConsumption = _yieldConsumptionFactor * growthTimeOffset;
-
-                        _consumptionPerHour += growthFertilizerConsumption;
-
-                        float growthProgress = yieldGrower.GrowthProgress;
-
-                        if (UpdateConsumption(growthFertilizerConsumption))
+                        if ((null != gatherable)
+                            && (null != yieldGrower))
                         {
-                            // update growth
-                            yieldGrower.FastForwardGrowth(growthTimeOffset);
+                            growthTimeTotal_d = gatherable.YieldGrowthTimeInDays;
+
+                            float growthTimeTotal_h = growthTimeTotal_d * 24.0f;
+                            float growthTimePerHourDflt_pc = 1.0f / growthTimeTotal_h;
+                            float growthTimePerHourComb_pc = growthTimePerHourDflt_pc / _yieldFactor;
+
+                            growthTimeOffset = growthTimePerHourComb_pc - growthTimePerHourDflt_pc;
+
+                            growthFertilizerConsumption = _yieldConsumptionFactor * growthTimeOffset;
+
+                            _consumptionPerHour += growthFertilizerConsumption;
+
+                            float growthProgress = yieldGrower.GrowthProgress;
+
+                            if (UpdateConsumption(growthFertilizerConsumption))
+                            {
+                                // update growth
+                                yieldGrower.FastForwardGrowth(growthTimeOffset);
+                            }
                         }
-
-                        Debug.Log("Yield: " + growthTimeTotal_d + " - " + growthTimeTotal_h + " / " + growthTimePerHourDflt_pc + " / " + growthTimePerHourComb_pc + " / " + growthTimeOffset + " -- " + _yieldFactor);
-
                     }
+
+                    // yield growth increase in this cycle, reference as percentage of the whole growth time
+                    _dailyYieldInc += ((growthTimeOffset / (1 / growthTimeTotal_d)) * 100.0f);
                 }
-
-                // yield growth increase in this cycle, reference as percentage of the whole growth time
-                _dailyYieldInc += ((growthTimeOffset / (1 / growthTimeTotal_d)) * 100.0f);
-
-                Debug.Log("Daily: " + _dailyYieldInc);
-
+                else
+                {
+                    _dailyYieldInc = 0.0f;
+                }
 
             }
             this._timeTrigger.Reset();
@@ -465,6 +485,15 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                     _treesInRangeCount++;
                 }
             }
+        }
+
+        [OnEvent]
+        public void OnGrowthFertilizationConfigChangeEvent(GrowthFertilizationConfigChangeEvent configChangeEvent)
+        {
+            if (null == configChangeEvent)
+                return;
+
+            FertilizeYieldActive = configChangeEvent.FertilizeYield;
         }
     }
 }
