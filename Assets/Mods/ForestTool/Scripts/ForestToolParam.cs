@@ -178,7 +178,7 @@ namespace Cordial.Mods.ForestTool.Scripts
             }
             else
             {
-                ImmutableArray<string> factionTreeNames = _forestToolPrefabSpecService.GetAllTrees();
+                ImmutableArray<string> factionTreeNames = _forestToolPrefabSpecService.GetAllForestryPlantables();
 
                 foreach (string treeName in factionTreeNames)
                 {

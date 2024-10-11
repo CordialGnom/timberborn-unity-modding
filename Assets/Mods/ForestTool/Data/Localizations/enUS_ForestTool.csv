@@ -4,6 +4,6 @@ Cordial.ForestTool.Description,Configurable tool for planting mixed forests.,-
 Coridal.ForestTool.Requirement,Required Building: <SolidHighlight>{0}</SolidHighlight>,{0} stands for Building.Forester.DisplayName
 Cordial.ForestTool.ForestToolPanel.Title,Forest Tool Configuration,-
 Cordial.ForestTool.ForestToolPanel.Description,Configure tree types and spots to be planted,-
-Cordial.ForestTool.ForestToolPanel.ToggleTreeAll,All tree types,-
+Cordial.ForestTool.ForestToolPanel.ToggleTreeAll,All forestry plant types,-
 Cordial.ForestTool.ForestToolPanel.ToggleEmpty,Allow clearings, perhaps "enable empty spots" or something similar
 Cordial.ForestTool.ForestToolError.Description,You need to unlock <SolidHighlight>{0}</SolidHighlight> to plant trees.,{0} stands for Building.Forester.DisplayName

@@ -77,6 +77,28 @@ namespace Cordial.Mods.ForestTool.Scripts
 
             return factionId;
         }
+        public ImmutableArray<string> GetAllForestryPlantables()
+        {
+            List<string> treeTypes = new();
 
+            if (null != _prefabService)
+            {
+                var treeComponents = _prefabService.GetAll<TreeComponent>();
+                var bushComponents = _prefabService.GetAll<Bush>();
+
+                foreach (var treeObject in treeComponents)
+                {
+                    treeTypes.Add(treeObject.name);
+                }
+
+                foreach (var bushObject in bushComponents)
+                {
+                    treeTypes.Add(bushObject.name);
+                }
+
+            }
+
+            return treeTypes.ToImmutableArray<string>();
+        }
     }
 }
