@@ -129,8 +129,6 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         public void Save(ISingletonSaver singletonSaver)
         {
-            Debug.Log("Crops Saved");
-
             singletonSaver.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Set(PlantingOverrideCropCoordKey, _cropRegistry.Keys);
             singletonSaver.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Set(PlantingOverrideCropTypeKey, _cropRegistry.Values);
         }
