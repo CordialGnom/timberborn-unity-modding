@@ -244,6 +244,7 @@ namespace Cordial.Mods.ForestTool.Scripts
                 }
                 else
                 {
+
                     if (_plantingAreaValidator.CanPlant(leveledCoordinate, resourceName))
                     {
                         _plantingService.SetPlantingCoordinates(leveledCoordinate, resourceName);

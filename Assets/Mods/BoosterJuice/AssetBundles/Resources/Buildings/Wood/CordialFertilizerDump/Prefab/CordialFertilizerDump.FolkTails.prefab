@@ -431,11 +431,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _growthFactor: 0.5
-  _yieldFactor: 1.25
+  _growthConsumptionFactor: 750
+  _yieldFactor: 0.5
+  _yieldConsumptionFactor: 15
   _growthFertilizationRadius: 8
-  _capacity: 30
+  _capacity: 50
   _supply: Fertilizer
-  _consumptionFactor: 2000
 --- !u!1 &4187045584144244368
 GameObject:
   m_ObjectHideFlags: 0

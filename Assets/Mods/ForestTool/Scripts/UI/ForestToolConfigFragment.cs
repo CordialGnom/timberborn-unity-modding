@@ -64,13 +64,13 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
                 .Build();
 
             // create toggle elements for all available tree types
-            ImmutableArray<string> treeList = _forestToolPrefabSpecService.GetAllTrees();
+            ImmutableArray<string> treeList = _forestToolPrefabSpecService.GetAllForestryPlantables();
 
             for (int index = 0; index < treeList.Length; ++index )
             {
                 _toggleTreeList.Add(_uiBuilder.Create<GameToggle>()
                     .SetName(treeList[index])
-                    .SetLocKey("NaturalResource." + treeList[index] + ".DisplayName")
+                    .SetLocKey("NaturalResource." + treeList[index].Replace("Bush", "") + ".DisplayName")
                     .Build());
 
                 _toggleTreeDict.Add(treeList[index], _toggleTreeList[index]);

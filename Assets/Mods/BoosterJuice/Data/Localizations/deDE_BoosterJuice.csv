@@ -11,9 +11,11 @@ Cordial.Building.FertilizerDump.DisplayName,Baumdüngerableiter,-
 Cordial.Building.FertilizerDump.FlavorDescription,Baumdünger verbessert Wachstum und Ertrag.,-
 Cordial.Building.FertilizerDump.Consumption,Baumdünger Verbrauch, the ": " is part of the code
 Cordial.Building.FertilizerDump.TreeCount,Wachsende Bäume, the ": " is part of the code
+Cordial.Building.FertilizerDump.FertilizeYield,Verwende Baumdünger für den Reifungsfortschritt, 
 Cordial.TreeFragment.Title,Wachstum ist durch Baumdünger beeinflusst.,-
 Cordial.TreeFragment.GrowthDaily,Tägliches Wachstum erhöht um,-
 Cordial.TreeFragment.GrowthAverage,Durchschn. Wachstum verringert um,-
+Cordial.TreeFragment.YieldAverage,Durchschn. Reifung verringert um,-
 Cordial.Unit.Days,Tage, plural of day as a unit
 Cordial.Unit.PerHour,/h,-
 
