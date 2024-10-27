@@ -26,6 +26,7 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         Toggle _toggleArea04 = new();
         Toggle _toggleTreeAll = new();
         Toggle _toggleTreeMark = new();
+        Toggle _toggleStump = new();
 
         private readonly List<Toggle> _toggleTreeList = new();
         private readonly List<string> _toggleNameList = new();
@@ -40,6 +41,7 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
         public CutterPatterns CutterPatterns => _cutterPatterns;
         public bool TreeMarkOnly => _toggleTreeMark.value;
+        public bool IgnoreStumps => _toggleStump.value;
 
 
         public CutterToolConfigFragment (UIBuilder uiBuilder,
@@ -73,6 +75,11 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             _toggleTreeAll = _uiBuilder.Create<GameToggle>()
                 .SetName("TreeAll")
                 .SetLocKey("Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeAll")
+                .Build();
+
+            _toggleStump = _uiBuilder.Create<GameToggle>()
+                .SetName("IgnoreStump")
+                .SetLocKey("Cordial.CutterTool.CutterToolPanel.TreeConfig.IgnoreStump")
                 .Build();
 
             // create toggle elements for all available tree types
@@ -111,6 +118,11 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                             .AddComponent(_toggleArea04)
                             .BuildAndInitialize());
 
+            _root.Add(CreateCenteredPanelFragmentBuilder()
+                     .AddComponent(_toggleStump)
+                     .AddComponent(_toggleTreeMark)
+                     .BuildAndInitialize());
+
             VisualElement toggleList = new();
 
             foreach (Toggle toggle in _toggleTreeList)
@@ -119,7 +131,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             }
 
             _root.Add(CreateCenteredPanelFragmentBuilder()
-                    .AddComponent(_toggleTreeMark)
                     .AddComponent(_toggleTreeAll)
                     .AddComponent(toggleList)
                     .BuildAndInitialize());
@@ -221,6 +232,7 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                     _cutterPatterns = CutterPatterns.LinesY;
                     UpdateTogglePattern(false, false, false, true);
                     break;
+                case "IgnoreStump": // these toggles are handled directly through their internal values
                 case "TreeMark":
                     break;
                 default:    // tree type configuration

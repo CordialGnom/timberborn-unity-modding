@@ -9,3 +9,4 @@ Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern03, Lignes X,-
 Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern04, Lignes Y,-
 Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeAll, Tous types d'arbres,-
 Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeMark, Marquer les arbres uniquement,-
+Cordial.CutterTool.CutterToolPanel.TreeConfig.IgnoreStump, Ignorer les souches,-
