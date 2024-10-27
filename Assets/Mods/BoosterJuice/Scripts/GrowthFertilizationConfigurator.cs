@@ -34,8 +34,10 @@ namespace Cordial.Mods.BoosterJuice.Scripts
                 TemplateModule.Builder builder = new TemplateModule.Builder();
                 builder.AddDecorator<GrowthFertilizationBuilding, AutoEmptiable>();
                 builder.AddDecorator<GrowthFertilizationBuilding, Emptiable>();
+                builder.AddDecorator<GrowthFertilizationBuilding, HaulCandidate>();
                 builder.AddDecorator<GrowthFertilizationBuilding, FillInputHaulBehaviorProvider>();
                 builder.AddDecorator<GrowthFertilizationBuilding, GrowthFertilizationStatusService>();
+                builder.AddDecorator<GrowthFertilizationBuilding, GrowthFertilizationHaulBehaviourProvider>();
                 builder.AddDecorator<GrowthFertilizationBuilding, WorkshopProductivityCounter>();
                 builder.AddDecorator<Worker, WorkplaceWorkStarter>();
                 builder.AddDecorator<GrowthFertilizationStatusService, LackOfResourcesStatus>();
@@ -47,10 +49,10 @@ namespace Cordial.Mods.BoosterJuice.Scripts
 
             private static void InitializeBehaviors(TemplateModule.Builder builder)
             {
+                builder.AddDecorator<GrowthFertilizationBuilding, GrowthFertilizationWorkplaceBehaviour>();
                 builder.AddDecorator<GrowthFertilizationBuilding, EmptyInventoriesWorkplaceBehavior>();
                 builder.AddDecorator<GrowthFertilizationBuilding, FillInputWorkplaceBehavior>();
                 builder.AddDecorator<GrowthFertilizationBuilding, RemoveUnwantedStockWorkplaceBehavior>();
-                builder.AddDecorator<GrowthFertilizationBuilding, GrowthFertilizationWorkplaceBehaviour>();
                 builder.AddDecorator<GrowthFertilizationBuilding, LaborWorkplaceBehavior>();
                 builder.AddDecorator<GrowthFertilizationBuilding, WaitInsideIdlyWorkplaceBehavior>();
             }
