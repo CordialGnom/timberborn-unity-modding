@@ -433,7 +433,7 @@ MonoBehaviour:
   _growthFactor: 0.5
   _growthConsumptionFactor: 850
   _yieldFactor: 0.5
-  _yieldConsumptionFactor: 15
+  _yieldConsumptionFactor: 8
   _growthFertilizationRadius: 7
   _capacity: 50
   _supply: Fertilizer

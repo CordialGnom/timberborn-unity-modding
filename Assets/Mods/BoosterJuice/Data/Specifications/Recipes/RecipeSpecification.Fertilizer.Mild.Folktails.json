@@ -6,7 +6,7 @@
   "Ingredients": [
     { "Good": { "Id": "Berries" }, 		"Amount": 1 },
     { "Good": { "Id": "Wheat" }, 		"Amount": 1 },
-    { "Good": { "Id": "Spadderdock" },  "Amount": 1 },
+    { "Good": { "Id": "Spadderdock" },  "Amount": 0.5 },
     { "Good": { "Id": "Water" }, 		"Amount": 2 }
   ],
   "Products": [
@@ -17,7 +17,7 @@
   "Fuel": {
     "Id": "Log"
   },
-  "CyclesFuelLasts": 2,
+  "CyclesFuelLasts": 4,
   "FuelCapacity": 5,
   "Icon": "Sprites/Goods/FertilizerIcon"
 }
