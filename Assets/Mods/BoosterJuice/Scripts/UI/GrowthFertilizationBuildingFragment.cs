@@ -12,14 +12,12 @@ using Timberborn.Localization;
 using Timberborn.SingletonSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Cordial.Mods.BoosterJuice.Scripts.Events;
 using TimberApi.UIPresets.Labels;
 
 namespace Cordial.Mods.BoosterJuice.Scripts.UI
 {
     sealed class GrowthFertilizationBuildingFragment : IEntityPanelFragment
     {
-        private readonly UiFactory _uiFactory;
         private readonly UIBuilder _uiBuilder;
 
         private GrowthFertilizationBuilding _growthFertilizationBuilding;
@@ -38,18 +36,10 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
         private static readonly string FertilizerNameLocKey = "Cordial.Good.Fertilizer.DisplayName";
         private static readonly string UnitPerHourLocKey = "Cordial.Unit.PerHour";
 
-        // event system
-        private readonly EventBus _eventBus;
-
-
-        public GrowthFertilizationBuildingFragment(UiFactory uiFactory,
-                                                    UIBuilder uiBuilder,
-                                                    EventBus eventBus,
+        public GrowthFertilizationBuildingFragment( UIBuilder uiBuilder,
                                                     ILoc loc)
         {
-            _uiFactory = uiFactory;
             _uiBuilder = uiBuilder;
-            _eventBus = eventBus;
             _loc = loc;
         }
 
@@ -98,6 +88,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
             UpdateGrowthState();
             UpdateInventoryState();
             UpdateConsumptionState();
+            UpdateToggleState();
 
             _root.ToggleDisplayStyle((bool)(Object)this._growthFertilizationBuilding);
         }
@@ -128,7 +119,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
         {
             if (!(bool)(Object)this._growthFertilizationBuilding)
                 return;
-            this._consumptionText.text = _loc.T(ConsumptionLocKey) + " " + _growthFertilizationBuilding.ConsumptionPerHour + _loc.T(UnitPerHourLocKey);
+            this._consumptionText.text = _loc.T(ConsumptionLocKey) + " " + _growthFertilizationBuilding.ConsumptionPerHour.ToString("0.0") + _loc.T(UnitPerHourLocKey);
         }
 
         private void UpdateGrowthState()
@@ -138,9 +129,17 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
             this._growthStateText.text = _loc.T(TreeCountLocKey) + ": " + (this._growthFertilizationBuilding.TreesGrowCount) + "/" + (this._growthFertilizationBuilding.TreesTotalCount);
         }
 
+        private void UpdateToggleState()
+        {
+            if (!(bool)(Object)this._growthFertilizationBuilding)
+                return;
+            _root.Q<Toggle>(this._yieldFertilize.name).SetValueWithoutNotify(this._growthFertilizationBuilding.FertilizeYieldActive);
+        }
+
         private void ToggleValueChange(bool value)
         {
-            this._eventBus.Post((object)new GrowthFertilizationConfigChangeEvent(value));
+            // instead of throwing a new event, modify available building status
+            this._growthFertilizationBuilding.FertilizeYieldActive = value;
         }
 
         public PanelFragment CreateCenteredPanelFragmentBuilder()

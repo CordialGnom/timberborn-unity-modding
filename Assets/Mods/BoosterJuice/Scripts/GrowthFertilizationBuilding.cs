@@ -22,6 +22,9 @@ using Timberborn.Workshops;
 using Timberborn.SingletonSystem;
 using Timberborn.Gathering;
 using Cordial.Mods.BoosterJuice.Scripts.Events;
+using Timberborn.Cutting;
+using Timberborn.GoodStackSystem;
+using Timberborn.NaturalResourcesLifecycle;
 
 namespace Cordial.Mods.BoosterJuice.Scripts {
   public class GrowthFertilizationBuilding : BaseComponent, 
@@ -59,6 +62,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         private static readonly PropertyKey<int> WorkHoursPassed = new PropertyKey<int>("WorkHoursPassed");
         private static readonly PropertyKey<float> DailyYieldKey = new PropertyKey<float>("DailyYield");
         private static readonly PropertyKey<float> AverageYieldKey = new PropertyKey<float>("AverageYield");
+        private static readonly PropertyKey<bool> FertilizeYieldKey = new PropertyKey<bool>("FertilizeYieldKey");
 
         // from GoodConsumingBuilding
         private BlockableBuilding _blockableBuilding;
@@ -78,11 +82,11 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         public int TreesTotalCount => this._treesInRangeCount;
         public int TreesGrowCount => (FertilizeYieldActive) ? (this._nearbyGrowingTrees.Count + this._nearbyYieldTrees.Count) : this._nearbyGrowingTrees.Count;
         public int TreesYieldCount => this._nearbyYieldTrees.Count;
-        public bool FertilizeYieldActive { get; private set; }  
+        public bool FertilizeYieldActive { get; set; }  
 
         public IEnumerable<Growable> GrowingTrees => this._nearbyGrowingTrees;
 
-        public int ConsumptionPerHour => Mathf.CeilToInt(this._consumptionPerHour);
+        public float ConsumptionPerHour => this._consumptionPerHour;
         public string Supply => this._supply;
 
         public int Capacity => this._capacity;
@@ -278,6 +282,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 saver.Set(GrowthFertilizationBuilding.DailyYieldKey, this._dailyYieldInc);
                 saver.Set(GrowthFertilizationBuilding.AverageYieldKey, this._averageYieldInc);
                 saver.Set(GrowthFertilizationBuilding.WorkHoursPassed, this._workHoursPassed);
+                saver.Set(GrowthFertilizationBuilding.FertilizeYieldKey, this.FertilizeYieldActive);
             }
         }
 
@@ -313,6 +318,10 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 // update passed work hours from save if available
                 int? intValueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.WorkHoursPassed);
                 this._workHoursPassed = intValueOrNullable.GetValueOrDefault();
+
+                // update passed work hours from save if available
+                bool? boolValueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.FertilizeYieldKey);
+                this.FertilizeYieldActive = boolValueOrNullable.GetValueOrDefault();
             }
         }
 
@@ -463,23 +472,55 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
                     if (growable != null)
                     {
-                        // check if still growing
-                        if (growable.GrowthInProgress)
+                        // check if still growing (and planted --> growth progress must have started
+                        if ((0.0f < growable.GrowthProgress)
+                            && (growable.GrowthProgress < 1.0f))
                         {
                             this._nearbyGrowingTrees.Add(growable);
                         }
+                        // check if it is grown, and still alive!
                         else if (growable.IsGrown)
                         {
+                            // check if component is only a stump
+                            treeComponentAt.TryGetComponentFast<Cuttable>(out Cuttable cuttable);
+                            treeComponentAt.TryGetComponentFast<LivingNaturalResource>(out LivingNaturalResource livingResource);
+                            treeComponentAt.TryGetComponentFast<Gatherable>(out Gatherable gatherable);
                             treeComponentAt.TryGetComponentFast<GatherableYieldGrower>(out GatherableYieldGrower yieldGrower);
 
-                            if (yieldGrower != null)
+                            // growable is already known
+                            if ((cuttable != null)
+                                && (livingResource != null)
+                                && (yieldGrower != null) )
                             {
-                                if (yieldGrower.GrowthProgress < 1.0f)
+                                bool gatherableEmpty = false;
+                                bool invIsEmpty = livingResource.GetComponentFast<GoodStack>().Inventory.IsEmpty;
+
+                                // must be a cuttable
+                                // must be a living resource
+                                // --> check if fully grown (= 1.0)
+                                // --> check if not yielding (cuttable / gatherable)
+
+                                bool cuttableEmpty = (cuttable.Yielder.Yield.Amount == 0);
+
+                                // not all trees have gatherables
+                                if (gatherable != null)
                                 {
-                                    this._nearbyYieldTrees.Add(treeComponentAt);
+                                    gatherableEmpty = (gatherable.Yielder.Yield.Amount == 0);
+                                }
+
+                                // is a stump or not: nothing to yield, and growth is done (checked before)
+                                if (invIsEmpty && cuttableEmpty && gatherableEmpty)
+                                {
+                                    // ignore stumps, do not mark as part of the selection
+                                }
+                                else // a tree or a markable stump
+                                {
+                                    if (yieldGrower.GrowthProgress < 1.0f)
+                                    {
+                                        this._nearbyYieldTrees.Add(treeComponentAt);
+                                    }
                                 }
                             }
-
                         }
                     }
                     _treesInRangeCount++;
