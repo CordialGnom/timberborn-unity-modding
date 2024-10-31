@@ -6,6 +6,7 @@ using Timberborn.CoreUI;
 using Timberborn.SingletonSystem;
 using Cordial.Mods.PlantingOverride.Scripts.Common.UI;
 using UnityEngine.UIElements;
+using TimberApi.UIPresets.Toggles;
 
 namespace Cordial.Mods.PlantingOverride.Scripts.UI
 {
@@ -19,6 +20,8 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
         private Label _labelTitle = new();
         private Label _labelDescription = new();
         private Dropdown _plantingOverrideDropDown = new();
+        private VisualElement _treeElement = new();
+        private Toggle _treeCuttingAreaRemove = new();
 
         // faction / crop configuration
         private readonly DropdownItemsSetter _dropdownItemsSetter;
@@ -63,6 +66,12 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
                              .BuildAndInitialize());
 
             // add a toggle for cutting area
+            _treeCuttingAreaRemove = _uiBuilder.Create<GameToggle>()
+                                        .SetName("CuttingAreaRemove")
+                                        .SetLocKey("Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.CuttingAreaRemove")
+                                        .Build();
+
+            _treeElement.Add(_treeCuttingAreaRemove);
 
             // create drop down
             _plantingOverrideDropDown = _uiBuilder.Build<GameDropdown, Dropdown>();
@@ -70,12 +79,16 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
             // add dropdown to panel
             _root.Add(CreateCenteredPanelFragmentBuilder()
                             .AddComponent(_plantingOverrideDropDown)
+                            .AddComponent(_treeElement)
                             .BuildAndInitialize());
             
             // register items to dropdown
             _dropdownItemsSetter.SetItems(_plantingOverrideDropDown, _dropDownProvider);
 
             _root.ToggleDisplayStyle(false);
+
+            // register event
+            _root.Q<Toggle>("CuttingAreaRemove").RegisterValueChangedCallback(value => ToggleValueChange(value.newValue));
 
             //this._eventBus.Post((object)new PlantingOverrideConfigChangeEvent(_dropDownProvider.PlantName, _dropDownProvider.ItemSetIsTree()));
 
@@ -108,20 +121,30 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
 
         public void SetTreeFragmentState()
         {
+            _treeElement.ToggleDisplayStyle(true);
             _dropDownProvider.ReloadAsTree();
             _dropdownItemsSetter.SetItems(_plantingOverrideDropDown, _dropDownProvider);
             _plantingOverrideDropDown.RefreshContent();
+            _treeCuttingAreaRemove.value = false;
 
-            this._eventBus.Post((object)new PlantingOverrideConfigChangeEvent(_dropDownProvider.PlantName, _dropDownProvider.ItemSetIsTree()));
+
+            this._eventBus.Post((object)new PlantingOverrideConfigChangeEvent(_dropDownProvider.PlantName, _dropDownProvider.ItemSetIsTree() ));
         }
 
         public void SetCropFragmentState()
         {
+            _treeElement.ToggleDisplayStyle(false);
             _dropDownProvider.ReloadAsCrop();
             _dropdownItemsSetter.SetItems(_plantingOverrideDropDown, _dropDownProvider);
             _plantingOverrideDropDown.RefreshContent();
 
-            this._eventBus.Post((object)new PlantingOverrideConfigChangeEvent(_dropDownProvider.PlantName, _dropDownProvider.ItemSetIsTree()));
+            this._eventBus.Post((object)new PlantingOverrideConfigChangeEvent(_dropDownProvider.PlantName, _dropDownProvider.ItemSetIsTree() ));
+        }
+
+        public void ToggleValueChange(bool value)
+        {
+            this._eventBus.Post((object)new PlantingOverrideAreaRemoveEvent(value));
+
         }
     }
 }
