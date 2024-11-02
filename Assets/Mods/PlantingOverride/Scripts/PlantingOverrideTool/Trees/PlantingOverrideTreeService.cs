@@ -320,7 +320,6 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             // the coordinate is removed from the service.
             if (HasEntryAtCoord(PlantingOverridePlantingEvent.Coordinates))
             {
-                Debug.Log("Remove: " + PlantingOverridePlantingEvent.Coordinates);
                 // remove entry in any case. Possibly the planting was reset by using the "standard" tool
                 RemoveEntryAtCoord(PlantingOverridePlantingEvent.Coordinates);
             }
