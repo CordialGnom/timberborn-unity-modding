@@ -305,9 +305,9 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                 _areaRegistry.Remove(coord);
             }
         }
-        public bool HasEntryAtCoord( Vector3Int coord, out string treeName)
+        public bool HasEntryAtCoord( Vector3Int coord)
         {
-            return _treeRegistry.TryGetValue(coord, out treeName);
+            return _treeRegistry.TryGetValue(coord, out string treeName);
         }
 
         [OnEvent]
@@ -316,9 +316,11 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             if (null == PlantingOverridePlantingEvent)
                 return;
 
-
-            if (HasEntryAtCoord(PlantingOverridePlantingEvent.Coordinates, out string resourceName))
+            // todo Cord: check that we also register if something was defined to be removed /deleted, that
+            // the coordinate is removed from the service.
+            if (HasEntryAtCoord(PlantingOverridePlantingEvent.Coordinates))
             {
+                Debug.Log("Remove: " + PlantingOverridePlantingEvent.Coordinates);
                 // remove entry in any case. Possibly the planting was reset by using the "standard" tool
                 RemoveEntryAtCoord(PlantingOverridePlantingEvent.Coordinates);
             }

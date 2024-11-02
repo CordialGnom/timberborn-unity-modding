@@ -56,12 +56,17 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
             PrefabNameMapper prefabNameMapper = DependencyContainer.GetInstance<PrefabNameMapper>();
 
             bool prefabValid = false;
+            string prefabNameOut = "";
 
             if (null != prefabNameMapper)
             {
-                if (prefabNameMapper.TryGetPrefabName(prefabNameInp, out string prefabNameOut))
+                if (prefabNameMapper.TryGetPrefabName(prefabNameInp, out prefabNameOut))
                 {
                     prefabValid = true;
+                }
+                else
+                {
+                    Debug.Log("Not Found: " + prefabNameInp + " - " + prefabNameOut);
                 }
             }
             return prefabValid;
