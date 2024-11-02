@@ -186,29 +186,10 @@ namespace Cordial.Mods.ForestTool.Scripts
         // Preview and Action Callbacks required for selection Tool Processor Factor
         private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-            //string resourceName = GetRandomPlantableName();
-            //Debug.Log("RN: " + resourceName);
-
             foreach (Vector3Int leveledCoordinate in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
             {
                 this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PlantingToolTile);
             }
-
-            //    // workaround so that highlighting doesn't toggle at a high cycle, 
-            //    // add preview of empty spots as pine trees. available to both default factions
-            //    if ((resourceName.Equals(ForestToolParam.NameEmpty, StringComparison.OrdinalIgnoreCase))
-            //    || (resourceName.Equals(string.Empty,StringComparison.OrdinalIgnoreCase))
-            //    )
-            //{
-            //    Debug.Log("RS: " + resourceName+ " - " + _defaultResource);
-            //    resourceName = _defaultResource;
-            //}
-
-            //this._areaHighlightingService.DrawTile(inputBlocks, this._colors.SelectionToolHighlight);
-
-            //this._plantingSelectionService.HighlightMarkableArea(inputBlocks, ray, resourceName);
-
-            // highlight everything added to the service above
             this._areaHighlightingService.Highlight();
         }
 
