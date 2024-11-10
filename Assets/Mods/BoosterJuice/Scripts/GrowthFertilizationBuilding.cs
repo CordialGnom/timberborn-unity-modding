@@ -393,8 +393,13 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                     // x =  ((24+1) - t) * (e.g. 3.33 * 300)
                     growthTimeOffsetCycle = ((25.0f - (float)_workHoursPassed) * (growthTimeOffset / 300.0f));
 
+
                     // calculate consumption
-                    growthFertilizerConsumption = _growthConsumptionFactor * growthTimeOffset * _timeTriggerCallCountPerDay;
+                    // 10.11.2024: changed from a relative consumption based on tree growth, set to a fixed value to 
+                    // instead for clarity. 
+                    //growthFertilizerConsumption = _growthConsumptionFactor * growthTimeOffset * _timeTriggerCallCountPerDay;
+                    // the growth time offset here is based on the original calculation referencing oak. 
+                    growthFertilizerConsumption = _growthConsumptionFactor * 0.000333f * _timeTriggerCallCountPerDay;
 
                     _consumptionPerHour += growthFertilizerConsumption;
 
@@ -428,7 +433,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
                             growthTimeOffset = growthTimePerHourComb_pc - growthTimePerHourDflt_pc;
 
-                            growthFertilizerConsumption = _yieldConsumptionFactor * growthTimeOffset;
+                            growthFertilizerConsumption = _yieldConsumptionFactor * 0.00048f;
 
                             _consumptionPerHour += growthFertilizerConsumption;
 
@@ -469,55 +474,134 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 if (treeComponentAt != null)
                 {
                     treeComponentAt.TryGetComponentFast<Growable>(out Growable growable);
+                    treeComponentAt.TryGetComponentFast<LivingNaturalResource>(out LivingNaturalResource livingResource);
 
-                    if (growable != null)
+                    if ((growable != null)
+                        && (livingResource != null))
                     {
-                        // check if still growing (and planted --> growth progress must have started
-                        if ((0.0f < growable.GrowthProgress)
-                            && (growable.GrowthProgress < 1.0f))
-                        {
-                            this._nearbyGrowingTrees.Add(growable);
-                        }
-                        // check if it is grown, and still alive!
-                        else if (growable.IsGrown)
-                        {
-                            // check if component is only a stump
-                            treeComponentAt.TryGetComponentFast<Cuttable>(out Cuttable cuttable);
-                            treeComponentAt.TryGetComponentFast<LivingNaturalResource>(out LivingNaturalResource livingResource);
-                            treeComponentAt.TryGetComponentFast<Gatherable>(out Gatherable gatherable);
-                            treeComponentAt.TryGetComponentFast<GatherableYieldGrower>(out GatherableYieldGrower yieldGrower);
-
-                            // growable is already known
-                            if ((cuttable != null)
-                                && (livingResource != null)
-                                && (yieldGrower != null) )
+                        if (!livingResource.IsDead)
+                        { 
+                            // check if still growing (and planted --> growth progress must have started
+                            if ((0.0f < growable.GrowthProgress)
+                                && (growable.GrowthProgress < 1.0f))
                             {
-                                bool gatherableEmpty = false;
-                                bool invIsEmpty = livingResource.GetComponentFast<GoodStack>().Inventory.IsEmpty;
+                                this._nearbyGrowingTrees.Add(growable);
+                            }
+                            // check if it is grown, and still alive!
+                            else if (growable.IsGrown)
+                            {
+                                // check if component is only a stump
+                                treeComponentAt.TryGetComponentFast<Cuttable>(out Cuttable cuttable);
+                                treeComponentAt.TryGetComponentFast<Gatherable>(out Gatherable gatherable);
+                                treeComponentAt.TryGetComponentFast<GatherableYieldGrower>(out GatherableYieldGrower yieldGrower);
 
-                                // must be a cuttable
-                                // must be a living resource
-                                // --> check if fully grown (= 1.0)
-                                // --> check if not yielding (cuttable / gatherable)
-
-                                bool cuttableEmpty = (cuttable.Yielder.Yield.Amount == 0);
-
-                                // not all trees have gatherables
-                                if (gatherable != null)
+                                // growable is already known
+                                if ((cuttable != null)
+                                    && (yieldGrower != null))
                                 {
-                                    gatherableEmpty = (gatherable.Yielder.Yield.Amount == 0);
-                                }
+                                    bool gatherableEmpty = false;
+                                    bool invIsEmpty = livingResource.GetComponentFast<GoodStack>().Inventory.IsEmpty;
 
-                                // is a stump or not: nothing to yield, and growth is done (checked before)
-                                if (invIsEmpty && cuttableEmpty && gatherableEmpty)
-                                {
-                                    // ignore stumps, do not mark as part of the selection
-                                }
-                                else // a tree or a markable stump
-                                {
-                                    if (yieldGrower.GrowthProgress < 1.0f)
+                                    // must be a cuttable
+                                    // must be a living resource
+                                    // --> check if fully grown (= 1.0)
+                                    // --> check if not yielding (cuttable / gatherable)
+
+                                    bool cuttableEmpty = (cuttable.Yielder.Yield.Amount == 0);
+
+                                    // not all trees have gatherables
+                                    if (gatherable != null)
                                     {
-                                        this._nearbyYieldTrees.Add(treeComponentAt);
+                                        gatherableEmpty = (gatherable.Yielder.Yield.Amount == 0);
+                                    }
+
+                                    // is a stump or not: nothing to yield, and growth is done (checked before)
+                                    if (invIsEmpty && cuttableEmpty && gatherableEmpty)
+                                    {
+                                        // ignore stumps, do not mark as part of the selection
+                                    }
+                                    else // a tree or a markable stump
+                                    {
+                                        if (yieldGrower.GrowthProgress < 1.0f)
+                                        {
+                                            this._nearbyYieldTrees.Add(treeComponentAt);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    _treesInRangeCount++;
+                }
+            }
+        }
+
+        private void UpdateNearbyGrowingBushes()
+        {
+            this._nearbyGrowingTrees.Clear();
+            this._nearbyYieldTrees.Clear();
+
+            _treesInRangeCount = 0;
+
+            foreach (Vector3Int coordinates in this._growthFertilizationAreaService.GetRegisteredFertilizationArea(_buildingId))
+            {
+                TreeComponent treeComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(coordinates);
+
+                if (treeComponentAt != null)
+                {
+                    treeComponentAt.TryGetComponentFast<Growable>(out Growable growable);
+                    treeComponentAt.TryGetComponentFast<LivingNaturalResource>(out LivingNaturalResource livingResource);
+
+                    if ((growable != null)
+                        && (livingResource != null))
+                    {
+                        if (!livingResource.IsDead)
+                        {
+                            // check if still growing (and planted --> growth progress must have started
+                            if ((0.0f < growable.GrowthProgress)
+                                && (growable.GrowthProgress < 1.0f))
+                            {
+                                this._nearbyGrowingTrees.Add(growable);
+                            }
+                            // check if it is grown, and still alive!
+                            else if (growable.IsGrown)
+                            {
+                                // check if component is only a stump
+                                treeComponentAt.TryGetComponentFast<Cuttable>(out Cuttable cuttable);
+                                treeComponentAt.TryGetComponentFast<Gatherable>(out Gatherable gatherable);
+                                treeComponentAt.TryGetComponentFast<GatherableYieldGrower>(out GatherableYieldGrower yieldGrower);
+
+                                // growable is already known
+                                if ((cuttable != null)
+                                    && (yieldGrower != null))
+                                {
+                                    bool gatherableEmpty = false;
+                                    bool invIsEmpty = livingResource.GetComponentFast<GoodStack>().Inventory.IsEmpty;
+
+                                    // must be a cuttable
+                                    // must be a living resource
+                                    // --> check if fully grown (= 1.0)
+                                    // --> check if not yielding (cuttable / gatherable)
+
+                                    bool cuttableEmpty = (cuttable.Yielder.Yield.Amount == 0);
+
+                                    // not all trees have gatherables
+                                    if (gatherable != null)
+                                    {
+                                        gatherableEmpty = (gatherable.Yielder.Yield.Amount == 0);
+                                    }
+
+                                    // is a stump or not: nothing to yield, and growth is done (checked before)
+                                    if (invIsEmpty && cuttableEmpty && gatherableEmpty)
+                                    {
+                                        // ignore stumps, do not mark as part of the selection
+                                    }
+                                    else // a tree or a markable stump
+                                    {
+                                        if (yieldGrower.GrowthProgress < 1.0f)
+                                        {
+                                            this._nearbyYieldTrees.Add(treeComponentAt);
+                                        }
                                     }
                                 }
                             }
