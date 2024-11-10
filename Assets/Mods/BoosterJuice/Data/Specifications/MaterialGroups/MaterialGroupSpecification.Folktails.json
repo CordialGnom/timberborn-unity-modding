@@ -1,0 +1,6 @@
+{
+  "Id": "Folktails",
+  "Paths#append": [
+    "Materials/Cordial/Goods/Fertilizer"
+  ]
+}

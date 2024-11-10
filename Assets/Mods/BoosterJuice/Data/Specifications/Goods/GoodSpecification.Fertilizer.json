@@ -11,7 +11,7 @@
     "Value": "Barrel"
   },
   "ContainerColor": "#95006d",
-  "ContainerMaterial": "Materials/Goods/Extract",
+  "ContainerMaterial": "Materials/Cordial/Goods/Fertilizer",
   "CarryingAnimation": "CarryInHands",
   "Weight": 1,
   "GoodGroupId": "Materials",
