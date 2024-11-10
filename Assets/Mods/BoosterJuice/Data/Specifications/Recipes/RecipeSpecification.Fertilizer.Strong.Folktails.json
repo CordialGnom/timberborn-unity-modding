@@ -11,7 +11,7 @@
   ],
   "Products": [
     {
-      "Good": { "Id": "Fertilizer" }, 	"Amount": 10 }
+      "Good": { "Id": "Fertilizer" }, 	"Amount": 11 }
   ],
   "ProducedSciencePoints": 0,
   "Fuel": {
