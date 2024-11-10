@@ -431,7 +431,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _growthFactor: 0.5
-  _growthConsumptionFactor: 750
+  _growthConsumptionFactor: 700
   _yieldFactor: 0.5
   _yieldConsumptionFactor: 7
   _growthFertilizationRadius: 8
