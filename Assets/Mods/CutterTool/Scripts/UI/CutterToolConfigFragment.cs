@@ -273,23 +273,44 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         }
         private void UpdateToggleTreeType(string name, bool value)
         {
+            bool toggleState = true;
+
             if (name == "TreeAll")
             {
                 SendToggleUpdateEventWithoutNotify("TreeAll", value);
 
-                if (true == value)
+                foreach (var toggle in _toggleTreeList)
                 {
-                    foreach (var toggle in _toggleTreeList)
-                    {
-                        SendToggleUpdateEventWithoutNotify(toggle.name, value);
-                    }
+                    SendToggleUpdateEventWithoutNotify(toggle.name, value);
                 }
             }
             else
             {
-                SendToggleUpdateEventWithoutNotify("TreeAll", false);
+                if (value)
+                {
+                    SendToggleUpdateEventWithoutNotify(name, value);
 
-                SendToggleUpdateEventWithoutNotify(name, value);
+                    // check if all trees are true, then set corresponding flag as well
+                    foreach (var toggle in _toggleTreeList)
+                    {
+                        if (!toggle.value)
+                        {
+                            toggleState = false;
+                            break;
+                        }
+                    }
+
+                    if (toggleState)
+                    {
+                        SendToggleUpdateEventWithoutNotify("TreeAll", true);
+                    }
+                }
+                else
+                {
+                    SendToggleUpdateEventWithoutNotify("TreeAll", false);
+
+                    SendToggleUpdateEventWithoutNotify(name, value);
+                }
             }  
         }
     }

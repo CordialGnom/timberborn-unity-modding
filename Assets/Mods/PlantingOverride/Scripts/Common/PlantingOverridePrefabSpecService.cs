@@ -29,15 +29,20 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
             }
         }
 
-        public ImmutableArray<string> GetAllTrees()
+        public ImmutableArray<string> GetAllForestryPlantables()
         {
             List<string> treeTypes = new();
 
             if (null != _prefabService)
-            { 
+            {
                 var treeComponents = _prefabService.GetAll<TreeComponent>();
+                var bushComponents = _prefabService.GetAll<Bush>();
 
-                //todo Cordial: Load a prefab group
+                foreach (var bushObject in bushComponents)
+                {
+                    treeTypes.Add(bushObject.name);
+                }
+
                 foreach (var treeObject in treeComponents)
                 {
                     treeTypes.Add(treeObject.name);
@@ -50,8 +55,8 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
         {
             PrefabNameMapper prefabNameMapper = DependencyContainer.GetInstance<PrefabNameMapper>();
 
-            string prefabNameOut = "";
             bool prefabValid = false;
+            string prefabNameOut = "";
 
             if (null != prefabNameMapper)
             {
@@ -59,15 +64,18 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
                 {
                     prefabValid = true;
                 }
+                else
+                {
+                    Debug.Log("Not Found: " + prefabNameInp + " - " + prefabNameOut);
+                }
             }
             return prefabValid;
         }
-        public bool CheckIsTree(string prefabNameInp)
+        public bool CheckIsForestry(string prefabNameInp)
         {
-            ImmutableArray<string> treeTypes = GetAllTrees();
+            ImmutableArray<string> forestryTypes = GetAllForestryPlantables();
 
-
-            return treeTypes.Contains(prefabNameInp.Replace(" ", ""));
+            return forestryTypes.Contains(prefabNameInp.Replace(" ", ""));
         }
 
         public ImmutableArray<string> GetAllCrops()

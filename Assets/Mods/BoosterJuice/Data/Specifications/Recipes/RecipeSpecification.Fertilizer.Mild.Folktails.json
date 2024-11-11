@@ -17,7 +17,7 @@
   "Fuel": {
     "Id": "Log"
   },
-  "CyclesFuelLasts": 2,
+  "CyclesFuelLasts": 4,
   "FuelCapacity": 5,
   "Icon": "Sprites/Goods/FertilizerIcon"
 }

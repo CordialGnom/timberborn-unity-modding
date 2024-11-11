@@ -6,7 +6,7 @@
   "Ingredients": [
     { "Good": { "Id": "Dirt" }, 		"Amount": 1 },
     { "Good": { "Id": "Spadderdock" },  "Amount": 1 },
-    { "Good": { "Id": "Extract" },  	"Amount": 2 },
+    { "Good": { "Id": "Extract" },  	"Amount": 1 },
     { "Good": { "Id": "Water" }, 		"Amount": 3 }
   ],
   "Products": [

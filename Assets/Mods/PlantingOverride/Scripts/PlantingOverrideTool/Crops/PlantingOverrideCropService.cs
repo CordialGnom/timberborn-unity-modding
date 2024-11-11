@@ -240,9 +240,9 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         {
             _cropRegistry.Remove(coord);
         }
-        public bool HasEntryAtCoord( Vector3Int coord, out string cropName)
+        public bool HasEntryAtCoord( Vector3Int coord)
         {
-            return _cropRegistry.TryGetValue(coord, out cropName);
+            return _cropRegistry.TryGetValue(coord, out string cropName);
         }
 
         [OnEvent]
@@ -252,19 +252,10 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                 return;
 
 
-            if (HasEntryAtCoord(PlantingOverridePlantingEvent.Coordinates, out string resourceName))
+            if (HasEntryAtCoord(PlantingOverridePlantingEvent.Coordinates))
             {
                 // remove entry in any case. Possibly the planting was reset by using the "standard" tool
                 RemoveEntryAtCoord(PlantingOverridePlantingEvent.Coordinates);
-
-                //if (resourceName == PlantingOverridePlantingEvent.PlantName)
-                //{
-                //    RemoveEntryAtCoord(PlantingOverridePlantingEvent.Coordinates);
-                //}
-                //else
-                //{
-                //    Debug.Log("PO: T: Mismatch: " + resourceName + " - " + PlantingOverridePlantingEvent.PlantName);
-                //}
             }
         }
     }

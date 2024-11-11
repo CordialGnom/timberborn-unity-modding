@@ -39,7 +39,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
         {
             if (this._specService != null)
             {
-                ImmutableArray<string> allowedPlantables = this._specService.GetAllTrees();
+                ImmutableArray<string> allowedPlantables = this._specService.GetAllForestryPlantables();
 
                 foreach (string plant in allowedPlantables)
                 {
@@ -57,7 +57,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
             if (this._specService != null)
             {
 
-                ImmutableArray<string> allowedPlantables = this._specService.GetAllTrees();
+                ImmutableArray<string> allowedPlantables = this._specService.GetAllForestryPlantables();
 
                 foreach (string plant in allowedPlantables)
                 {
@@ -97,7 +97,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
         {
             plantable = GetNamedPlantable(value);
 
-            bool isTree = this._specService.CheckIsTree(plantable);
+            bool isTree = this._specService.CheckIsForestry(plantable);
             bool isCrop = this._specService.CheckIsCrop(plantable);
 
             if (isTree ^ isCrop)
@@ -108,13 +108,14 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
 
         public bool ItemSetIsTree()
         {
-            return this._specService.CheckIsTree(plantable);
+            return this._specService.CheckIsForestry(plantable);
         }
 
         private string PlantableLocKey(string plantname)
         {
-            string newName = plantname.Replace(" ", "");
-            return _loc.T("NaturalResource." + newName + ".DisplayName");
+            plantname = plantname.Replace(" ", "");
+            plantname = plantname.Replace("Bush", "");
+            return _loc.T("NaturalResource." + plantname + ".DisplayName");
         }
 
         // converts string value to plantable based on the value being compared to each entry

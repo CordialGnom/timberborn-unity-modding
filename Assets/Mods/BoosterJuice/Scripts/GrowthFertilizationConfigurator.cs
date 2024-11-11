@@ -6,6 +6,7 @@ using Timberborn.LaborSystem;
 using Timberborn.TemplateSystem;
 using Timberborn.Workshops;
 using Timberborn.WorkSystem;
+using Cordial.Mods.BoosterJuice.Scripts.Material;
 
 namespace Cordial.Mods.BoosterJuice.Scripts
   
@@ -16,6 +17,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts
         public void Configure(IContainerDefinition containerDefinition)
         {
             containerDefinition.Bind<GrowthFertilizationInventoryService>().AsSingleton();
+            containerDefinition.Bind<MaterialInitializer>().AsSingleton();
             containerDefinition.MultiBind<TemplateModule>().ToProvider<GrowthFertilizationConfigurator.TemplateModuleProvider>().AsSingleton();
         }
 
