@@ -431,10 +431,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _growthFactor: 0.5
-  _growthConsumptionFactor: 700
+  _growthConsumptionFactor: 760
   _yieldFactor: 0.5
-  _yieldConsumptionFactor: 7
-  _growthFertilizationRadius: 7
+  _yieldConsumptionFactor: 0.74
+  _growthFertilizationRadius: 8
   _capacity: 50
   _supply: Fertilizer
 --- !u!1 &4187045584144244368

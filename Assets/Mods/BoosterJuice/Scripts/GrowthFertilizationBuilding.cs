@@ -433,7 +433,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
                             growthTimeOffset = growthTimePerHourComb_pc - growthTimePerHourDflt_pc;
 
-                            growthFertilizerConsumption = _yieldConsumptionFactor * 0.00048f;
+                            growthFertilizerConsumption = (_yieldConsumptionFactor/100.0f);
 
                             _consumptionPerHour += growthFertilizerConsumption;
 

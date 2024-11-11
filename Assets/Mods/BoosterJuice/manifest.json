@@ -7,7 +7,7 @@
   "RequiredMods": [
    {
 	"Id": "TimberApi",
-	"MinimumVersion": "0.7.6.0"
+	"MinimumVersion": "0.7.7.2"
    }
   ]
 }
