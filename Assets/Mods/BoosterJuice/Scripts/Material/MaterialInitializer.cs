@@ -18,14 +18,15 @@ namespace Cordial.Mods.BoosterJuice.Scripts.Material
 
         public void Load()
         {
-            var extract = _materialRepository.GetMaterial("Water");
+            var extract = _materialRepository.GetMaterial("Extract");
+            //var water = _materialRepository.GetMaterial("Water");
             var fertilizer = _materialRepository.GetMaterial("Fertilizer");
 
             if ((extract != null)
                 && (fertilizer != null))
             {
-
-
+                // todo Cord: further tests of changing color properties required. 
+                fertilizer.CopyPropertiesFromMaterial(extract);
                 fertilizer.shader = extract.shader;
                 // disable foam, suggestion based on Tobbert/Emberpelt code
                 //fertilizer.SetVector("_FoamColor", fertilizerEmissionColor);
