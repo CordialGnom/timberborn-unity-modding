@@ -1,4 +1,3 @@
 {
-	"Goods#append" : [ "Fertilizer" ],
-	"MaterialGroups#append": [ "Materials/Cordial/Goods/Fertilizer" ]
+	"Goods#append" : [ "Fertilizer" ]
 }
