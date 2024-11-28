@@ -1,0 +1,15 @@
+{
+  "Id": "Cordial.DeletionTool",
+  "Type": "DeletionTool",
+  "GroupId": "Demolishing",
+  "Layout": "brown",
+  "Order": 12,
+  "Icon": "Sprites/DeletionTool/DeletionToolIcon",
+  "NameLocKey": "Cordial.DeletionTool.DisplayName",
+  "DescriptionLocKey": "Cordial.DeletionTool.Description",
+  "DevMode": false,
+  "Hidden": false,
+  "ToolInformation": {
+    "BottomBarSection": 1
+  }
+}

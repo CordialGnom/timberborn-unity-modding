@@ -1,0 +1,13 @@
+{
+  "Name": "Deletion Tool",
+  "Version": "0.0.1",
+  "Id": "Cordial.Mods.DeletionTool",
+  "MinimumGameVersion": "0.6.7.0",
+  "Description": "A tool to select multiple objects for simultaneous deletion.",
+  "RequiredMods": [
+  {
+	"Id": "TimberApi",
+	"MinimumVersion": "0.7.8.0"
+  }
+  ]
+}

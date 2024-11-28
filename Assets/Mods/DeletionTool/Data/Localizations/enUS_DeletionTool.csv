@@ -1,0 +1,4 @@
+ID,Text,Comment
+Cordial.DeletionTool.DisplayName,Selective Deletion Tool,-
+Cordial.DeletionTool.Description,This tool deletes all selected objects of the same type,-
+Cordial.DeletionTool.Prompt.Abort, Not all selected objects could be deleted!,-
