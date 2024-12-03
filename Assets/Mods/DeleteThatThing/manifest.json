@@ -1,0 +1,13 @@
+{
+  "Name": "Delete That Thing",
+  "Version": "0.1.0",
+  "Id": "Cordial.Mods.DeleteThatThing",
+  "MinimumGameVersion": "0.6.7.0",
+  "Description": "A tool to select multiple objects of the same type for deletion.",
+  "RequiredMods": [
+  {
+	"Id": "TimberApi",
+	"MinimumVersion": "0.7.8.0"
+  }
+  ]
+}
