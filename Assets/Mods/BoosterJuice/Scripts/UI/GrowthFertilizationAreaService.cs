@@ -192,6 +192,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
             }
         }
         public float GetGrowthFactor()
+        { 
             if (_buildingRegistry.Count > 0)
             {
                 KeyValuePair<int, GrowthFertilizationBuilding> kvp = _buildingRegistry.First();
