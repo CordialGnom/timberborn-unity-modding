@@ -29,6 +29,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
         private Label _yieldStateText = new();
         private Toggle _yieldFertilize = new();
 
+        private VisualElement _panelFragment = new();
+
         // localizations
         private readonly ILoc _loc;
         private static readonly string ConsumptionLocKey = "Cordial.Building.FertilizerDump.Consumption";
@@ -45,7 +47,6 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
         public VisualElement InitializeFragment()
         {
-
             _growthStateText =  _uiBuilder.Create<GameLabel>()
                                     .Small()
                                     .Build();
@@ -63,15 +64,20 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
                                     .SetLocKey("Cordial.Building.FertilizerDump.FertilizeYield")
                                     .Build();
 
+
             _root.Add(CreateCenteredPanelFragmentBuilder()
                             .AddComponent(_yieldFertilize)
                             .BuildAndInitialize());
 
-            _root.Add(CreateCenteredPanelFragmentBuilder()
-                            .AddComponent(_growthStateText)
-                            .AddComponent(_capacityStateText)
-                            .AddComponent(_consumptionText)
-                            .BuildAndInitialize());
+
+            _panelFragment =    CreateCenteredPanelFragmentBuilder()
+                                    .BuildAndInitialize();
+
+            _panelFragment.Add(_growthStateText);
+            _panelFragment.Add(_capacityStateText);
+            _panelFragment.Add(_consumptionText);
+
+            _root.Add(_panelFragment);
 
             _root.ToggleDisplayStyle(visible: false);
 
