@@ -22,7 +22,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
         private GrowthFertilizationBuilding _growthFertilizationBuilding;
 
-        private VisualElement _root = new();
+        private readonly VisualElement _root = new();
         private Label _growthStateText = new();
         private Label _consumptionText = new();
         private Label _capacityStateText = new();
