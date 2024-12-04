@@ -66,7 +66,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
                 }
                 else
                 {
-                    Debug.Log("Not Found: " + prefabNameInp + " - " + prefabNameOut);
+                    Debug.Log("PO: Missing: " + prefabNameInp + " - " + prefabNameOut);
                 }
             }
             return prefabValid;

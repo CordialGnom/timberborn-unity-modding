@@ -53,7 +53,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         private static Dictionary<Vector3Int, string> _treeRegistry = new();
         private static List<Vector3Int> _areaRegistry = new();
 
-        private static readonly SingletonKey PlantingOverrideTreeServiceKey = new SingletonKey("Cordial.PlantingOverrideTreeService");
+        private static readonly SingletonKey PlantingOverrideTreeServiceKey = new SingletonKey(nameof(PlantingOverrideTreeService));
         private static readonly ListKey<Vector3Int> PlantingOverrideTreeCoordKey = new ListKey<Vector3Int>("Cordial.PlantingOverrideTreeCoordKey");
         private static readonly ListKey<string> PlantingOverrideTreeTypeKey = new ListKey<string>("Cordial.PlantingOverrideTreeTypeKey");
         private static readonly ListKey<Vector3Int> PlantingOverrideAreaCoordKey = new ListKey<Vector3Int>("Cordial.PlantingOverrideAreaCoordKey");

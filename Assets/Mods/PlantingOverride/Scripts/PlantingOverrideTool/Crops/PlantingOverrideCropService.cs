@@ -49,7 +49,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         private readonly ISingletonLoader _singletonLoader;
         private static Dictionary<Vector3Int, string> _cropRegistry = new();
 
-        private static readonly SingletonKey PlantingOverrideCropServiceKey = new SingletonKey("Cordial.PlantingOverrideCropService");
+        private static readonly SingletonKey PlantingOverrideCropServiceKey = new SingletonKey( nameof(PlantingOverrideCropService));
         private static readonly ListKey<Vector3Int> PlantingOverrideCropCoordKey = new ListKey<Vector3Int>("Cordial.PlantingOverrideCropCoordKey");
         private static readonly ListKey<string> PlantingOverrideCropTypeKey = new ListKey<string>("Cordial.PlantingOverrideCropTypeKey");
 
