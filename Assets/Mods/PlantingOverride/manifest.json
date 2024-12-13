@@ -1,6 +1,6 @@
 {
   "Name": "Planting Override",
-  "Version": "0.3.2",
+  "Version": "0.4.0",
   "Id": "Cordial.Mods.PlantingOverride",
   "MinimumGameVersion": "0.6.7.0",
   "Description": "Allows overriding the replanting of crops and trees",
