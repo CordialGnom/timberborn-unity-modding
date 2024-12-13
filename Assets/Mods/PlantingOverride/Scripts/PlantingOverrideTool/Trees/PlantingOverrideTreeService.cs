@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cordial.Mods.PlantingOverride.Scripts.Common;
 using Cordial.Mods.PlantingOverride.Scripts.UI;
+using NUnit.Framework;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.CoreUI;
@@ -127,7 +128,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                             }
                         }
 
-                        foreach (var kvp in _treeRegistry)
+                        foreach (var kvp in _treeRegistry.ToList())
                         {
                             TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(kvp.Key);
                             Bush bushComponentAt = this._blockService.GetBottomObjectComponentAt<Bush>(kvp.Key);
@@ -292,9 +293,13 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         public void RemoveEntryAtCoord( Vector3Int coord)
         {
+            // remove coordinate from both registries
             _treeRegistry.Remove(coord);
+            _areaRegistry.Remove(coord);
+        }
 
-
+        public void RemoveEntryInCutArea(Vector3Int coord)
+        {
             if (_areaRegistry.Contains(coord))
             {
                 List<Vector3Int> list = new();
@@ -305,6 +310,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                 _areaRegistry.Remove(coord);
             }
         }
+
         public bool HasEntryAtCoord( Vector3Int coord)
         {
             return _treeRegistry.TryGetValue(coord, out string treeName);
@@ -316,13 +322,20 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             if (null == PlantingOverridePlantingEvent)
                 return;
 
-            // todo Cord: check that we also register if something was defined to be removed /deleted, that
-            // the coordinate is removed from the service.
             if (HasEntryAtCoord(PlantingOverridePlantingEvent.Coordinates))
             {
-                // remove entry in any case. Possibly the planting was reset by using the "standard" tool
+                RemoveEntryInCutArea(PlantingOverridePlantingEvent.Coordinates);
                 RemoveEntryAtCoord(PlantingOverridePlantingEvent.Coordinates);
             }
+        }
+
+        [OnEvent]
+        public void OnPlantingOverrideRemoveEvent(PlantingOverrideRemoveEvent PlantingOverrideRemoveEvent)
+        {
+            if (null == PlantingOverrideRemoveEvent)
+                return;
+
+            RemoveEntryAtCoord(PlantingOverrideRemoveEvent.Coordinates);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cordial.Mods.PlantingOverride.Scripts.Common;
 using Cordial.Mods.PlantingOverride.Scripts.UI;
 using Timberborn.BaseComponentSystem;
@@ -111,7 +112,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                         }
                     }
 
-                    foreach (var kvp in _cropRegistry)
+                    foreach (var kvp in _cropRegistry.ToList())
                     {
                         Crop objectComponentAt = this._blockService.GetBottomObjectComponentAt<Crop>(kvp.Key);
 
@@ -256,6 +257,19 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             {
                 // remove entry in any case. Possibly the planting was reset by using the "standard" tool
                 RemoveEntryAtCoord(PlantingOverridePlantingEvent.Coordinates);
+            }
+        }
+        [OnEvent]
+        public void OnPlantingOverrideRemoveEvent(PlantingOverrideRemoveEvent PlantingOverrideRemoveEvent)
+        {
+            if (null == PlantingOverrideRemoveEvent)
+                return;
+
+
+            if (HasEntryAtCoord(PlantingOverrideRemoveEvent.Coordinates))
+            {
+                // remove entry in any case. Possibly the planting was reset by using a "standard" tool
+                RemoveEntryAtCoord(PlantingOverrideRemoveEvent.Coordinates);
             }
         }
     }
