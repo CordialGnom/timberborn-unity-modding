@@ -19,8 +19,6 @@ namespace Cordial.Mods.BoosterJuice.Scripts
         private FillInputWorkplaceBehavior _fillInputWorkplaceBehavior;
         private EmptyOutputWorkplaceBehavior _emptyOutputWorkplaceBehavior;
 
-
-
         [Inject]
         public void InjectDependencies(InventoryFillCalculator inventoryFillCalculator)
         {

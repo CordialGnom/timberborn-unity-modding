@@ -1,20 +1,19 @@
-﻿using Cordial.Mods.PlantingOverride.Scripts;
-using Cordial.Mods.PlantingOverride.Scripts.Common;
-using Cordial.Mods.PlantingOverride.Scripts.UI;
+﻿using Cordial.Mods.PlantingOverride.Scripts.Common;
 using HarmonyLib;
+using System.Collections.Generic;
 using TimberApi.DependencyContainerSystem;
-using Timberborn.BaseComponentSystem;
 using Timberborn.BehaviorSystem;
 using Timberborn.BlockSystem;
 using Timberborn.Common;
+using Timberborn.DemolishingUI;
 using Timberborn.Forestry;
 using Timberborn.ModManagerScene;
 using Timberborn.Planting;
+using Timberborn.PlantingUI;
 using Timberborn.ReservableSystem;
 using Timberborn.SingletonSystem;
-using Timberborn.WorkSystem;
+using Timberborn.ToolSystem;
 using UnityEngine;
-using UnityEngine.Playables;
 
 namespace Assets.Mods.PlantingOverride.Scripts.Common
 {
@@ -43,7 +42,7 @@ namespace Assets.Mods.PlantingOverride.Scripts.Common
                             && (null != eventBus))
                     {
                         string oldResource = plantingService.GetResourceAt(coordinates.XY());
-                        eventBus.Post((object)new PlantingOverridePlantingEvent(coordinates));
+                        eventBus.Post((object)new PlantingOverridePlantingEvent(coordinates, oldResource));
                     }
                 }
 
@@ -52,46 +51,65 @@ namespace Assets.Mods.PlantingOverride.Scripts.Common
             }
         }
 
-        [HarmonyPatch(typeof(Planter), "Unreserve")]
-        public static class PlantUnreservePatch
+        /*
+         * 
+         * 
+         * Unset Tool: Timberborn.DemolishingUI.DemolishableSelectionTool - Timberborn.ToolSystem.ToolDescription
+TR: False AR: False
+Unset Tool: Timberborn.PlantingUI.CancelPlantingTool - Timberborn.ToolSystem.ToolDescription
+TR: False AR: False
+UnmarkArea Tool: Timberborn.PlantingUI.CancelPlantingTool - Timberborn.ToolSystem.ToolDescription
+TR: False AR: False
+Unset Tool: Cordial.Mods.PlantingOverride.Scripts.PlantingOverrideTreeService - Timberborn.ToolSystem.ToolDescription
+TR: False AR: False
+Unset Tool: Timberborn.PlantingUI.PlantingTool - Timberborn.ToolSystem.ToolDescription
+TR: False AR: False
+
+         * 
+         * 
+*/
+
+        //CancelPlantingTool: PlantingSelectionService -> Unmark Area --> UnsetPlantingCoordinates
+        //Demolition: DemoishableSelectionTool ->UnsetPlantingCoordinates
+        //Planting: PlantingTool Plant
+
+
+        // planting service SetPlanting / UnsetPlanting
+        // for when the "standard" tools override the planting override service
+
+        [HarmonyPatch(typeof(PlantingService), "UnsetPlantingCoordinates")]
+        public static class PlantingServiceUnsetCoordinatePatch
         {
-            static bool Prefix(ref Planter __instance)
+            static void Postfix(ref Vector3Int coordinates)
             {
-                // need to get access to object as well. 
-                if (null != __instance)
+                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+                ToolManager toolManager = DependencyContainer.GetInstance<ToolManager>();
+
+                if (null != toolManager)
                 {
-                    if (__instance.PlantingCoordinates.HasValue)
+                    if (null != toolManager.ActiveTool)
                     {
-                        EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
-                        eventBus.Post((object)new PlantingOverridePlantingEvent(__instance.PlantingCoordinates.Value));
+                        // when the active tool is the override service, don't call entry removal,
+                        // any planting override changes are handled directly through the tool. 
+
+                        // for all other tools, remove the coordinates from the override service
+                        // this may be called by DemolishableSelectionTool, CancelPlantingTool or the standard PlantingTool.
+                        if (toolManager.ActiveTool.ToString().Contains("PlantingOverride"))
+                        {
+                            // ignore removal
+                        }
+                        else
+                        {
+                            eventBus.Post((object)new PlantingOverrideRemoveEvent(coordinates));
+                        }
+                    }
+                    else
+                    {
+                        // no active tool, ignore situation (likely save game startup validation)
                     }
                 }
 
-                // always return true, to ensure patched function is executed
-                return true;
-            }
-        }
 
-        [HarmonyPatch(typeof(Reservable), "Unreserve")]
-        public static class ReservableUnreservePatch
-        {
-            static bool Prefix(ref Reservable __instance)
-            {
-                // need to get access to object as well. 
-                if (null != __instance)
-                {
-                    __instance.TryGetComponentFast<TreeComponent>(out TreeComponent component);
-                    __instance.TryGetComponentFast<BlockObject>(out BlockObject block);
-
-                    if ((null != component)
-                        && (null != block))
-                    {
-                        EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
-                        eventBus.Post((object)new PlantingOverridePlantingEvent(block.Coordinates));
-                    }
-                }
-                // always return true, to ensure patched function is executed
-                return true;
             }
         }
     }

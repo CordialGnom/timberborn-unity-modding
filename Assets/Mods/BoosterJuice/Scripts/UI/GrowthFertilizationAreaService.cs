@@ -10,8 +10,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
     {
         private int _buildingCount;
 
-        private Dictionary<Vector3Int, int> _coordinateRegistry = new Dictionary<Vector3Int, int>();
-        private Dictionary<int, GrowthFertilizationBuilding> _buildingRegistry = new Dictionary<int, GrowthFertilizationBuilding>();
+        private readonly Dictionary<Vector3Int, int> _coordinateRegistry = new Dictionary<Vector3Int, int>();
+        private readonly Dictionary<int, GrowthFertilizationBuilding> _buildingRegistry = new Dictionary<int, GrowthFertilizationBuilding>();
 
         public GrowthFertilizationAreaService()
         {
@@ -114,23 +114,26 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
         public float GetGrowthProgessDaily( Vector3Int coordinate)
         {
             // get building ID referenced to the coordinate
-            int buildingID =    _coordinateRegistry.GetValueOrDefault(coordinate, 0);
-
-            if (buildingID == 0)
+            if (!_coordinateRegistry.TryGetValue(coordinate, out int buildingID))
             {
-                return 0.0f;
+                return 0f;
             }
             else
             {
-                GrowthFertilizationBuilding building =  _buildingRegistry.GetValueOrDefault(buildingID, null);
-
-                if (building != null)
+                if (buildingID == 0)
                 {
-                    return building.DailyGrowth;
+                    return 0.0f;
                 }
                 else
                 {
-                    return 0.0f;
+                    if (!_buildingRegistry.TryGetValue(buildingID, out GrowthFertilizationBuilding building))
+                    {
+                        return 0f;
+                    }
+                    else
+                    {
+                        return building.DailyGrowth;
+                    }
                 }
             }
         }
@@ -138,66 +141,82 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
         public float GetGrowthProgessAverage(Vector3Int coordinate)
         {
             // get building ID referenced to the coordinate
-            int buildingID = _coordinateRegistry.GetValueOrDefault(coordinate, 0);
-
-            if (buildingID == 0)
+            if (!_coordinateRegistry.TryGetValue(coordinate, out int buildingID))
             {
-                return 0.0f;
+                return 0f;
             }
             else
             {
-                GrowthFertilizationBuilding building = _buildingRegistry.GetValueOrDefault(buildingID, null);
-
-                if (building != null)
+                if (buildingID == 0)
                 {
-                    return building.AverageGrowth;
+                    return 0.0f;
                 }
                 else
                 {
+                    if (!_buildingRegistry.TryGetValue(buildingID, out GrowthFertilizationBuilding building))
+                    {
+                        return 0f;
+                    }
+                    else
+                    {
+                        return building.AverageGrowth;
+                    }
+                }
+            }
+        }
+        
+        public float GetYieldProgessAverage(Vector3Int coordinate)
+        {
+            // get building ID referenced to the coordinate
+            if (!_coordinateRegistry.TryGetValue(coordinate, out int buildingID))
+            {
+                return 0f;
+            }
+            else
+            {
+                if (buildingID == 0)
+                {
                     return 0.0f;
+                }
+                else
+                {
+                    if (!_buildingRegistry.TryGetValue(buildingID, out GrowthFertilizationBuilding building))
+                    {
+                        return 0f;
+                    }
+                    else
+                    {
+                        return building.AverageYieldInc;
+                    }
                 }
             }
         }
         public float GetGrowthFactor()
-        {
-            // get first building, as all should have the same reference
-            KeyValuePair<int, GrowthFertilizationBuilding> kvp = _buildingRegistry.First();
-
-            if (kvp.Value == null)
-                return 0.0f;
-            return kvp.Value.GrowthFactor;
-        }
-        public float GetYieldProgessAverage(Vector3Int coordinate)
-        {
-            // get building ID referenced to the coordinate
-            int buildingID = _coordinateRegistry.GetValueOrDefault(coordinate, 0);
-
-            if (buildingID == 0)
+        { 
+            if (_buildingRegistry.Count > 0)
             {
-                return 0.0f;
-            }
-            else
-            {
-                GrowthFertilizationBuilding building = _buildingRegistry.GetValueOrDefault(buildingID, null);
+                KeyValuePair<int, GrowthFertilizationBuilding> kvp = _buildingRegistry.First();
 
-                if (building != null)
+                if (kvp.Value != null)
                 {
-                    return building.AverageYieldInc;
-                }
-                else
-                {
-                    return 0.0f;
+                    return kvp.Value.GrowthFactor;
                 }
             }
+            return 0f;
         }
         public float GetYieldFactor()
         {
             // get first building, as all should have the same reference
-            KeyValuePair<int, GrowthFertilizationBuilding> kvp = _buildingRegistry.First();
+            if (_buildingRegistry.Count > 0)
+            {
+                KeyValuePair<int, GrowthFertilizationBuilding> kvp = _buildingRegistry.First();
 
-            if (kvp.Value == null)
-                return 0.0f;
-            return kvp.Value.YieldFactor;
+                if (kvp.Value != null)
+                {
+                    return kvp.Value.YieldFactor;
+                }
+            }
+            return 0.0f;
         }
     }
 }

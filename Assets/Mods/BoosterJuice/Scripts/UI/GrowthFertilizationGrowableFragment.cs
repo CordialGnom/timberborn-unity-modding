@@ -28,8 +28,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
 
         private VisualElement _root = new();
-        private VisualElement _growthElement = new();
-        private VisualElement _yieldElement = new();
+        private readonly VisualElement _growthElement = new();
+        private readonly VisualElement _yieldElement = new();
 
         private Label _title = new();
         private Label _growthDailyInfo = new();
