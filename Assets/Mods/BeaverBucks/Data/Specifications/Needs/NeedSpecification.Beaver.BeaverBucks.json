@@ -1,0 +1,24 @@
+{
+  "Id": "BeaverBucks",
+  "BackwardCompatibleIds": [
+  ],
+  "Order": 9,
+  "NeedGroupId": "WEllbeing",
+  "CharacterType": "Beaver",
+  "DisplayNameLocKey": "Cordial.Building.DisplayName",
+  "StartingValue": 0.0,
+  "MinimumValue": 0.0,
+  "MaximumValue": 1.0,
+  "DailyDelta": -0.05,
+  "ImportanceMultiplier": 1.0,
+  "CriticalNeedType": {
+    "Value": "None"
+  },
+  "CriticalSpriteName": "",
+  "CriticalDescriptionLocKey": "",
+  "DeathOnMinValue": false,
+  "DeathMessageLocKey": "",
+  "Effectiveness": 5.0,
+  "Wastable": true,
+  "FavorableWellbeing": 1
+}

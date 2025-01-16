@@ -1,0 +1,25 @@
+{
+  "Id": "TailTea",
+  "BackwardCompatibleIds": [],
+  "DisplayNameLocKey": "Cordial.Good.TailTea.DisplayName",
+  "PluralDisplayNameLocKey": "Cordial.Good.TailTea.PluralDisplayName",
+  "ConsumptionEffects": [
+	{ "Points": 0.5, "NeedId": "Thirst" },
+	{ "Points": 0.3, "NeedId": "Sleep" },
+	{ "Points": 0.5, "NeedId": "TailTea" },
+	{ "Points": 0.2, "NeedId": "RooftopTerrace" }
+ ],
+  "GoodType": "Liquid",
+  "StockpileVisualization": "Liquid",
+  "VisibleContainer": {
+    "Value": "Barrel"
+  },
+  "ContainerColor": "#e1a2c1",
+  "ContainerMaterial": "Materials/Goods/Extract",
+  "CarryingAnimation": "CarryInHands",
+  "Weight": 1,
+  "GoodGroupId": "Food",
+  "ForceImport": false,
+  "Icon": "Sprites/Goods/TailTeaIcon",
+  "RequiredFeatureToggle": ""
+}
