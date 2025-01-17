@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 888569846499390633}
   - component: {fileID: 3228620913753078987}
   - component: {fileID: 8819500228608806773}
-  - component: {fileID: 8596211870099459604}
-  - component: {fileID: 6734430368143552073}
   m_Layer: 0
   m_Name: '#Finished'
   m_TagString: Untagged
@@ -47,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelName: Buildings/Wood/CordialFertilizerDump/Models/CordialFertilizerDump.Folktails.Model
+  _modelName: Buildings/Wellbeing/CordialBeaverBucks/Models/BeaverBucks.Folktails.Model
 --- !u!65 &8819500228608806773
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -67,52 +65,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.2, y: 0.4, z: 0.7}
-  m_Center: {x: 0.5, y: 0.55, z: 1.3}
---- !u!65 &8596211870099459604
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 666627564884985863}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.1, z: 1}
-  m_Center: {x: 0.5, y: 0.3, z: 1.44}
---- !u!136 &6734430368143552073
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 666627564884985863}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1.42
-  m_Direction: 1
-  m_Center: {x: 0.5, y: 0.48, z: 0.5}
+  m_Size: {x: 3, y: 2, z: 2}
+  m_Center: {x: 1.5, y: 1, z: 1}
 --- !u!1 &2863585299073478030
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,21 +78,16 @@ GameObject:
   - component: {fileID: 803529049518635409}
   - component: {fileID: 5844259344645007443}
   - component: {fileID: 5124144526841976077}
-  - component: {fileID: -1066210719923161554}
   - component: {fileID: -961603786714167271}
-  - component: {fileID: 4819035487028770096}
   - component: {fileID: 6550179831291003621}
   - component: {fileID: 597385797418565326}
   - component: {fileID: 6141423570053224474}
   - component: {fileID: 2167036561229256711}
-  - component: {fileID: -3161173505399161988}
-  - component: {fileID: -3263700274538104599}
   - component: {fileID: -5231034337155097649}
   - component: {fileID: 3045347935002632006}
-  - component: {fileID: 8892177175870057185}
   - component: {fileID: 7672197548274035088}
   m_Layer: 0
-  m_Name: CordialBeaverBucks.FolkTails
+  m_Name: BeaverBucks.FolkTails
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -197,26 +146,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _finishedModelName: '#Finished'
-  _unfinishedModelName: '#Finished'
+  _unfinishedModelName: '#Unfinished'
   _finishedUncoveredModelName: 
   _constructionModeModel: 0
---- !u!114 &-1066210719923161554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1496982017, guid: 71874a96862cca0445075c2f72e705bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxWorkers: 1
-  _defaultWorkers: 1
-  _defaultWorkerType: Beaver
-  _disallowOtherWorkerTypes: 0
-  _workerTypeUnlockCosts: []
 --- !u!114 &-961603786714167271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,22 +164,10 @@ MonoBehaviour:
   _operatingState: 0
   _limitedCapacityFinished: 0
   _capacityFinished: 0
-  _throttledExitFinished: 1
+  _throttledExitFinished: 0
   _limitedCapacityUnfinished: 0
   _capacityUnfinished: 0
   _throttledExitUnfinished: 0
---- !u!114 &4819035487028770096
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1933283616, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6550179831291003621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: -731835049, guid: b5f268a4cb31a93ed707a95d3a502b0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prefabName: CordialBeaverBucks.Folktails
+  _prefabName: BeaverBucks.Folktails
   _backwardCompatiblePrefabNames: []
   _requiredFeatureToggle: 
   _disablingFeatureToggle: 
@@ -282,78 +202,78 @@ MonoBehaviour:
     - _matterBelow: 1
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 55
+      _occupations: -1
       _stackable: 0
       _occupyAllBelow: 0
     - _matterBelow: 1
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
+      _occupations: -1
       _stackable: 0
       _occupyAllBelow: 0
     - _matterBelow: 1
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
+      _occupations: -1
       _stackable: 0
       _occupyAllBelow: 0
     - _matterBelow: 1
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
+      _occupations: -1
       _stackable: 0
       _occupyAllBelow: 0
     - _matterBelow: 1
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
+      _occupations: -1
       _stackable: 0
       _occupyAllBelow: 0
     - _matterBelow: 1
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
+      _occupations: -1
       _stackable: 0
       _occupyAllBelow: 0
-    - _matterBelow: 1
+    - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
-      _stackable: 0
+      _occupations: -1
+      _stackable: 1
       _occupyAllBelow: 0
-    - _matterBelow: 1
+    - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
-      _stackable: 0
+      _occupations: -1
+      _stackable: 1
       _occupyAllBelow: 0
-    - _matterBelow: 1
+    - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
-      _stackable: 0
+      _occupations: -1
+      _stackable: 1
       _occupyAllBelow: 0
-    - _matterBelow: 1
+    - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
-      _stackable: 0
+      _occupations: -1
+      _stackable: 1
       _occupyAllBelow: 0
-    - _matterBelow: 1
+    - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
-      _stackable: 0
+      _occupations: -1
+      _stackable: 1
       _occupyAllBelow: 0
-    - _matterBelow: 1
+    - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: 51
-      _stackable: 0
+      _occupations: -1
+      _stackable: 1
       _occupyAllBelow: 0
   _entrance:
     _hasEntrance: 1
-    _coordinates: {x: -1, y: 0, z: 0}
+    _coordinates: {x: 0, y: -1, z: 0}
   _baseZ: 0
   _overridable: 0
   _flippable: 1
@@ -392,31 +312,7 @@ MonoBehaviour:
   _displayNameLocKey: Cordial.Building.BeaverBucks.DisplayName
   _descriptionLocKey: Cordial.Building.BeaverBucks.Description
   _flavorDescriptionLocKey: Cordial.Building.BeaverBucks.FlavorDescription
-  _imagePath: Buildings/Wood/CordialFertilizerDump/FertilizerDumpIcon
---- !u!114 &-3161173505399161988
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -455950880, guid: 71874a96862cca0445075c2f72e705bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-3263700274538104599
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -598504670, guid: 6e68475ee52ce568acbd493b99ce126d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _imagePath: Sprites/Bottombar/BotGeneratorTool
 --- !u!114 &-5231034337155097649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,19 +344,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _localAccess: {x: -0.5, y: -0.15, z: 0.22}
-  _forceOneFinalAccess: 1
---- !u!114 &8892177175870057185
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1912839643, guid: 603f82a4140498c516499d72a9d347b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _forceOneFinalAccess: 0
 --- !u!114 &7672197548274035088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -500,7 +384,7 @@ Transform:
   m_GameObject: {fileID: 4187045584144244368}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.4999984, y: 0.9345722, z: 0.49999768}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -520,7 +404,7 @@ GameObject:
   - component: {fileID: 4104787996602027944}
   - component: {fileID: 1761111825529870235}
   m_Layer: 0
-  m_Name: ConstructionSite1x1
+  m_Name: ConstructionSite3x2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -535,7 +419,7 @@ Transform:
   m_GameObject: {fileID: 5054363170690802403}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.4999984, y: -0.9345722, z: -0.49999768}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -560,8 +444,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 0.1, z: 1}
-  m_Center: {x: 0.5, y: 0.05, z: 0.5}
+  m_Size: {x: 3, y: 0.1, z: 2}
+  m_Center: {x: 1.5, y: 0.05, z: 1}
 --- !u!114 &1761111825529870235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -574,7 +458,7 @@ MonoBehaviour:
   m_Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelName: ConstructionSites\ConstructionSite1x1\ConstructionSite1x1.Model
+  _modelName: ConstructionSites\ConstructionSite3x2\ConstructionSite3x2.Model
 --- !u!1 &7175132922643718069
 GameObject:
   m_ObjectHideFlags: 0
@@ -585,7 +469,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3693081330615644763}
   - component: {fileID: 4583208347522989508}
-  - component: {fileID: 4425295537041938692}
   - component: {fileID: 6228445552305634670}
   m_Layer: 0
   m_Name: ConstructionStage0
@@ -603,7 +486,7 @@ Transform:
   m_GameObject: {fileID: 7175132922643718069}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.4999984, y: -0.9345722, z: -0.49999768}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -628,29 +511,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.8612499, y: 0.34287843, z: 0.9963006}
-  m_Center: {x: 0.5, y: 0.17143922, z: 0.4981503}
---- !u!65 &4425295537041938692
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7175132922643718069}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.8612499, y: 0.09461802, z: 0.89056003}
-  m_Center: {x: 0.5, y: 0.2955694, z: 1.4429188}
+  m_Size: {x: 3, y: 0.1, z: 2}
+  m_Center: {x: 1.5, y: 0.05, z: 1}
 --- !u!114 &6228445552305634670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -663,4 +525,4 @@ MonoBehaviour:
   m_Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelName: Buildings\Water\FluidDump\FluidDump.Folktails.ConstructionStage0.Model
+  _modelName: Buildings/Housing/TripleLodge/TripleLodge.ConstructionStage0.Model
