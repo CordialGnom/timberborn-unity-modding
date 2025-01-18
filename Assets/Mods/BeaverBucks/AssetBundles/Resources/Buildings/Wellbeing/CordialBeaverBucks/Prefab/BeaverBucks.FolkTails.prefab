@@ -78,14 +78,18 @@ GameObject:
   - component: {fileID: 803529049518635409}
   - component: {fileID: 5844259344645007443}
   - component: {fileID: 5124144526841976077}
+  - component: {fileID: 6422940482062867266}
   - component: {fileID: -961603786714167271}
   - component: {fileID: 6550179831291003621}
   - component: {fileID: 597385797418565326}
   - component: {fileID: 6141423570053224474}
   - component: {fileID: 2167036561229256711}
+  - component: {fileID: 6199678311330489223}
   - component: {fileID: -5231034337155097649}
   - component: {fileID: 3045347935002632006}
   - component: {fileID: 7672197548274035088}
+  - component: {fileID: 3649081143110316872}
+  - component: {fileID: 3377861871875612613}
   m_Layer: 0
   m_Name: BeaverBucks.FolkTails
   m_TagString: Untagged
@@ -149,6 +153,22 @@ MonoBehaviour:
   _unfinishedModelName: '#Unfinished'
   _finishedUncoveredModelName: 
   _constructionModeModel: 0
+--- !u!114 &6422940482062867266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -125768435, guid: 155d71f0a7a2317772ec1e43992c8879, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _effectSpecifications:
+  - _needId: BeaverBucks
+    _pointsPerHour: 0.3
+    _satisfyToMaxValue: 0
 --- !u!114 &-961603786714167271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,8 +182,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _operatingState: 0
-  _limitedCapacityFinished: 0
-  _capacityFinished: 0
+  _limitedCapacityFinished: 1
+  _capacityFinished: 14
   _throttledExitFinished: 0
   _limitedCapacityUnfinished: 0
   _capacityUnfinished: 0
@@ -313,6 +333,18 @@ MonoBehaviour:
   _descriptionLocKey: Cordial.Building.BeaverBucks.Description
   _flavorDescriptionLocKey: Cordial.Building.BeaverBucks.FlavorDescription
   _imagePath: Sprites/Bottombar/BotGeneratorTool
+--- !u!114 &6199678311330489223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1066712947, guid: dd1baa4f323651ee41781eb84b2b1960, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &-5231034337155097649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,6 +358,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _slotSpecifications:
+  - _slotKeyword: Seat
+    _animation: ForcedIdle
+    _inanimate: 0
+    _randomizeYRotation: 0
+    _waterSlot: 0
   - _slotKeyword: Entrance
     _animation: Sitting
     _inanimate: 0
@@ -343,7 +380,7 @@ MonoBehaviour:
   m_Script: {fileID: 1794062130, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _localAccess: {x: -0.5, y: -0.15, z: 0.22}
+  _localAccess: {x: 0.5, y: 0.12, z: 0.25}
   _forceOneFinalAccess: 0
 --- !u!114 &7672197548274035088
 MonoBehaviour:
@@ -359,6 +396,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _progressThresholds:
   - 0
+--- !u!114 &3649081143110316872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 541562997, guid: 3d08eaebc9cf2cdafcd1795ddf8771cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _supply: TailTea
+  _capacity: 60
+  _goodPerHour: 4
+--- !u!114 &3377861871875612613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1469392373, guid: 155d71f0a7a2317772ec1e43992c8879, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4187045584144244368
 GameObject:
   m_ObjectHideFlags: 0
