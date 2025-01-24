@@ -1,10 +1,12 @@
-﻿using Cordial.Mods.PlantingOverride.Scripts.Common;
+﻿using Cordial.Mods.PlantBeehive.Scripts;
+using Cordial.Mods.PlantingOverride.Scripts.Common;
 using HarmonyLib;
 using System.Collections.Generic;
 using TimberApi.DependencyContainerSystem;
 using Timberborn.BehaviorSystem;
 using Timberborn.BlockSystem;
 using Timberborn.Common;
+using Timberborn.Demolishing;
 using Timberborn.DemolishingUI;
 using Timberborn.Forestry;
 using Timberborn.ModManagerScene;
@@ -110,6 +112,42 @@ TR: False AR: False
                 }
 
 
+            }
+        }
+
+
+        // Plant Beehive Tool Patch for the demolishable (plant) unmark event
+        // in the case of unmark, either the plant has been deleted, or effectively unmarked by the user
+        [HarmonyPatch(typeof(Demolishable), "Unmark")]
+        public static class DemolishableUnmarkPatch
+        {
+            static void Postfix(Demolishable __instance)
+            {
+                bool placeHive = true;
+                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+                ToolManager toolManager = DependencyContainer.GetInstance<ToolManager>();
+
+                if ((null != __instance)
+                    && (null != __instance.GetComponentFast<BlockObject>()))
+                {
+                    if (null != toolManager)
+                    {
+                        if (null != toolManager.ActiveTool)
+                        {
+                            // there is an active tool, check if it is the demolition service
+
+                            if ((toolManager.ActiveTool.ToString().Contains("Delet"))
+                                || (toolManager.ActiveTool.ToString().Contains("Demol")))
+                            {
+                                // only remove coordinates
+                                placeHive = false;
+                                
+                            }
+                        }
+                    }
+
+                    eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(__instance.GetComponentFast<BlockObject>().Coordinates, placeHive));
+                }
             }
         }
     }
