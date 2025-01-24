@@ -1,0 +1,6 @@
+ID,Text,Comment
+Cordial.DeleteThatThing.DisplayName,Zerstöre das Objekt,-
+Cordial.DeleteThatThing.Description,Dieses Werkzeug zerstört alle Objekte vom gleichen Typ,-
+Cordial.DeleteThatThing.Prompt.Abort,Nicht alle ausgewählten Objekte konnten zerstört werden. Wahrscheinlich ist auf einem Objekt etwas platziert.,-
+Cordial.DeleteThatThing.Prompt.Stump,"Ein Baumstumpf wurde ausgewählt. Es werden nur Baumstümpfe zum Zerstören markiert. Möchten Sie fortfahren?",-
+Cordial.DeleteThatThing.Prompt.DeadTree,"Ein abgestorbener Baum wurde ausgewählt. Es werden nur abgestorbene Bäume zum Zerstören markiert. Möchten Sie fortfahren?",-

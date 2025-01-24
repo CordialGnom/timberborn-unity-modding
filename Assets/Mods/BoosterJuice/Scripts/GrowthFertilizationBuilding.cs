@@ -130,10 +130,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         private BlockService _blockService;
         private BlockObjectRange _blockObjectRange;
 
-
-        private List<Yielder> _yieldersInArea = new();
-
-
+        private readonly List<Yielder> _yieldersInArea = new();
 
         private ITimeTriggerFactory _timeTriggerFactory;
         private ITimeTrigger _timeTrigger;
@@ -279,9 +276,9 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 saver.Set(GrowthFertilizationBuilding.SupplyLeftKey, this._supplyLeft);
                 saver.Set(GrowthFertilizationBuilding.DailyGrowthKey, this._dailyGrowth);
                 saver.Set(GrowthFertilizationBuilding.AverageGrowthKey, this._averageGrowth);
+                saver.Set(GrowthFertilizationBuilding.WorkHoursPassed, this._workHoursPassed);
                 saver.Set(GrowthFertilizationBuilding.DailyYieldKey, this._dailyYieldInc);
                 saver.Set(GrowthFertilizationBuilding.AverageYieldKey, this._averageYieldInc);
-                saver.Set(GrowthFertilizationBuilding.WorkHoursPassed, this._workHoursPassed);
                 saver.Set(GrowthFertilizationBuilding.FertilizeYieldKey, this.FertilizeYieldActive);
             }
         }
@@ -307,6 +304,10 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 valueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.AverageGrowthKey);
                 this._averageGrowth = valueOrNullable.GetValueOrDefault();
 
+                // update passed work hours from save if available
+                int? intValueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.WorkHoursPassed);
+                this._workHoursPassed = intValueOrNullable.GetValueOrDefault();
+
                 // update yield from save if available
                 valueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.DailyYieldKey);
                 this._dailyYieldInc = valueOrNullable.GetValueOrDefault();
@@ -314,10 +315,6 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 // update average yield from save if available
                 valueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.AverageYieldKey);
                 this._averageYieldInc = valueOrNullable.GetValueOrDefault();
-
-                // update passed work hours from save if available
-                int? intValueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.WorkHoursPassed);
-                this._workHoursPassed = intValueOrNullable.GetValueOrDefault();
 
                 // update passed work hours from save if available
                 bool? boolValueOrNullable = loader.GetValueOrNullable(GrowthFertilizationBuilding.FertilizeYieldKey);
