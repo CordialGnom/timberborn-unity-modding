@@ -29,11 +29,10 @@ using System.Drawing;
 using System.Linq;
 using Timberborn.SelectionToolSystem;
 using System;
-using Timberborn.AreaSelectionSystem;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
-    public class PlantBeehiveToolService : Tool, ISaveableSingleton, ILoadableSingleton, IPostLoadableSingleton, IPlantBeehiveTool, IInputProcessor
+    public class PlantBeehiveToolService : Tool, ISaveableSingleton, ILoadableSingleton, IPostLoadableSingleton, IPlantBeehiveTool
     {
         private const int _cBeehiveRadius = 3;
 
@@ -54,7 +53,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private static AreaHighlightingService _areaHighlightingService;
 
         // selection
-        //private readonly SelectionToolProcessor _selectionToolProcessor;
+        private readonly SelectionToolProcessor _selectionToolProcessor;
         private readonly BlockService _blockService;
         private static Vector3Int _cursorPosPrev = new Vector3Int(0, 0, 0);
 
@@ -66,16 +65,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
         private BlockObjectRange _blockObjectRange;
 
-        // v2 
-        private readonly InputService _inputService;
-
-
-        private readonly AreaPickerFactory _areaPickerFactory;
-        private readonly PreviewPlacer _previewPlacer;
-        private AreaPicker _areaPicker;
-        private PlaceableBlockObject Prefab;
-
-
         // configuration storage
         private readonly ISingletonLoader _singletonLoader;
         private static List<Vector3Int> _hiveCoordsNew = new();
@@ -84,15 +73,12 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private static readonly SingletonKey PlantBeehiveToolServiceKey = new SingletonKey("Cordial.PlantBeehiveToolService");
         private static readonly ListKey<Vector3Int> PlantBeehiveToolCoordKey = new ListKey<Vector3Int>("Cordial.PlantBeehiveToolCoordKey");
 
-        public PlantBeehiveToolService( /*SelectionToolProcessorFactory selectionToolProcessorFactory,*/
+        public PlantBeehiveToolService( SelectionToolProcessorFactory selectionToolProcessorFactory,
                                             BuildingUnlockingService buildingUnlockingService,
                                             AreaHighlightingService areaHighlightingService,
                                             ToolUnlockingService toolUnlockingService,
                                             ISingletonLoader singletonLoader,
                                             BuildingService buildingService,
-                                            InputService inputService,
-                                            AreaPickerFactory areaPickerFactory,
-      PreviewPlacer previewPlacer,
                                             CursorService cursorService,
                                             BlockService blockService,
                                             EventBus eventBus,
@@ -104,47 +90,28 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             _toolUnlockingService = toolUnlockingService;
             _singletonLoader = singletonLoader;
             _buildingService = buildingService;
-            this._areaPickerFactory = areaPickerFactory;
-            this._previewPlacer = previewPlacer;
-
-            _inputService = inputService;
             _cursorService = cursorService;
             _blockService = blockService;
             _eventBus = eventBus;
             _colors = colors;
-            _loc = loc;
-
-            //_selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
-            //                                                                        Ray>(this.PreviewCallback),
-            //                                                                        new Action<IEnumerable<Vector3Int>,
-            //                                                                        Ray>(this.ActionCallback),
-            //                                                                        new Action(ShowNoneCallback),
-            //                                                                        CursorKey);
+            _loc = loc; 
+            
+            _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
+                                                                                    Ray>(this.PreviewCallback),
+                                                                                    new Action<IEnumerable<Vector3Int>,
+                                                                                    Ray>(this.ActionCallback),
+                                                                                    new Action(ShowNoneCallback),
+                                                                                    CursorKey);
 
             // todo add service that the tool is locked / requires beehive
-            this.Prefab = null;
+
+
         }
 
         public void Load()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
             this._eventBus.Register((object)this);
-
-
-            // create a beehive to check if system is unlocked
-            string prefabName = "Beehive.Folktails";
-            _beehive = _buildingService.GetBuildingPrefab(prefabName);
-
-            if (_beehive != null)
-            {
-                Debug.Log("Load Hive");
-                this.Prefab = _beehive.GetComponentFast<PlaceableBlockObject>();
-
-                if (this.Prefab != null)
-                {
-                    Debug.Log("Load Prefab");
-                }
-            }
         }
 
         public void PostLoad()
@@ -163,7 +130,10 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
         public override void Enter()
         {
+            string prefabName = "Beehive.Folktails";
 
+            // create a beehive to check if system is unlocked
+            _beehive = _buildingService.GetBuildingPrefab(prefabName);
 
             if (_beehive == null)
             {
@@ -178,13 +148,20 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 {
                     // activate tool
                     this._cursorService.SetTemporaryCursor(CursorKey);
-                    //this._selectionToolProcessor.Enter();
-                    this._inputService.AddInputProcessor((IInputProcessor)this);
-                    this._areaPicker = this._areaPickerFactory.Create();
+                    this._selectionToolProcessor.Enter();
 
                     // highlight area
                     //HighlightExistingHiveArea();
                     //_areaHighlightingService.Highlight();
+
+                    _beehive.TryGetComponentFast<SelectableObject>(out SelectableObject selectObject);
+
+                    if (selectObject != null)
+                    {
+                        this._eventBus.Post((object)new SelectableObjectSelectedEvent(selectObject));
+                        Debug.Log("Post Select Event");
+                    }
+
 
                 }
                 else
@@ -195,53 +172,11 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         }
         public override void Exit()
         {
-            //this._selectionToolProcessor.Exit();
+            this._selectionToolProcessor.Exit();
             this._cursorService.ResetTemporaryCursor();
-            this._inputService.RemoveInputProcessor((IInputProcessor)this);
-            this._previewPlacer.HideAllPreviews();
-            this._areaPicker = (AreaPicker)null;
 
         }
-        public bool ProcessInput()
-        {
-            if (this.Prefab != null)
-            {
-                return this._areaPicker.PickBlockObjectArea(this.Prefab, Orientation.Cw0, FlipMode.Unflipped, new AreaPicker.BlockObjectAreaCallback(this.PreviewCallback), new AreaPicker.BlockObjectAreaCallback(this.ActionCallback));
-            }
-            else
-            { 
-                return false;
-            }
-        }
 
-        private void PreviewCallback(IEnumerable<Placement> placements)
-        {
-            this.ShowPreviews(placements);
-        }
-        private void ActionCallback(IEnumerable<Placement> placements)
-        {
-
-            var bottomObject = this._blockService.GetBottomObjectAt(placements.First().Coordinates);
-
-            if (bottomObject != null)
-            {
-                OnSelectableObjectSelected(bottomObject);
-                Debug.Log("Action Ok");
-            }
-            else
-            {
-
-                Debug.Log("Action Failed");
-            }
-
-            this._previewPlacer.HideAllPreviews();
-        }
-        private void ShowPreviews(IEnumerable<Placement> placements)
-        {
-            this._previewPlacer.ShowPreviews(placements);
-        }
-
-        /*
         private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
             // only take first input block
@@ -294,7 +229,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         {
             _areaHighlightingService.UnhighlightAll();
         }
-        */
+
         public void SetToolGroup(ToolGroup toolGroup)
         {
             ToolGroup = toolGroup;
