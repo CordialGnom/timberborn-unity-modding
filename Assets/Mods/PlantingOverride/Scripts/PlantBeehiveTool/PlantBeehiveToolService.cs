@@ -13,6 +13,7 @@ using Timberborn.Demolishing;
 using Timberborn.InputSystem;
 using Timberborn.Localization;
 using Timberborn.Persistence;
+using Timberborn.Pollination;
 using Timberborn.Planting;
 using Timberborn.PrefabSystem;
 using Timberborn.ScienceSystem;
@@ -21,11 +22,20 @@ using Timberborn.SingletonSystem;
 using Timberborn.TerrainSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
+using Timberborn.Fields;
+using Timberborn.Common;
+using Moq;
+using System.Drawing;
+using System.Linq;
+using Timberborn.SelectionToolSystem;
+using System;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
-    public class PlantBeehiveToolService : Tool, ISaveableSingleton, IPostLoadableSingleton, IInputProcessor, IPlantBeehiveTool
+    public class PlantBeehiveToolService : Tool, ISaveableSingleton, ILoadableSingleton, IPostLoadableSingleton, IPlantBeehiveTool
     {
+        private const int _cBeehiveRadius = 3;
+
         // tool descriptions
         private static readonly string TitleLocKey = "Cordial.PlantBeehiveTool.DisplayName";
         private static readonly string DescriptionLocKey = "Cordial.PlantBeehiveTool.Description";
@@ -40,77 +50,82 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
         // highlighting
         private readonly Colors _colors;
-        private readonly AreaHighlightingService _areaHighlightingService;
-        private readonly TerrainAreaService _terrainAreaService;
+        private static AreaHighlightingService _areaHighlightingService;
 
         // selection
-        private readonly InputService _inputService;
+        private readonly SelectionToolProcessor _selectionToolProcessor;
         private readonly BlockService _blockService;
-        private readonly SelectableObjectRaycaster _selectableObjectRaycaster;
-        private bool _plantBeehiveToolActive = true;
+        private static Vector3Int _cursorPosPrev = new Vector3Int(0, 0, 0);
+
 
         // building placement
         private BuildingUnlockingService _buildingUnlockingService;
         private BuildingService _buildingService;
         private Building _beehive;
 
+        private BlockObjectRange _blockObjectRange;
+
         // configuration storage
         private readonly ISingletonLoader _singletonLoader;
-        private static List<Vector3Int> _hiveRegistry = new();
+        private static List<Vector3Int> _hiveCoordsNew = new();
+        private static List<Hive> _hiveRegistry = new();
 
         private static readonly SingletonKey PlantBeehiveToolServiceKey = new SingletonKey("Cordial.PlantBeehiveToolService");
         private static readonly ListKey<Vector3Int> PlantBeehiveToolCoordKey = new ListKey<Vector3Int>("Cordial.PlantBeehiveToolCoordKey");
 
-        public PlantBeehiveToolService( SelectableObjectRaycaster selectableObjectRaycaster,
+        public PlantBeehiveToolService( SelectionToolProcessorFactory selectionToolProcessorFactory,
                                             BuildingUnlockingService buildingUnlockingService,
                                             AreaHighlightingService areaHighlightingService,
                                             ToolUnlockingService toolUnlockingService,
-                                            TerrainAreaService terrainAreaService,
                                             ISingletonLoader singletonLoader,
                                             BuildingService buildingService,
                                             CursorService cursorService,
                                             BlockService blockService,
-                                            InputService inputService,
                                             EventBus eventBus,
                                             Colors colors,
                                             ILoc loc )
         {
-            _selectableObjectRaycaster = selectableObjectRaycaster;
             _buildingUnlockingService = buildingUnlockingService;
             _areaHighlightingService = areaHighlightingService;
             _toolUnlockingService = toolUnlockingService;
-            _terrainAreaService = terrainAreaService;
             _singletonLoader = singletonLoader;
             _buildingService = buildingService;
             _cursorService = cursorService;
             _blockService = blockService;
-            _inputService = inputService;
             _eventBus = eventBus;
             _colors = colors;
-            _loc = loc;
+            _loc = loc; 
+            
+            _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
+                                                                                    Ray>(this.PreviewCallback),
+                                                                                    new Action<IEnumerable<Vector3Int>,
+                                                                                    Ray>(this.ActionCallback),
+                                                                                    new Action(ShowNoneCallback),
+                                                                                    CursorKey);
 
             // todo add service that the tool is locked / requires beehive
 
 
         }
 
-        public void PostLoad()
+        public void Load()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
             this._eventBus.Register((object)this);
+        }
 
-            _inputService.AddInputProcessor((IInputProcessor)this);
-
+        public void PostLoad()
+        {
             if (this._singletonLoader.HasSingleton(PlantBeehiveToolService.PlantBeehiveToolServiceKey))
             {
                 // reload coordinates where a hive is to be planted
-                _hiveRegistry = _singletonLoader.GetSingleton(PlantBeehiveToolService.PlantBeehiveToolServiceKey).Get(PlantBeehiveToolService.PlantBeehiveToolCoordKey);
+                _hiveCoordsNew = _singletonLoader.GetSingleton(PlantBeehiveToolService.PlantBeehiveToolServiceKey).Get(PlantBeehiveToolService.PlantBeehiveToolCoordKey);
             }
         }
 
         public void Save(ISingletonSaver singletonSaver)
         {
-            singletonSaver.GetSingleton(PlantBeehiveToolService.PlantBeehiveToolServiceKey).Set(PlantBeehiveToolCoordKey, _hiveRegistry);
+            singletonSaver.GetSingleton(PlantBeehiveToolService.PlantBeehiveToolServiceKey).Set(PlantBeehiveToolCoordKey, _hiveCoordsNew);
         }
 
         public override void Enter()
@@ -127,12 +142,27 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             else
             {
                 bool isUnlocked = _buildingUnlockingService.Unlocked(_beehive);
+                this._blockObjectRange = _beehive.GetComponentFast<BlockObjectRange>();
 
                 if (true == isUnlocked)
                 {
                     // activate tool
                     this._cursorService.SetTemporaryCursor(CursorKey);
-                    _plantBeehiveToolActive = true;
+                    this._selectionToolProcessor.Enter();
+
+                    // highlight area
+                    //HighlightExistingHiveArea();
+                    //_areaHighlightingService.Highlight();
+
+                    _beehive.TryGetComponentFast<SelectableObject>(out SelectableObject selectObject);
+
+                    if (selectObject != null)
+                    {
+                        this._eventBus.Post((object)new SelectableObjectSelectedEvent(selectObject));
+                        Debug.Log("Post Select Event");
+                    }
+
+
                 }
                 else
                 {
@@ -142,10 +172,62 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         }
         public override void Exit()
         {
+            this._selectionToolProcessor.Exit();
             this._cursorService.ResetTemporaryCursor();
-            _plantBeehiveToolActive = false;
-            //this._eventBus.Post((object)new PlantBeehiveToolUnselectedEvent(this));
 
+        }
+
+        private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
+        {
+            // only take first input block
+            Vector3Int startCoord =     inputBlocks.First();
+
+            Debug.Log("PBTS: PreV: " + startCoord);
+
+            if (startCoord != Vector3Int.zero)
+            {
+                HighlightCursorArea(startCoord, _cBeehiveRadius);
+
+                var bottomObject = this._blockService.GetBottomObjectAt(startCoord);
+
+                if (bottomObject != null)
+                {
+                    Debug.Log("PBTS: PreV 3: " + startCoord);
+                    _areaHighlightingService.AddForHighlight((BaseComponent)bottomObject);
+                }
+
+            }
+
+            // highlight everything added to the service above
+            _areaHighlightingService.Highlight();
+        }
+
+        private void ActionCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
+        {
+            // only take first input block
+            Vector3Int startCoord = inputBlocks.First();
+
+            Debug.Log("PBTS: Act: " + startCoord);
+
+            if (startCoord != Vector3Int.zero)
+            {
+                HighlightCursorArea(startCoord, _cBeehiveRadius);
+
+                var bottomObject = this._blockService.GetBottomObjectAt(startCoord);
+
+                if (bottomObject != null)
+                {
+                    OnSelectableObjectSelected(bottomObject);
+                }
+            }
+
+            // highlight everything added to the service above
+            _areaHighlightingService.Highlight();
+        }
+
+        private void ShowNoneCallback()
+        {
+            _areaHighlightingService.UnhighlightAll();
         }
 
         public void SetToolGroup(ToolGroup toolGroup)
@@ -155,31 +237,82 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         public override ToolDescription Description() => _toolDescription;
 
        
-        bool IInputProcessor.ProcessInput()
+        private void HighlightExistingHiveArea()
         {
-            if (!_plantBeehiveToolActive)
-            {
-                return false;
-            }
+            // iterate through all hives
+            List<Vector3Int> hiveArea = new();
 
-            if (_inputService.MouseOverUI || !_inputService.MainMouseButtonDown)
+            foreach (Hive hive in _hiveRegistry)
             {
-                return false;
+                hiveArea.AddRange(hive.GetBlocksInRange());
             }
+            HighlightPassedBlocks(hiveArea);
+        }
 
-            if (_selectableObjectRaycaster.TryHitSelectableObject(out var hitObject))
+        private void HighlightReservedHiveArea()
+        {
+            // iterate through all hives
+            List<Vector3Int> hiveArea = new();
+
+            foreach (Vector3Int coord in _hiveCoordsNew)
             {
-                OnSelectableObjectSelected(hitObject);
-                return true;
+                hiveArea.AddRange(GetBlocksInRectangularRadius(coord, _cBeehiveRadius));
             }
+            HighlightPassedBlocks(hiveArea);
+        }
 
-            return false;
+        private void HighlightCursorArea(Vector3Int cursorPos, int radiusRect )
+        {
+           if (_cursorPosPrev != cursorPos)
+            {
+                // highligh cursor area
+                HighlightPassedBlocks(GetBlocksInRectangularRadius(cursorPos, radiusRect));
+
+                // highlight Hive Area
+                HighlightExistingHiveArea();
+
+                // copy cursor
+                _cursorPosPrev = cursorPos;
+            }
+        }
+
+        private IEnumerable<Vector3Int> GetBlocksInRectangularRadius(Vector3Int cursorPos, int radiusRect)
+        {
+            List<Vector3Int> area = new List<Vector3Int>();
+
+            Vector2 vector2 = cursorPos.XY();
+            Vector2Int vector2Int = new Vector2Int(cursorPos.y, cursorPos.x);
+            (int num1, int num2) = ((int)((double)vector2.x - ((double)vector2Int.x / 2.0) - (double)radiusRect), ((int)((double)vector2.x - ((double)vector2Int.x / 2.0) + (double)radiusRect)));
+            (int num3, int num4) = ((int)((double)vector2.y - ((double)vector2Int.y / 2.0) - (double)radiusRect), ((int)((double)vector2.y - ((double)vector2Int.y / 2.0) + (double)radiusRect)));
+
+            for (int x = num1; x < num2; ++x)
+            {
+                for (int y = num3; y < num4; ++y)
+                {
+                    area.Add(new Vector3Int(x, y, cursorPos.z));
+                }
+            }
+            return area.AsEnumerable<Vector3Int>();
+        }
+
+        private void HighlightPassedBlocks(IEnumerable<Vector3Int> blocks)
+        {
+            // iterate over all input blocks -> toggle boolean flag for it
+            foreach (Vector3Int block in blocks)
+            {
+                var bottomObject = this._blockService.GetBottomObjectAt(block);
+
+                if (bottomObject != null)
+                {
+                    _areaHighlightingService.AddForHighlight((BaseComponent)bottomObject);
+                }
+
+                _areaHighlightingService.DrawTile(block, this._colors.BuildingRangeTile);
+            }
         }
 
         public void OnSelectableObjectSelected(BaseComponent hitObject)
         {
-            var selectableObjectName = hitObject.GetComponentFast<Prefab>().PrefabName;
-
             BuilderPrioritizable prioritizable = null;  
 
             // check if the hit object is a plant
@@ -190,7 +323,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 && (blockObject != null))
             {
                 // reserve the coordinates
-                _hiveRegistry.Add(blockObject.Coordinates);
+                _hiveCoordsNew.Add(blockObject.Coordinates);
 
                 // mark the plant to be deleted
                 Demolishable demolishable = blockObject.GetComponentFast<Demolishable>();
@@ -202,10 +335,26 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 {
                     prioritizable.SetPriority(Timberborn.PrioritySystem.Priority.High);
                 }
+
+                // highlighting update
+                HighlightReservedHiveArea();
+                HighlightExistingHiveArea();
+
+                //
+                Debug.Log("PBTS: New Selection!");
+            }
+            else
+            {
+
+                Debug.Log("PBTS: No Object!");
             }
         }
 
 
+        //private IEnumerable<Vector3Int> GetBlocksInRange()
+        //{
+        //    return this._blockObjectRange.GetBlocksOnTerrainInRectangularRadius(_cBeehiveRadius);
+        //}
 
         // harmony is to check the deletion of the registered plant at these coordinates
 
@@ -229,11 +378,11 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
         //public void RemoveEntryAtCoord( Vector3Int coord)
         //{
-        //    _hiveRegistry.Remove(coord);
+        //    _hiveCoordsNew.Remove(coord);
         //}
         //public bool HasEntryAtCoord( Vector3Int coord)
         //{
-        //    return _hiveRegistry.TryGetValue(coord, out string hiveName);
+        //    return _hiveCoordsNew.TryGetValue(coord, out string hiveName);
         //}
 
         //[OnEvent]
@@ -260,10 +409,10 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             }
             else // event exists
             {
-                if (_hiveRegistry.Contains(PlantBeehiveToolUnmarkEvent.Coordinates))
+                if (_hiveCoordsNew.Contains(PlantBeehiveToolUnmarkEvent.Coordinates))
                 {
                     // remove coordinates
-                    _hiveRegistry.Remove(PlantBeehiveToolUnmarkEvent.Coordinates);
+                    _hiveCoordsNew.Remove(PlantBeehiveToolUnmarkEvent.Coordinates);
 
                     if (PlantBeehiveToolUnmarkEvent.PlaceHive)
                     {
@@ -293,6 +442,39 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                         placer.Place(block, placement);
                     }
                 }
+            }
+        }
+
+        [OnEvent]
+        public void OnPlantBeehiveToolRegisterHiveEvent(PlantBeehiveToolRegisterHiveEvent PlantBeehiveToolRegisterHiveEvent)
+        {
+            if (null == PlantBeehiveToolRegisterHiveEvent)
+            {
+                return;
+            }
+            else // event exists
+            {
+                if (!_hiveRegistry.Contains(PlantBeehiveToolRegisterHiveEvent.Hive))
+                {
+                    _hiveRegistry.Add(PlantBeehiveToolRegisterHiveEvent.Hive);
+
+                    Debug.Log("OPBTRHE: " + _hiveRegistry.Count);
+                }
+            }
+        }
+
+        [OnEvent]
+        public void OnPlantBeehiveToolUnregisterHiveEvent(PlantBeehiveToolUnregisterHiveEvent PlantBeehiveToolUnregisterHiveEvent)
+        {
+            if (null == PlantBeehiveToolUnregisterHiveEvent)
+            {
+                return;
+            }
+            else // event exists
+            {
+                _hiveRegistry.Remove(PlantBeehiveToolUnregisterHiveEvent.Hive);
+
+                Debug.Log("OPBTUHE: " + _hiveRegistry.Count);
             }
         }
     }

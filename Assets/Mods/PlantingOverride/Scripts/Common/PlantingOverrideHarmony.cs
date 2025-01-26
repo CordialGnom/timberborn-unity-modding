@@ -12,6 +12,7 @@ using Timberborn.Forestry;
 using Timberborn.ModManagerScene;
 using Timberborn.Planting;
 using Timberborn.PlantingUI;
+using Timberborn.Pollination;
 using Timberborn.ReservableSystem;
 using Timberborn.SingletonSystem;
 using Timberborn.ToolSystem;
@@ -148,6 +149,56 @@ TR: False AR: False
 
                     eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(__instance.GetComponentFast<BlockObject>().Coordinates, placeHive));
                 }
+            }
+        }
+
+        // register all hives as they are awoken
+        [HarmonyPatch(typeof(Hive), "Awake")]
+        public static class HiveAwakePatch
+        {
+            static void Postfix(Hive __instance)
+            {
+                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+
+                if (null != __instance)
+                {
+                    eventBus.Post((object)new PlantBeehiveToolRegisterHiveEvent(__instance));
+
+                }
+                Debug.Log("Hive: Awake");
+            }
+        }
+
+        // register all hives as they are created
+        [HarmonyPatch(typeof(Hive), "OnEnterFinishedState")]
+        public static class HiveOnEnterFinishedStatePatch
+        {
+            static void Postfix(Hive __instance)
+            {
+                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+
+                if (null != __instance)
+                {
+                    eventBus.Post((object)new PlantBeehiveToolRegisterHiveEvent(__instance));
+
+                }
+                Debug.Log("Hive: OnEnter");
+            }
+        }
+
+        // unregister any hive
+        [HarmonyPatch(typeof(Hive), "OnExitFinishedState")]
+        public static class HiveOnExitFinishedStatePatch
+        {
+            static void Postfix(Hive __instance)
+            {
+                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+
+                if (null != __instance)
+                {
+                    eventBus.Post((object)new PlantBeehiveToolUnregisterHiveEvent(__instance));
+                }
+                Debug.Log("Hive: OnExit");
             }
         }
     }
