@@ -1,19 +1,14 @@
 ﻿using Cordial.Mods.PlantBeehive.Scripts;
 using Cordial.Mods.PlantingOverride.Scripts.Common;
 using HarmonyLib;
-using System.Collections.Generic;
 using TimberApi.DependencyContainerSystem;
 using Timberborn.BehaviorSystem;
 using Timberborn.BlockSystem;
 using Timberborn.Common;
 using Timberborn.Demolishing;
-using Timberborn.DemolishingUI;
-using Timberborn.Forestry;
 using Timberborn.ModManagerScene;
 using Timberborn.Planting;
-using Timberborn.PlantingUI;
 using Timberborn.Pollination;
-using Timberborn.ReservableSystem;
 using Timberborn.SingletonSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
@@ -138,34 +133,21 @@ TR: False AR: False
                             // there is an active tool, check if it is the demolition service
 
                             if ((toolManager.ActiveTool.ToString().Contains("Delet"))
-                                || (toolManager.ActiveTool.ToString().Contains("Demol")))
+                                || (toolManager.ActiveTool.ToString().Contains("Demol"))
+                                || (toolManager.ActiveTool.ToString().Contains("Cancel")))
                             {
                                 // only remove coordinates
                                 placeHive = false;
-                                
+                            }
+                            else
+                            {
+                                Debug.Log("ActiveTool: " + toolManager.ActiveTool.ToString());
                             }
                         }
                     }
 
                     eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(__instance.GetComponentFast<BlockObject>().Coordinates, placeHive));
                 }
-            }
-        }
-
-        // register all hives as they are awoken
-        [HarmonyPatch(typeof(Hive), "Awake")]
-        public static class HiveAwakePatch
-        {
-            static void Postfix(Hive __instance)
-            {
-                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
-
-                if (null != __instance)
-                {
-                    eventBus.Post((object)new PlantBeehiveToolRegisterHiveEvent(__instance));
-
-                }
-                Debug.Log("Hive: Awake");
             }
         }
 
@@ -182,7 +164,6 @@ TR: False AR: False
                     eventBus.Post((object)new PlantBeehiveToolRegisterHiveEvent(__instance));
 
                 }
-                Debug.Log("Hive: OnEnter");
             }
         }
 
@@ -198,7 +179,6 @@ TR: False AR: False
                 {
                     eventBus.Post((object)new PlantBeehiveToolUnregisterHiveEvent(__instance));
                 }
-                Debug.Log("Hive: OnExit");
             }
         }
     }

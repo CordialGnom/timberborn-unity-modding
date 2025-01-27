@@ -51,6 +51,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         // highlighting
         private readonly Colors _colors;
         private static AreaHighlightingService _areaHighlightingService;
+        private readonly TerrainAreaService _terrainAreaService;
 
         // selection
         private readonly SelectionToolProcessor _selectionToolProcessor;
@@ -77,6 +78,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                                             BuildingUnlockingService buildingUnlockingService,
                                             AreaHighlightingService areaHighlightingService,
                                             ToolUnlockingService toolUnlockingService,
+                                            TerrainAreaService terrainAreaService,
                                             ISingletonLoader singletonLoader,
                                             BuildingService buildingService,
                                             CursorService cursorService,
@@ -88,6 +90,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             _buildingUnlockingService = buildingUnlockingService;
             _areaHighlightingService = areaHighlightingService;
             _toolUnlockingService = toolUnlockingService;
+            _terrainAreaService = terrainAreaService;
             _singletonLoader = singletonLoader;
             _buildingService = buildingService;
             _cursorService = cursorService;
@@ -142,27 +145,17 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             else
             {
                 bool isUnlocked = _buildingUnlockingService.Unlocked(_beehive);
-                this._blockObjectRange = _beehive.GetComponentFast<BlockObjectRange>();
+                //this._blockObjectRange = _beehive.GetComponentFast<BlockObjectRange>();
 
                 if (true == isUnlocked)
                 {
                     // activate tool
-                    this._cursorService.SetTemporaryCursor(CursorKey);
+                    //this._cursorService.SetTemporaryCursor(CursorKey);
                     this._selectionToolProcessor.Enter();
 
                     // highlight area
                     //HighlightExistingHiveArea();
                     //_areaHighlightingService.Highlight();
-
-                    _beehive.TryGetComponentFast<SelectableObject>(out SelectableObject selectObject);
-
-                    if (selectObject != null)
-                    {
-                        this._eventBus.Post((object)new SelectableObjectSelectedEvent(selectObject));
-                        Debug.Log("Post Select Event");
-                    }
-
-
                 }
                 else
                 {
@@ -173,7 +166,8 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         public override void Exit()
         {
             this._selectionToolProcessor.Exit();
-            this._cursorService.ResetTemporaryCursor();
+            //this._cursorService.ResetTemporaryCursor();
+            _areaHighlightingService.UnhighlightAll();
 
         }
 
@@ -182,20 +176,44 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             // only take first input block
             Vector3Int startCoord =     inputBlocks.First();
 
-            Debug.Log("PBTS: PreV: " + startCoord);
+            List<Vector3Int> newList = new();
+            List<Vector2Int> coordList = new();
+
+            coordList.Add(startCoord.XY());
+
+            newList.AddRange(_terrainAreaService.InMapCoordinates(coordList));
+
+            startCoord = newList.First();
+
+            newList.Clear();
 
             if (startCoord != Vector3Int.zero)
             {
-                HighlightCursorArea(startCoord, _cBeehiveRadius);
+                // evaluate start coord range
+                newList.AddRange(GetBlocksInRectangularRadius(startCoord, _cBeehiveRadius));
 
-                var bottomObject = this._blockService.GetBottomObjectAt(startCoord);
-
-                if (bottomObject != null)
+                // get all areas
+                foreach (Hive hive in _hiveRegistry)
                 {
-                    Debug.Log("PBTS: PreV 3: " + startCoord);
-                    _areaHighlightingService.AddForHighlight((BaseComponent)bottomObject);
+                    newList.AddRange(hive.GetBlocksInRange());
                 }
 
+                foreach (Vector3Int coord in _hiveCoordsNew)
+                {
+                    newList.AddRange(GetBlocksInRectangularRadius(coord, _cBeehiveRadius));
+                }
+
+                foreach (Vector3Int coord in newList)
+                {
+                    _areaHighlightingService.DrawTile(coord, this._colors.BuildingRangeTile);
+                }
+
+                var tgtCoord = this._blockService.GetBottomObjectAt(startCoord);
+
+                if (tgtCoord != null)
+                {
+                    _areaHighlightingService.AddForHighlight((BaseComponent)tgtCoord);
+                }
             }
 
             // highlight everything added to the service above
@@ -207,17 +225,49 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             // only take first input block
             Vector3Int startCoord = inputBlocks.First();
 
-            Debug.Log("PBTS: Act: " + startCoord);
+            List<Vector3Int> newList = new();
+            List<Vector2Int> coordList = new();
+
+            coordList.Add(startCoord.XY());
+
+            newList.AddRange(_terrainAreaService.InMapCoordinates(coordList));
+
+            startCoord = newList.First();
+
+            newList.Clear();
 
             if (startCoord != Vector3Int.zero)
             {
-                HighlightCursorArea(startCoord, _cBeehiveRadius);
+                // get all areas
+                newList.AddRange(GetBlocksInRectangularRadius(startCoord, _cBeehiveRadius));
 
-                var bottomObject = this._blockService.GetBottomObjectAt(startCoord);
 
-                if (bottomObject != null)
+                foreach (Hive hive in _hiveRegistry)
                 {
-                    OnSelectableObjectSelected(bottomObject);
+                    newList.AddRange(hive.GetBlocksInRange());
+                }
+
+                foreach (Vector3Int coord in _hiveCoordsNew)
+                {
+                    newList.AddRange(GetBlocksInRectangularRadius(coord, _cBeehiveRadius));
+                }
+
+                foreach (Vector3Int coord in newList)
+                {
+                    _areaHighlightingService.DrawTile(coord, this._colors.BuildingRangeTile);
+                }
+
+                var tgtCoord = this._blockService.GetBottomObjectAt(startCoord);
+
+                if (tgtCoord != null)
+                {
+                    OnSelectableObjectSelected(tgtCoord);
+                }
+                else
+                {
+                    // no object to be deleted
+                    // place immediately
+                    PlaceBeehiveObject(startCoord);
                 }
             }
 
@@ -227,7 +277,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
         private void ShowNoneCallback()
         {
-            _areaHighlightingService.UnhighlightAll();
+            //_areaHighlightingService.UnhighlightAll();
         }
 
         public void SetToolGroup(ToolGroup toolGroup)
@@ -279,19 +329,20 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private IEnumerable<Vector3Int> GetBlocksInRectangularRadius(Vector3Int cursorPos, int radiusRect)
         {
             List<Vector3Int> area = new List<Vector3Int>();
+            List<Vector2Int> blocks = new List<Vector2Int>();
 
-            Vector2 vector2 = cursorPos.XY();
-            Vector2Int vector2Int = new Vector2Int(cursorPos.y, cursorPos.x);
-            (int num1, int num2) = ((int)((double)vector2.x - ((double)vector2Int.x / 2.0) - (double)radiusRect), ((int)((double)vector2.x - ((double)vector2Int.x / 2.0) + (double)radiusRect)));
-            (int num3, int num4) = ((int)((double)vector2.y - ((double)vector2Int.y / 2.0) - (double)radiusRect), ((int)((double)vector2.y - ((double)vector2Int.y / 2.0) + (double)radiusRect)));
-
-            for (int x = num1; x < num2; ++x)
+            for (int x = (cursorPos.x - radiusRect); x <= (cursorPos.x + (radiusRect)); ++x)
             {
-                for (int y = num3; y < num4; ++y)
+                for (int y = (cursorPos.y - radiusRect); y <= (cursorPos.y + (radiusRect)); ++y)
                 {
-                    area.Add(new Vector3Int(x, y, cursorPos.z));
+                    Vector2Int v2 = new Vector2Int(x, y);
+
+                    blocks.Add(v2);
                 }
             }
+
+            area.AddRange(_terrainAreaService.InMapCoordinates(blocks));
+
             return area.AsEnumerable<Vector3Int>();
         }
 
@@ -335,10 +386,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 {
                     prioritizable.SetPriority(Timberborn.PrioritySystem.Priority.High);
                 }
-
-                // highlighting update
-                HighlightReservedHiveArea();
-                HighlightExistingHiveArea();
 
                 //
                 Debug.Log("PBTS: New Selection!");
@@ -457,8 +504,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 if (!_hiveRegistry.Contains(PlantBeehiveToolRegisterHiveEvent.Hive))
                 {
                     _hiveRegistry.Add(PlantBeehiveToolRegisterHiveEvent.Hive);
-
-                    Debug.Log("OPBTRHE: " + _hiveRegistry.Count);
                 }
             }
         }
@@ -473,8 +518,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             else // event exists
             {
                 _hiveRegistry.Remove(PlantBeehiveToolUnregisterHiveEvent.Hive);
-
-                Debug.Log("OPBTUHE: " + _hiveRegistry.Count);
             }
         }
     }
