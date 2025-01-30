@@ -29,6 +29,7 @@ using System.Drawing;
 using System.Linq;
 using Timberborn.SelectionToolSystem;
 using System;
+using Timberborn.Growing;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
@@ -46,7 +47,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private ToolDescription _toolDescription;               // is used
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly EventBus _eventBus;
-        private readonly CursorService _cursorService;
 
         // highlighting
         private readonly Colors _colors;
@@ -81,7 +81,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                                             TerrainAreaService terrainAreaService,
                                             ISingletonLoader singletonLoader,
                                             BuildingService buildingService,
-                                            CursorService cursorService,
                                             BlockService blockService,
                                             EventBus eventBus,
                                             Colors colors,
@@ -93,7 +92,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             _terrainAreaService = terrainAreaService;
             _singletonLoader = singletonLoader;
             _buildingService = buildingService;
-            _cursorService = cursorService;
             _blockService = blockService;
             _eventBus = eventBus;
             _colors = colors;
@@ -150,7 +148,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 if (true == isUnlocked)
                 {
                     // activate tool
-                    //this._cursorService.SetTemporaryCursor(CursorKey);
                     this._selectionToolProcessor.Enter();
 
                     // highlight area
@@ -166,7 +163,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         public override void Exit()
         {
             this._selectionToolProcessor.Exit();
-            //this._cursorService.ResetTemporaryCursor();
             _areaHighlightingService.UnhighlightAll();
 
         }
@@ -257,18 +253,8 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                     _areaHighlightingService.DrawTile(coord, this._colors.BuildingRangeTile);
                 }
 
-                var tgtCoord = this._blockService.GetBottomObjectAt(startCoord);
+                PrepareBeehivePlacement(startCoord);
 
-                if (tgtCoord != null)
-                {
-                    OnSelectableObjectSelected(tgtCoord);
-                }
-                else
-                {
-                    // no object to be deleted
-                    // place immediately
-                    PlaceBeehiveObject(startCoord);
-                }
             }
 
             // highlight everything added to the service above
@@ -362,38 +348,64 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             }
         }
 
-        public void OnSelectableObjectSelected(BaseComponent hitObject)
+        public void PrepareBeehivePlacement(Vector3Int coord)
         {
-            BuilderPrioritizable prioritizable = null;  
 
-            // check if the hit object is a plant
-            hitObject.TryGetComponentFast<Plantable>(out Plantable plantable);
-            hitObject.TryGetComponentFast<BlockObject>(out BlockObject blockObject);
-
-            if ((plantable != null)
-                && (blockObject != null))
+            if (_blockService.AnyObjectAt(coord))
             {
-                // reserve the coordinates
-                _hiveCoordsNew.Add(blockObject.Coordinates);
-
-                // mark the plant to be deleted
-                Demolishable demolishable = blockObject.GetComponentFast<Demolishable>();
-                demolishable.Mark();
-                demolishable.TryGetComponentFast<BuilderPrioritizable>(out prioritizable);
-
-                // increase the priority of the plant which is to be deleted
-                if (prioritizable != null)
+                if (1 == _blockService.GetObjectsAt(coord).Count)
                 {
-                    prioritizable.SetPriority(Timberborn.PrioritySystem.Priority.High);
-                }
+                    foreach (var block in _blockService.GetObjectsAt(coord))
+                    {
+                        if (block != null)
+                        {
+                            // check what kind of object has been found
+                            block.TryGetComponentFast<Demolishable>(out var demolishable);
+                            block.TryGetComponentFast<Growable>(out var growable);
+                            block.TryGetComponentFast<Building>(out var building);
 
-                //
-                Debug.Log("PBTS: New Selection!");
+                            if ((building != null)
+                                || (block.name.Contains("Path")))
+                            {
+                                // do nothing, object cannot be replaced
+                                break;
+                            }
+                            else if ((demolishable != null)
+                                     && (growable != null))
+                            {
+                                // check that it is not added twice
+                                if (!_hiveCoordsNew.Contains(coord))
+                                {
+                                    _hiveCoordsNew.Add(coord);
+                                    demolishable.Mark();
+                                    demolishable.TryGetComponentFast<BuilderPrioritizable>(out BuilderPrioritizable prioritizable);
+
+                                    // increase the priority of the plant which is to be deleted
+                                    if (prioritizable != null)
+                                    {
+                                        prioritizable.SetPriority(Timberborn.PrioritySystem.Priority.High);
+                                    }
+                                }
+                                
+                            }
+                            else
+                            {
+                                // nothing of interest here, do nothing
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // multiple objects do nothing
+                }
             }
             else
             {
-
-                Debug.Log("PBTS: No Object!");
+                // no object to be deleted
+                // place immediately
+                _hiveCoordsNew.Add(coord);
+                PlaceBeehiveObject(coord);
             }
         }
 

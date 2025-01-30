@@ -152,6 +152,22 @@ TR: False AR: False
         }
 
         // register all hives as they are created
+        [HarmonyPatch(typeof(Hive), "Awake")]
+        public static class HiveAwakePatch
+        {
+            static void Postfix(Hive __instance)
+            {
+                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+
+                if (null != __instance)
+                {
+                    eventBus.Post((object)new PlantBeehiveToolRegisterHiveEvent(__instance));
+                    Debug.Log("Hive Awake!");
+                }
+            }
+        }
+
+        // register all hives as they are created
         [HarmonyPatch(typeof(Hive), "OnEnterFinishedState")]
         public static class HiveOnEnterFinishedStatePatch
         {
