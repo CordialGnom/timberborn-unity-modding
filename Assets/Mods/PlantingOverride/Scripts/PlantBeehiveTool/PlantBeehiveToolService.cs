@@ -1,31 +1,23 @@
-﻿using Cordial.Mods.PlantingOverride.Scripts.UI;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TimberApi.DependencyContainerSystem;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockObjectTools;
 using Timberborn.BlockSystem;
 using Timberborn.BuilderPrioritySystem;
 using Timberborn.Buildings;
-using Timberborn.BuildingTools;
 using Timberborn.Coordinates;
 using Timberborn.CoreUI;
 using Timberborn.Demolishing;
-using Timberborn.InputSystem;
 using Timberborn.Localization;
 using Timberborn.Persistence;
 using Timberborn.Pollination;
-using Timberborn.Planting;
-using Timberborn.PrefabSystem;
 using Timberborn.ScienceSystem;
 using Timberborn.SelectionSystem;
 using Timberborn.SingletonSystem;
 using Timberborn.TerrainSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
-using Timberborn.Fields;
 using Timberborn.Common;
-using Moq;
-using System.Drawing;
 using System.Linq;
 using Timberborn.SelectionToolSystem;
 using System;
@@ -121,6 +113,9 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             {
                 // reload coordinates where a hive is to be planted
                 _hiveCoordsNew = _singletonLoader.GetSingleton(PlantBeehiveToolService.PlantBeehiveToolServiceKey).Get(PlantBeehiveToolService.PlantBeehiveToolCoordKey);
+                
+                // replace hivecoords with a distinct (no duplicate) copy of itself
+                _hiveCoordsNew = _hiveCoordsNew.Distinct().ToList();
             }
         }
 
@@ -193,6 +188,8 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 {
                     newList.AddRange(hive.GetBlocksInRange());
                 }
+
+                _hiveCoordsNew = _hiveCoordsNew.Distinct().ToList();
 
                 foreach (Vector3Int coord in _hiveCoordsNew)
                 {
@@ -407,6 +404,9 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 _hiveCoordsNew.Add(coord);
                 PlaceBeehiveObject(coord);
             }
+
+            // replace hivecoords with a distinct (no duplicate) copy of itself
+            _hiveCoordsNew = _hiveCoordsNew.Distinct().ToList();
         }
 
 
@@ -499,6 +499,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                     if (null != placer)
                     {
                         placer.Place(block, placement);
+                        _hiveCoordsNew.Remove(coordinates);
                     }
                 }
             }

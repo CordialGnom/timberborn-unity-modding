@@ -41,6 +41,8 @@ namespace Assets.Mods.PlantingOverride.Scripts.Common
                     {
                         string oldResource = plantingService.GetResourceAt(coordinates.XY());
                         eventBus.Post((object)new PlantingOverridePlantingEvent(coordinates, oldResource));
+                        eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(coordinates, false));
+
                     }
                 }
 
@@ -139,10 +141,6 @@ TR: False AR: False
                                 // only remove coordinates
                                 placeHive = false;
                             }
-                            else
-                            {
-                                Debug.Log("ActiveTool: " + toolManager.ActiveTool.ToString());
-                            }
                         }
                     }
 
@@ -162,7 +160,6 @@ TR: False AR: False
                 if (null != __instance)
                 {
                     eventBus.Post((object)new PlantBeehiveToolRegisterHiveEvent(__instance));
-                    Debug.Log("Hive Awake!");
                 }
             }
         }
