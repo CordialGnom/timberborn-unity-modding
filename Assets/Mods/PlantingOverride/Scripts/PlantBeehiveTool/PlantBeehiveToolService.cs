@@ -52,8 +52,8 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
 
         // building placement
-        private BuildingUnlockingService _buildingUnlockingService;
-        private BuildingService _buildingService;
+        private readonly BuildingUnlockingService _buildingUnlockingService;
+        private readonly BuildingService _buildingService;
         private Building _beehive;
 
         private BlockObjectRange _blockObjectRange;
@@ -105,6 +105,8 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
             this._eventBus.Register((object)this);
+
+            Debug.Log("Overriding limits...");
         }
 
         public void PostLoad()
