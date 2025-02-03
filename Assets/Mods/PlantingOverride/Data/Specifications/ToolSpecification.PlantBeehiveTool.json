@@ -4,7 +4,7 @@
   "GroupId": "Fields",
   "Layout": "brown",
   "Order": 70,
-  "Icon": "Sprites/PlantingOverride/PlantingOverrideTreeIcon",
+  "Icon": "Sprites/PlantBeehive/PlantBeehiveIcon",
   "NameLocKey": "Cordial.PlantBeehiveTool.DisplayName",
   "DescriptionLocKey": "Cordial.PlantBeehiveTool.Description",
   "DevMode": false,
