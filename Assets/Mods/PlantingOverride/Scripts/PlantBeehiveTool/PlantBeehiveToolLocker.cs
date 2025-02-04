@@ -1,16 +1,12 @@
-﻿using Cordial.Mods.PlantingOverride.Scripts.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Timberborn.Buildings;
+﻿using Timberborn.Buildings;
 using Timberborn.CoreUI;
-using Timberborn.EntitySystem;
 using Timberborn.InputSystem;
 using Timberborn.Localization;
 using Timberborn.ScienceSystem;
 using Timberborn.ToolSystem;
+using UnityEngine;
+using System;
+using Timberborn.BlockObjectTools;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
@@ -20,7 +16,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private static readonly string BuildingLockKey = "Cordial.PlantBeehiveTool.BuildingLock";
         private static readonly string UnLockKey = "Cordial.PlantBeehiveTool.Unlock";
         private readonly InputService _inputService;
-        private readonly PlantingOverridePrefabSpecService _prefabSpecService;
+        private readonly PlantBeehivePrefabSpecService _prefabSpecService;
         private readonly BuildingUnlockingService _buildingUnlockingService;
         private readonly BuildingService _buildingService;
 
@@ -29,9 +25,9 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
         public PlantBeehiveToolLocker(  InputService inputService,
                                         DialogBoxShower dialogBoxShower,
-                                        PlantingOverridePrefabSpecService prefabSpecService,
-                                            BuildingUnlockingService buildingUnlockingService,
-                                            BuildingService buildingService,
+                                        PlantBeehivePrefabSpecService prefabSpecService,
+                                        BuildingUnlockingService buildingUnlockingService,
+                                        BuildingService buildingService,
                                         ILoc loc)
         {
             this._inputService = inputService;
@@ -40,17 +36,25 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             this._dialogBoxShower = dialogBoxShower;
             this._prefabSpecService = prefabSpecService;
             this._loc = loc;
+
         }
         public bool ShouldLock(Tool tool)
         {
-            // get faction: this is only applicable for folktails (beehive is available)
-            if (_prefabSpecService.FactionId.Contains("Folktails"))
+            if (tool is PlantBeehiveToolService beehiveTool)
             {
-                return false; 
+                // get faction: this is only applicable for folktails (beehive is available)
+                if (_prefabSpecService.FactionId.Contains("Folktails"))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
             else
-            {
-                return true;
+            { 
+                return false;
             }
          }
 

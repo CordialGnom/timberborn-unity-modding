@@ -22,6 +22,7 @@ using System.Linq;
 using Timberborn.SelectionToolSystem;
 using System;
 using Timberborn.Growing;
+using UnityEngine.UIElements;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
@@ -66,7 +67,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private static readonly SingletonKey PlantBeehiveToolServiceKey = new SingletonKey("Cordial.PlantBeehiveToolService");
         private static readonly ListKey<Vector3Int> PlantBeehiveToolCoordKey = new ListKey<Vector3Int>("Cordial.PlantBeehiveToolCoordKey");
 
-        public PlantBeehiveToolService( SelectionToolProcessorFactory selectionToolProcessorFactory,
+        public PlantBeehiveToolService(SelectionToolProcessorFactory selectionToolProcessorFactory,
                                             BuildingUnlockingService buildingUnlockingService,
                                             AreaHighlightingService areaHighlightingService,
                                             ToolUnlockingService toolUnlockingService,
@@ -97,8 +98,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                                                                                     CursorKey);
 
             // todo add service that the tool is locked / requires beehive
-
-
         }
 
         public void Load()
@@ -128,136 +127,133 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
         public override void Enter()
         {
-            string prefabName = "Beehive.Folktails";
-
-            // create a beehive to check if system is unlocked
-            _beehive = _buildingService.GetBuildingPrefab(prefabName);
-
-            if (_beehive == null)
+            if (this.Locker != null)
             {
-                return; // tool not available for this faction
+                this._toolUnlockingService.TryToUnlock((Tool)this);
             }
             else
-            {
-                bool isUnlocked = _buildingUnlockingService.Unlocked(_beehive);
-                //this._blockObjectRange = _beehive.GetComponentFast<BlockObjectRange>();
-
-                if (true == isUnlocked)
-                {
-                    // activate tool
-                    this._selectionToolProcessor.Enter();
-
-                    // highlight area
-                    //HighlightExistingHiveArea();
-                    //_areaHighlightingService.Highlight();
-                }
-                else
-                {
-                    return;
-                }
+            { 
+                // activate tool
+                this._selectionToolProcessor.Enter();
             }
         }
+
         public override void Exit()
         {
             this._selectionToolProcessor.Exit();
             _areaHighlightingService.UnhighlightAll();
-
         }
 
         private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-            // only take first input block
-            Vector3Int startCoord =     inputBlocks.First();
-
-            List<Vector3Int> newList = new();
-            List<Vector2Int> coordList = new();
-
-            coordList.Add(startCoord.XY());
-
-            newList.AddRange(_terrainAreaService.InMapCoordinates(coordList));
-
-            startCoord = newList.First();
-
-            newList.Clear();
-
-            if (startCoord != Vector3Int.zero)
+            if (this.Locker != null)
             {
-                // evaluate start coord range
-                newList.AddRange(GetBlocksInRectangularRadius(startCoord, _cBeehiveRadius));
-
-                // get all areas
-                foreach (Hive hive in _hiveRegistry)
-                {
-                    newList.AddRange(hive.GetBlocksInRange());
-                }
-
-                _hiveCoordsNew = _hiveCoordsNew.Distinct().ToList();
-
-                foreach (Vector3Int coord in _hiveCoordsNew)
-                {
-                    newList.AddRange(GetBlocksInRectangularRadius(coord, _cBeehiveRadius));
-                }
-
-                foreach (Vector3Int coord in newList)
-                {
-                    _areaHighlightingService.DrawTile(coord, this._colors.BuildingRangeTile);
-                }
-
-                var tgtCoord = this._blockService.GetBottomObjectAt(startCoord);
-
-                if (tgtCoord != null)
-                {
-                    _areaHighlightingService.AddForHighlight((BaseComponent)tgtCoord);
-                }
+                this._toolUnlockingService.TryToUnlock((Tool)this);
             }
+            else
+            {
 
-            // highlight everything added to the service above
-            _areaHighlightingService.Highlight();
+                // only take first input block
+                Vector3Int startCoord = inputBlocks.First();
+
+                List<Vector3Int> newList = new();
+                List<Vector2Int> coordList = new();
+
+                coordList.Add(startCoord.XY());
+
+                newList.AddRange(_terrainAreaService.InMapCoordinates(coordList));
+
+                startCoord = newList.First();
+
+                newList.Clear();
+
+                if (startCoord != Vector3Int.zero)
+                {
+                    // evaluate start coord range
+                    newList.AddRange(GetBlocksInRectangularRadius(startCoord, _cBeehiveRadius));
+
+                    // get all areas
+                    foreach (Hive hive in _hiveRegistry)
+                    {
+                        newList.AddRange(hive.GetBlocksInRange());
+                    }
+
+                    _hiveCoordsNew = _hiveCoordsNew.Distinct().ToList();
+
+                    foreach (Vector3Int coord in _hiveCoordsNew)
+                    {
+                        newList.AddRange(GetBlocksInRectangularRadius(coord, _cBeehiveRadius));
+                    }
+
+                    foreach (Vector3Int coord in newList)
+                    {
+                        _areaHighlightingService.DrawTile(coord, this._colors.BuildingRangeTile);
+                    }
+
+                    var tgtCoord = this._blockService.GetBottomObjectAt(startCoord);
+
+                    if (tgtCoord != null)
+                    {
+                        _areaHighlightingService.AddForHighlight((BaseComponent)tgtCoord);
+                    }
+                }
+
+                // highlight everything added to the service above
+                _areaHighlightingService.Highlight();
+            }
         }
 
         private void ActionCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-            // only take first input block
-            Vector3Int startCoord = inputBlocks.First();
-
-            List<Vector3Int> newList = new();
-            List<Vector2Int> coordList = new();
-
-            coordList.Add(startCoord.XY());
-
-            newList.AddRange(_terrainAreaService.InMapCoordinates(coordList));
-
-            startCoord = newList.First();
-
-            newList.Clear();
-
-            if (startCoord != Vector3Int.zero)
+            if (this.Locker != null)
             {
-                // get all areas
-                newList.AddRange(GetBlocksInRectangularRadius(startCoord, _cBeehiveRadius));
-
-
-                foreach (Hive hive in _hiveRegistry)
-                {
-                    newList.AddRange(hive.GetBlocksInRange());
-                }
-
-                foreach (Vector3Int coord in _hiveCoordsNew)
-                {
-                    newList.AddRange(GetBlocksInRectangularRadius(coord, _cBeehiveRadius));
-                }
-
-                foreach (Vector3Int coord in newList)
-                {
-                    _areaHighlightingService.DrawTile(coord, this._colors.BuildingRangeTile);
-                }
-
-                PrepareBeehivePlacement(startCoord);
-
+                this._toolUnlockingService.TryToUnlock((Tool)this);
             }
+            else
+            {
 
-            // highlight everything added to the service above
-            _areaHighlightingService.Highlight();
+                // only take first input block
+                Vector3Int startCoord = inputBlocks.First();
+
+                List<Vector3Int> newList = new();
+                List<Vector2Int> coordList = new();
+
+                coordList.Add(startCoord.XY());
+
+                newList.AddRange(_terrainAreaService.InMapCoordinates(coordList));
+
+                startCoord = newList.First();
+
+                newList.Clear();
+
+                if (startCoord != Vector3Int.zero)
+                {
+                    // get all areas
+                    newList.AddRange(GetBlocksInRectangularRadius(startCoord, _cBeehiveRadius));
+
+
+                    foreach (Hive hive in _hiveRegistry)
+                    {
+                        newList.AddRange(hive.GetBlocksInRange());
+                    }
+
+                    foreach (Vector3Int coord in _hiveCoordsNew)
+                    {
+                        newList.AddRange(GetBlocksInRectangularRadius(coord, _cBeehiveRadius));
+                    }
+
+                    foreach (Vector3Int coord in newList)
+                    {
+                        _areaHighlightingService.DrawTile(coord, this._colors.BuildingRangeTile);
+                    }
+
+                    PrepareBeehivePlacement(startCoord);
+
+                }
+
+                // highlight everything added to the service above
+                _areaHighlightingService.Highlight();
+            }
         }
 
         private void ShowNoneCallback()
