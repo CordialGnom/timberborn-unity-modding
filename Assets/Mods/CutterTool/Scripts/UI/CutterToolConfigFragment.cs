@@ -4,7 +4,6 @@ using TimberApi.UIBuilderSystem;
 using TimberApi.UIBuilderSystem.CustomElements;
 using TimberApi.UIPresets.Labels;
 using TimberApi.UIPresets.Toggles;
-using Timberborn.Common;
 using Timberborn.CoreUI;
 using Timberborn.SingletonSystem;
 using UnityEngine.UIElements;
@@ -161,7 +160,9 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         {
             foreach (var child in visualElement.Children())
             {
-                if ((child.GetType() == typeof(LocalizableToggle))
+                // todo Cordial: could also be TimberApi.xxx.LocalizableToggle... 
+                // check feature after TimberApi update
+                if ((child.GetType() == typeof(Timberborn.CoreUI.LocalizableToggle))
                     //|| (child.GetType() == typeof(Toggle))     // if GameTextToggle is used
                     )
                 {

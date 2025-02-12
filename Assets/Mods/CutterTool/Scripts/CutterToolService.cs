@@ -4,9 +4,11 @@ using System.Linq;
 using Cordial.Mods.CutterTool.Scripts.UI;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
+using Timberborn.BlueprintSystem;
 using Timberborn.CoreUI;
 using Timberborn.Cutting;
 using Timberborn.Forestry;
+using Timberborn.ForestryUI;
 using Timberborn.Gathering;
 using Timberborn.GoodStackSystem;
 using Timberborn.Growing;
@@ -15,7 +17,7 @@ using Timberborn.NaturalResourcesLifecycle;
 using Timberborn.SelectionSystem;
 using Timberborn.SelectionToolSystem;
 using Timberborn.SingletonSystem;
-using Timberborn.TerrainSystem;
+using Timberborn.TerrainQueryingSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
 
@@ -33,7 +35,8 @@ namespace Cordial.Mods.CutterTool.Scripts
         private ToolDescription _toolDescription;      // is used
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly SelectionToolProcessor _selectionToolProcessor;
-        private EventBus _eventBus;
+        private readonly ISpecService _specService;
+        private readonly EventBus _eventBus;
 
         // UI setup
         //private CutterToolInitializer _cutterToolInitializer;
@@ -46,9 +49,10 @@ namespace Cordial.Mods.CutterTool.Scripts
         private bool _ignoreStumps = false;
 
         // highlighting
-        private readonly Colors _colors;
         private readonly AreaHighlightingService _areaHighlightingService;
         private readonly TerrainAreaService _terrainAreaService;
+        public Color _toolActionTileColor;
+        public Color _toolNoActionTileColor;
 
         // cutting area
         private readonly TreeCuttingArea _treeCuttingArea;
@@ -57,12 +61,12 @@ namespace Cordial.Mods.CutterTool.Scripts
 
         public CutterToolService(   SelectionToolProcessorFactory selectionToolProcessorFactory,
                                     ToolUnlockingService toolUnlockingService,
-                                    Colors colors,
                                     ILoc loc,
                                     AreaHighlightingService areaHighlightingService,
                                     TerrainAreaService terrainAreaService,
                                     TreeCuttingArea treeCuttingArea,
                                     BlockService blockService,
+                                    ISpecService specService,
                                     EventBus eventBus ) 
         {
             _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
@@ -77,8 +81,8 @@ namespace Cordial.Mods.CutterTool.Scripts
             _terrainAreaService = terrainAreaService;
             _treeCuttingArea =  treeCuttingArea;
             _blockService = blockService;
+            _specService = specService;
             _eventBus = eventBus;
-            _colors = colors;
             _loc = loc; 
 
         }
@@ -87,8 +91,14 @@ namespace Cordial.Mods.CutterTool.Scripts
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
             this._eventBus.Register((object)this);
+
+
+            TreeCuttingColorsSpec singleSpec = this._specService.GetSingleSpec<TreeCuttingColorsSpec>();
+            _toolActionTileColor = singleSpec.ToolActionTile;
+            _toolNoActionTileColor = singleSpec.ToolNoActionTile;
+
         }
-        public override void Enter()
+    public override void Enter()
         {
             // activate tool
             this._selectionToolProcessor.Enter();
@@ -154,29 +164,29 @@ namespace Cordial.Mods.CutterTool.Scripts
                             if (invIsEmpty && cuttableEmpty && growthDone && gatherableEmpty && _ignoreStumps)
                             {
                                 // ignore stumps, do not mark as part of the selection
-                                this._areaHighlightingService.DrawTile(block, this._colors.PriorityTileColor);
+                                this._areaHighlightingService.DrawTile(block, _toolNoActionTileColor);
                             }
                             else // a tree or a markable stump
                             {
                                 this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
-                                this._areaHighlightingService.DrawTile(block, this._colors.SelectionToolHighlight);
+                                this._areaHighlightingService.DrawTile(block, _toolActionTileColor);
                             }
                         }
                     }
                     else
                     {
                         // ignore entry, not contained
-                        this._areaHighlightingService.DrawTile(block, this._colors.PriorityTileColor);
+                        this._areaHighlightingService.DrawTile(block, _toolNoActionTileColor);
                     }
                 }
                 // no tree, yet marking enabled
                 else if (_treeMarkOnly == false)
                 {
-                    this._areaHighlightingService.DrawTile(block, this._colors.SelectionToolHighlight);
+                    this._areaHighlightingService.DrawTile(block, _toolActionTileColor);
                 }
                 else
                 {
-                    this._areaHighlightingService.DrawTile(block, this._colors.PriorityTileColor);
+                    this._areaHighlightingService.DrawTile(block, _toolNoActionTileColor);
                 }
             }
             // highlight everything added to the service above
