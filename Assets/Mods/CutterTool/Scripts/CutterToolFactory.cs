@@ -12,7 +12,7 @@ namespace Cordial.Mods.CutterTool.Scripts
             _CutterTool = CutterTool;
         }
 
-        public Tool Create(ToolSpecification toolSpecification, ToolGroup toolGroup = null)
+        public Tool Create(ToolSpec toolSpecification, ToolGroup toolGroup = null)
         {
             _CutterTool.SetToolGroup(toolGroup);
             return (Tool)_CutterTool;

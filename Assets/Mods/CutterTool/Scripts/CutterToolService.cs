@@ -5,7 +5,6 @@ using Cordial.Mods.CutterTool.Scripts.UI;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.BlueprintSystem;
-using Timberborn.CoreUI;
 using Timberborn.Cutting;
 using Timberborn.Forestry;
 using Timberborn.ForestryUI;
@@ -92,17 +91,16 @@ namespace Cordial.Mods.CutterTool.Scripts
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
             this._eventBus.Register((object)this);
 
-
-            TreeCuttingColorsSpec singleSpec = this._specService.GetSingleSpec<TreeCuttingColorsSpec>();
-            _toolActionTileColor = singleSpec.ToolActionTile;
-            _toolNoActionTileColor = singleSpec.ToolNoActionTile;
-
         }
     public override void Enter()
         {
             // activate tool
             this._selectionToolProcessor.Enter();
             this._eventBus.Post((object)new CutterToolSelectedEvent(this) );
+
+            TreeCuttingColorsSpec singleSpec = this._specService.GetSingleSpec<TreeCuttingColorsSpec>();
+            _toolActionTileColor = singleSpec.ToolActionTile;
+            _toolNoActionTileColor = singleSpec.ToolNoActionTile;
         }
         public override void Exit()
         {
