@@ -2,15 +2,10 @@
   "ToolSpec": {
 	  "Id": "CutterTool",
 	  "GroupId": "TreeCutting",
-	  "Scenes": ["Game"],
-	  "Section": "BottomBar",
 	  "Type": "CutterTool",
-	  "Layout": "Default",
 	  "Order": 12,
 	  "Icon": "Sprites/CutterTool/CutterToolIcon",
 	  "NameLocKey": "Cordial.CutterTool.DisplayName",
-	  "DescriptionLocKey": "Cordial.CutterTool.Description",
-	  "Hidden": false,
-	  "DevMode": false
+	  "DescriptionLocKey": "Cordial.CutterTool.Description"
   }
 }

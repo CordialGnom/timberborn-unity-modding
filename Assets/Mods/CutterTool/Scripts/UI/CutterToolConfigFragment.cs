@@ -6,6 +6,7 @@ using TimberApi.UIPresets.Labels;
 using TimberApi.UIPresets.Toggles;
 using Timberborn.CoreUI;
 using Timberborn.SingletonSystem;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Cordial.Mods.CutterTool.Scripts.UI
@@ -162,7 +163,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
             {
                 // todo Cordial: could also be TimberApi.xxx.LocalizableToggle... 
                 // check feature after TimberApi update
-                if ((child.GetType() == typeof(Timberborn.CoreUI.LocalizableToggle))
+                if ((child.GetType() == typeof(TimberApi.UIBuilderSystem.CustomElements.LocalizableToggle))
+                        || (child.GetType() == typeof(Timberborn.CoreUI.LocalizableToggle))
                     //|| (child.GetType() == typeof(Toggle))     // if GameTextToggle is used
                     )
                 {
@@ -214,7 +216,6 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
         private void ToggleValueChange(string resourceName, bool value)
         {
-
             switch (resourceName)
             {
                 case "Pattern01":

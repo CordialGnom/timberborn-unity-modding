@@ -30,12 +30,12 @@ namespace Cordial.Mods.CutterTool.Scripts
         private static readonly string CursorKey = "CutTreeCursor";
 
         // tool setup
-        private readonly ILoc _loc;
-        private ToolDescription _toolDescription;      // is used
-        private readonly ToolUnlockingService _toolUnlockingService;
-        private readonly SelectionToolProcessor _selectionToolProcessor;
-        private readonly ISpecService _specService;
-        private readonly EventBus _eventBus;
+        public readonly ILoc _loc;
+        public ToolDescription _toolDescription;      // is used
+        public readonly ToolUnlockingService _toolUnlockingService;
+        public readonly SelectionToolProcessor _selectionToolProcessor;
+        public readonly ISpecService _specService;
+        public readonly EventBus _eventBus;
 
         // UI setup
         //private CutterToolInitializer _cutterToolInitializer;
@@ -48,14 +48,14 @@ namespace Cordial.Mods.CutterTool.Scripts
         private bool _ignoreStumps = false;
 
         // highlighting
-        private readonly AreaHighlightingService _areaHighlightingService;
-        private readonly TerrainAreaService _terrainAreaService;
+        public readonly AreaHighlightingService _areaHighlightingService;
+        public readonly TerrainAreaService _terrainAreaService;
         public Color _toolActionTileColor;
         public Color _toolNoActionTileColor;
 
         // cutting area
-        private readonly TreeCuttingArea _treeCuttingArea;
-        private readonly BlockService _blockService;
+        public readonly TreeCuttingArea _treeCuttingArea;
+        public readonly IBlockService _blockService;
 
 
         public CutterToolService(   SelectionToolProcessorFactory selectionToolProcessorFactory,
@@ -64,7 +64,7 @@ namespace Cordial.Mods.CutterTool.Scripts
                                     AreaHighlightingService areaHighlightingService,
                                     TerrainAreaService terrainAreaService,
                                     TreeCuttingArea treeCuttingArea,
-                                    BlockService blockService,
+                                    IBlockService blockService,
                                     ISpecService specService,
                                     EventBus eventBus ) 
         {
@@ -91,16 +91,15 @@ namespace Cordial.Mods.CutterTool.Scripts
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
             this._eventBus.Register((object)this);
 
+            _toolActionTileColor = Color.red;
+            _toolNoActionTileColor = Color.blue;
+
         }
     public override void Enter()
         {
             // activate tool
             this._selectionToolProcessor.Enter();
             this._eventBus.Post((object)new CutterToolSelectedEvent(this) );
-
-            TreeCuttingColorsSpec singleSpec = this._specService.GetSingleSpec<TreeCuttingColorsSpec>();
-            _toolActionTileColor = singleSpec.ToolActionTile;
-            _toolNoActionTileColor = singleSpec.ToolNoActionTile;
         }
         public override void Exit()
         {
@@ -121,7 +120,7 @@ namespace Cordial.Mods.CutterTool.Scripts
             // iterate over all input blocks -> toggle boolean flag for it
             foreach (Vector3Int block in patternBlocks)
             {
-                TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
+                TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(block);
 
                 if (objectComponentAt != null)
                 {
@@ -209,7 +208,7 @@ namespace Cordial.Mods.CutterTool.Scripts
                 // iterate over all input blocks -> toggle boolean flag for it
                 foreach (Vector3Int block in patternBlocks)
                 {
-                    TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
+                    TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(block);
 
                     if (objectComponentAt != null)
                     {
