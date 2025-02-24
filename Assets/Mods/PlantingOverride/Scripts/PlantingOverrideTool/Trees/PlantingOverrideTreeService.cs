@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Cordial.Mods.PlantingOverride.Scripts.Common;
 using Cordial.Mods.PlantingOverride.Scripts.UI;
-using NUnit.Framework;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
-using Timberborn.CoreUI;
+using Timberborn.BlueprintSystem;
 using Timberborn.Forestry;
+using Timberborn.ForestryUI;
 using Timberborn.Localization;
 using Timberborn.Persistence;
 using Timberborn.Planting;
 using Timberborn.SelectionSystem;
 using Timberborn.SelectionToolSystem;
 using Timberborn.SingletonSystem;
-using Timberborn.TerrainSystem;
+using Timberborn.TerrainQueryingSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
 
@@ -32,21 +32,23 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         private ToolDescription _toolDescription;               // is used
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly SelectionToolProcessor _selectionToolProcessor;
+        private readonly ISpecService _specService;
         private readonly EventBus _eventBus;
 
         // configuration
         private readonly List<string> _treeTypesActive = new();
-        private readonly PlantingOverridePrefabSpecService _specService;
+        private readonly PlantingOverridePrefabSpecService _plantOverrideSpecService;
         private bool _removeCuttingArea;
 
         // highlighting
-        private readonly Colors _colors;
         private readonly AreaHighlightingService _areaHighlightingService;
         private readonly TerrainAreaService _terrainAreaService;
+        public Color _toolActionTileColor;
+        public Color _toolNoActionTileColor;
 
         // planting area / selection
         private readonly PlantingService _plantingService;
-        private readonly BlockService _blockService;
+        private readonly IBlockService _blockService;
         private readonly TreeCuttingArea _treeCuttingArea;
 
         // configuration storage
@@ -63,15 +65,15 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         public PlantingOverrideTreeService( SelectionToolProcessorFactory selectionToolProcessorFactory,
                                             AreaHighlightingService areaHighlightingService,
-                                            PlantingOverridePrefabSpecService specService,
+                                            PlantingOverridePrefabSpecService plantOverrideSpecService,
                                             ToolUnlockingService toolUnlockingService,
                                             TerrainAreaService terrainAreaService,
                                             ISingletonLoader singletonLoader,
                                             TreeCuttingArea treeCuttingArea,
                                             PlantingService plantingService,
-                                            BlockService blockService,
+                                            IBlockService blockService,
+                                            ISpecService specService,
                                             EventBus eventBus,
-                                            Colors colors,
                                             ILoc loc ) 
         {
             _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
@@ -81,6 +83,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                                                                                     new Action(ShowNoneCallback),
                                                                                     CursorKey);
 
+            _plantOverrideSpecService = plantOverrideSpecService;
             _areaHighlightingService = areaHighlightingService;
             _toolUnlockingService = toolUnlockingService;
             _terrainAreaService = terrainAreaService;
@@ -90,7 +93,6 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             _blockService = blockService;
             _specService = specService;
             _eventBus = eventBus;
-            _colors = colors;
             _loc = loc; 
 
         }
@@ -99,6 +101,9 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
             this._eventBus.Register((object)this);
+
+            _toolActionTileColor = Color.red;
+            _toolNoActionTileColor = Color.blue;
 
             if (this._singletonLoader.HasSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey))
             {
@@ -130,13 +135,13 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
                         foreach (var kvp in _treeRegistry.ToList())
                         {
-                            TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(kvp.Key);
-                            Bush bushComponentAt = this._blockService.GetBottomObjectComponentAt<Bush>(kvp.Key);
+                            TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(kvp.Key);
+                            BushSpec bushComponentAt = this._blockService.GetBottomObjectComponentAt<BushSpec>(kvp.Key);
 
                             if ((objectComponentAt != null)
                                  || (bushComponentAt != null))
                             {
-                                if (_specService.VerifyPrefabName(kvp.Value))
+                                if (_plantOverrideSpecService.VerifyPrefabName(kvp.Value))
                                 {
                                     _plantingService.SetPlantingCoordinates(kvp.Key, kvp.Value);
                                 }
@@ -178,22 +183,22 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             // iterate over all input blocks -> toggle boolean flag for it
             foreach (Vector3Int block in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
             {
-                TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
-                Bush bushComponentAt = this._blockService.GetBottomObjectComponentAt<Bush>(block);
+                TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(block);
+                BushSpec bushComponentAt = this._blockService.GetBottomObjectComponentAt<BushSpec>(block);
 
                 if (objectComponentAt != null)
                 {
                    this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
-                   this._areaHighlightingService.DrawTile(block, this._colors.PlantingToolTile);
+                   this._areaHighlightingService.DrawTile(block, this._toolActionTileColor);
                 }
                 else if (bushComponentAt != null)
                 {
                    this._areaHighlightingService.AddForHighlight((BaseComponent)bushComponentAt);
-                   this._areaHighlightingService.DrawTile(block, this._colors.PlantingToolTile);
+                   this._areaHighlightingService.DrawTile(block, this._toolActionTileColor);
                 }
                 else
                 {
-                    this._areaHighlightingService.DrawTile(block, this._colors.PriorityTileColor);
+                    this._areaHighlightingService.DrawTile(block, this._toolNoActionTileColor);
                 }
             }
                 
@@ -210,18 +215,18 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             else
             {
                 this._areaHighlightingService.UnhighlightAll();
-                _specService.VerifyPrefabName(_treeTypesActive[0]);
+                _plantOverrideSpecService.VerifyPrefabName(_treeTypesActive[0]);
 
                 foreach (Vector3Int block in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
                 {                
-                    TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
-                    Bush bushComponentAt = this._blockService.GetBottomObjectComponentAt<Bush>(block);
+                    TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(block);
+                    BushSpec bushComponentAt = this._blockService.GetBottomObjectComponentAt<BushSpec>(block);
 
                     if ((objectComponentAt != null)
                         || (bushComponentAt != null))
                     {
                         if ((_treeTypesActive.Count == 1)
-                            && (_specService.VerifyPrefabName(_treeTypesActive[0])))
+                            && (_plantOverrideSpecService.VerifyPrefabName(_treeTypesActive[0])))
                         {
                             _plantingService.SetPlantingCoordinates(block, _treeTypesActive[0]);
 

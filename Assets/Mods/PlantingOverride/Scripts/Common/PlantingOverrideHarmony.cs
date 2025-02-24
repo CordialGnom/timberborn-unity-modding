@@ -2,10 +2,12 @@
 using Cordial.Mods.PlantingOverride.Scripts.Common;
 using HarmonyLib;
 using TimberApi.DependencyContainerSystem;
+using Timberborn.BaseComponentSystem;
 using Timberborn.BehaviorSystem;
 using Timberborn.BlockSystem;
 using Timberborn.Common;
 using Timberborn.Demolishing;
+using Timberborn.EntitySystem;
 using Timberborn.ModManagerScene;
 using Timberborn.Planting;
 using Timberborn.Pollination;
@@ -31,15 +33,15 @@ namespace Assets.Mods.PlantingOverride.Scripts.Common
                 // need to get access to class/object as well. 
                 if (null != __instance)
                 {
-                    PlantingOverridePrefabSpecService specService = DependencyContainer.GetInstance<PlantingOverridePrefabSpecService>();
+                    PlantingOverridePrefabSpecService plantOverrideSpecService = DependencyContainer.GetInstance<PlantingOverridePrefabSpecService>();
                     PlantingService plantingService = DependencyContainer.GetInstance<PlantingService>();
                     EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
 
                     if ((null != plantingService)
-                            && (null != specService)
+                            && (null != plantOverrideSpecService)
                             && (null != eventBus))
                     {
-                        string oldResource = plantingService.GetResourceAt(coordinates.XY());
+                        string oldResource = plantingService.GetResourceAt(coordinates);
                         eventBus.Post((object)new PlantingOverridePlantingEvent(coordinates, oldResource));
                         eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(coordinates, false));
 
@@ -191,6 +193,42 @@ TR: False AR: False
                 if (null != __instance)
                 {
                     eventBus.Post((object)new PlantBeehiveToolUnregisterHiveEvent(__instance));
+                }
+            }
+        } 
+        
+        // unregister any hive that has been deleted (e.g. in construction state)
+        [HarmonyPatch(typeof(EntityService), "Delete")]
+        public static class EntityServiceOnDeletePatch
+        {
+            static void Postfix(ref BaseComponent entity)
+            {
+                if (null != entity)
+                {
+                    EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+
+                    // check if entity has a hive component
+                    entity.TryGetComponentFast<Hive>(out Hive component);
+
+                    if (null != component)
+                    {
+                        component.TryGetComponentFast<BlockObject>(out BlockObject blockObject);
+
+                        if (null != blockObject)
+                        {
+                            Debug.Log("Delete Hive At Coordinates: " + blockObject.Coordinates);
+                            eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(blockObject.Coordinates, false));
+                        }
+                        else
+                        {
+                            Debug.Log("Delete Hive : " + component.name);
+                            eventBus.Post((object)new PlantBeehiveToolUnregisterHiveEvent(component));
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("Delete: " + entity.name);
+                    }
                 }
             }
         }

@@ -11,7 +11,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
 {
     public class PlantingOverrideDropDownProvider : IDropdownProvider, ILoadableSingleton
     {
-        private readonly PlantingOverridePrefabSpecService _specService;
+        private readonly PlantingOverridePrefabSpecService _plantOverrideSpecService;
         private readonly EventBus _eventBus;
         private readonly List<string> _items = new();
         private readonly List<string> _gameItemName = new();
@@ -21,11 +21,11 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
 
         public string PlantName => plantable;
 
-        public PlantingOverrideDropDownProvider( PlantingOverridePrefabSpecService specService,
+        public PlantingOverrideDropDownProvider( PlantingOverridePrefabSpecService plantOverrideSpecService,
                                                         EventBus eventBus, 
                                                         ILoc loc )
         {
-            _specService = specService;
+            _plantOverrideSpecService = plantOverrideSpecService;
             _eventBus = eventBus;
             _loc = loc;
         }
@@ -37,9 +37,9 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
 
         public void Load()
         {
-            if (this._specService != null)
+            if (this._plantOverrideSpecService != null)
             {
-                ImmutableArray<string> allowedPlantables = this._specService.GetAllForestryPlantables();
+                ImmutableArray<string> allowedPlantables = this._plantOverrideSpecService.GetAllForestryPlantables();
 
                 foreach (string plant in allowedPlantables)
                 {
@@ -54,10 +54,10 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
             this._items.Clear();
             this._gameItemName.Clear();
 
-            if (this._specService != null)
+            if (this._plantOverrideSpecService != null)
             {
 
-                ImmutableArray<string> allowedPlantables = this._specService.GetAllForestryPlantables();
+                ImmutableArray<string> allowedPlantables = this._plantOverrideSpecService.GetAllForestryPlantables();
 
                 foreach (string plant in allowedPlantables)
                 {
@@ -73,9 +73,9 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
             this._items.Clear();
             this._gameItemName.Clear();
 
-            if (this._specService != null)
+            if (this._plantOverrideSpecService != null)
             {
-                ImmutableArray<string> allowedPlantables = this._specService.GetAllCrops();
+                ImmutableArray<string> allowedPlantables = this._plantOverrideSpecService.GetAllCrops();
 
                 foreach (string plant in allowedPlantables)
                 {
@@ -97,8 +97,8 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
         {
             plantable = GetNamedPlantable(value);
 
-            bool isTree = this._specService.CheckIsForestry(plantable);
-            bool isCrop = this._specService.CheckIsCrop(plantable);
+            bool isTree = this._plantOverrideSpecService.CheckIsForestry(plantable);
+            bool isCrop = this._plantOverrideSpecService.CheckIsCrop(plantable);
 
             if (isTree ^ isCrop)
             {
@@ -108,7 +108,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.UI
 
         public bool ItemSetIsTree()
         {
-            return this._specService.CheckIsForestry(plantable);
+            return this._plantOverrideSpecService.CheckIsForestry(plantable);
         }
 
         private string PlantableLocKey(string plantname)

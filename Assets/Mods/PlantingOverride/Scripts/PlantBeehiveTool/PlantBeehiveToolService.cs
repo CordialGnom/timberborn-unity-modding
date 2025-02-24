@@ -6,7 +6,6 @@ using Timberborn.BlockSystem;
 using Timberborn.BuilderPrioritySystem;
 using Timberborn.Buildings;
 using Timberborn.Coordinates;
-using Timberborn.CoreUI;
 using Timberborn.Demolishing;
 using Timberborn.Localization;
 using Timberborn.Persistence;
@@ -14,7 +13,7 @@ using Timberborn.Pollination;
 using Timberborn.ScienceSystem;
 using Timberborn.SelectionSystem;
 using Timberborn.SingletonSystem;
-using Timberborn.TerrainSystem;
+using Timberborn.TerrainQueryingSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
 using Timberborn.Common;
@@ -23,6 +22,8 @@ using Timberborn.SelectionToolSystem;
 using System;
 using Timberborn.Growing;
 using UnityEngine.UIElements;
+using Timberborn.BlueprintSystem;
+using Timberborn.ForestryUI;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
@@ -40,22 +41,24 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private ToolDescription _toolDescription;               // is used
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly EventBus _eventBus;
+        private readonly ISpecService _specService;
 
         // highlighting
-        private readonly Colors _colors;
         private static AreaHighlightingService _areaHighlightingService;
         private readonly TerrainAreaService _terrainAreaService;
+        public Color _toolActionTileColor;
+        public Color _toolNoActionTileColor;
 
         // selection
         private readonly SelectionToolProcessor _selectionToolProcessor;
-        private readonly BlockService _blockService;
+        private readonly IBlockService _blockService;
         private static Vector3Int _cursorPosPrev = new Vector3Int(0, 0, 0);
 
 
         // building placement
         private readonly BuildingUnlockingService _buildingUnlockingService;
         private readonly BuildingService _buildingService;
-        private Building _beehive;
+        private BuildingSpec _beehive;
 
         private BlockObjectRange _blockObjectRange;
 
@@ -74,9 +77,9 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                                             TerrainAreaService terrainAreaService,
                                             ISingletonLoader singletonLoader,
                                             BuildingService buildingService,
-                                            BlockService blockService,
+                                            IBlockService blockService,
+                                            ISpecService specService,
                                             EventBus eventBus,
-                                            Colors colors,
                                             ILoc loc )
         {
             _buildingUnlockingService = buildingUnlockingService;
@@ -86,8 +89,8 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             _singletonLoader = singletonLoader;
             _buildingService = buildingService;
             _blockService = blockService;
+            _specService = specService;
             _eventBus = eventBus;
-            _colors = colors;
             _loc = loc; 
             
             _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
@@ -106,6 +109,9 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             this._eventBus.Register((object)this);
 
             Debug.Log("Overriding limits...");
+
+            _toolActionTileColor = Color.red;
+            _toolNoActionTileColor = Color.blue;
         }
 
         public void PostLoad()
@@ -129,12 +135,28 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         {
             if (this.Locker != null)
             {
+                Debug.Log("PBTS: Enter: +Lock");
                 this._toolUnlockingService.TryToUnlock((Tool)this);
             }
             else
-            { 
+            {
+                Debug.Log("PBTS: Enter: +NoLock");
                 // activate tool
                 this._selectionToolProcessor.Enter();
+
+                // create a beehive to be placed by the tool
+                string prefabName = "Beehive.Folktails";
+
+                _beehive = _buildingService.GetBuildingPrefab(prefabName);
+
+                if (_beehive == null)
+                {
+                    this.Exit();
+                }
+                else
+                {
+                    Debug.Log("PBTS: Enter: HasHive");
+                }
             }
         }
 
@@ -154,21 +176,21 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             {
 
                 // only take first input block
-                Vector3Int startCoord = inputBlocks.First();
+                Vector3Int startCoord = inputBlocks.FirstOrDefault();
 
                 List<Vector3Int> newList = new();
                 List<Vector2Int> coordList = new();
 
-                coordList.Add(startCoord.XY());
-
-                newList.AddRange(_terrainAreaService.InMapCoordinates(coordList));
-
-                startCoord = newList.First();
-
-                newList.Clear();
-
                 if (startCoord != Vector3Int.zero)
                 {
+                    coordList.Add(startCoord.XY());
+
+                    newList.AddRange(_terrainAreaService.InMapCoordinates(coordList));
+
+                    startCoord = newList.First();
+
+                    newList.Clear();
+
                     // evaluate start coord range
                     newList.AddRange(GetBlocksInRectangularRadius(startCoord, _cBeehiveRadius));
 
@@ -187,7 +209,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
                     foreach (Vector3Int coord in newList)
                     {
-                        _areaHighlightingService.DrawTile(coord, this._colors.BuildingRangeTile);
+                        _areaHighlightingService.DrawTile(coord, this._toolActionTileColor);
                     }
 
                     var tgtCoord = this._blockService.GetBottomObjectAt(startCoord);
@@ -211,23 +233,23 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             }
             else
             {
-
                 // only take first input block
-                Vector3Int startCoord = inputBlocks.First();
+                Vector3Int startCoord = inputBlocks.FirstOrDefault();
 
                 List<Vector3Int> newList = new();
                 List<Vector2Int> coordList = new();
 
-                coordList.Add(startCoord.XY());
-
-                newList.AddRange(_terrainAreaService.InMapCoordinates(coordList));
-
-                startCoord = newList.First();
-
-                newList.Clear();
-
+ 
                 if (startCoord != Vector3Int.zero)
                 {
+                    coordList.Add(startCoord.XY());
+
+                    newList.AddRange(_terrainAreaService.InMapCoordinates(coordList));
+
+                    startCoord = newList.First();
+
+                    newList.Clear();
+
                     // get all areas
                     newList.AddRange(GetBlocksInRectangularRadius(startCoord, _cBeehiveRadius));
 
@@ -244,7 +266,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
                     foreach (Vector3Int coord in newList)
                     {
-                        _areaHighlightingService.DrawTile(coord, this._colors.BuildingRangeTile);
+                        _areaHighlightingService.DrawTile(coord, this._toolActionTileColor);
                     }
 
                     PrepareBeehivePlacement(startCoord);
@@ -339,7 +361,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                     _areaHighlightingService.AddForHighlight((BaseComponent)bottomObject);
                 }
 
-                _areaHighlightingService.DrawTile(block, this._colors.BuildingRangeTile);
+                _areaHighlightingService.DrawTile(block, this._toolActionTileColor);
             }
         }
 
@@ -357,7 +379,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                             // check what kind of object has been found
                             block.TryGetComponentFast<Demolishable>(out var demolishable);
                             block.TryGetComponentFast<Growable>(out var growable);
-                            block.TryGetComponentFast<Building>(out var building);
+                            block.TryGetComponentFast<BuildingSpec>(out var building);
 
                             if ((building != null)
                                 || (block.name.Contains("Path")))
@@ -488,7 +510,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             if (_beehive != null)
             {
                 BlockObjectPlacerService buildingPlacer = DependencyContainer.GetInstance<BlockObjectPlacerService>();
-                BlockObject block = this._beehive.GetComponentFast<BlockObject>();
+                BlockObjectSpec block = this._beehive.GetComponentFast<BlockObjectSpec>();
 
                 if (null != buildingPlacer)
                 {
@@ -506,7 +528,8 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         [OnEvent]
         public void OnPlantBeehiveToolRegisterHiveEvent(PlantBeehiveToolRegisterHiveEvent PlantBeehiveToolRegisterHiveEvent)
         {
-            if (null == PlantBeehiveToolRegisterHiveEvent)
+            if ((null == PlantBeehiveToolRegisterHiveEvent)
+                    || (null == PlantBeehiveToolRegisterHiveEvent.Hive))
             {
                 return;
             }
@@ -515,6 +538,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 if (!_hiveRegistry.Contains(PlantBeehiveToolRegisterHiveEvent.Hive))
                 {
                     _hiveRegistry.Add(PlantBeehiveToolRegisterHiveEvent.Hive);
+                    _hiveCoordsNew.Remove(PlantBeehiveToolRegisterHiveEvent.Hive.GetComponentFast<BlockObject>().Coordinates);
                 }
             }
         }
@@ -522,13 +546,15 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         [OnEvent]
         public void OnPlantBeehiveToolUnregisterHiveEvent(PlantBeehiveToolUnregisterHiveEvent PlantBeehiveToolUnregisterHiveEvent)
         {
-            if (null == PlantBeehiveToolUnregisterHiveEvent)
+            if ((null == PlantBeehiveToolUnregisterHiveEvent)
+                    || (null == PlantBeehiveToolUnregisterHiveEvent.Hive))
             {
                 return;
             }
             else // event exists
             {
                 _hiveRegistry.Remove(PlantBeehiveToolUnregisterHiveEvent.Hive);
+                _hiveCoordsNew.Remove(PlantBeehiveToolUnregisterHiveEvent.Hive.GetComponentFast<BlockObject>().Coordinates);
             }
         }
     }

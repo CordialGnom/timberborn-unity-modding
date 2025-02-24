@@ -7,6 +7,7 @@ using Timberborn.ToolSystem;
 using UnityEngine;
 using System;
 using Timberborn.BlockObjectTools;
+using Timberborn.PlantingUI;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
@@ -40,12 +41,22 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         }
         public bool ShouldLock(Tool tool)
         {
-            if (tool is PlantBeehiveToolService beehiveTool)
+            PlantBeehiveToolService beehiveTool;
+
+            bool shouldLock =   IsPlantBeehiveTool(tool, out beehiveTool);
+
+            if (true == shouldLock)
             {
                 // get faction: this is only applicable for folktails (beehive is available)
                 if (_prefabSpecService.FactionId.Contains("Folktails"))
                 {
-                    return false;
+                    // check if beehive is unlocked
+                    string prefabName = "Beehive.Folktails";
+
+                    // create a beehive to check if system is unlocked
+                    BuildingSpec _beehive = _buildingService.GetBuildingPrefab(prefabName);
+
+                    return (!_buildingUnlockingService.Unlocked(_beehive));
                 }
                 else
                 {
@@ -67,7 +78,9 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 string prefabName = "Beehive.Folktails";
 
                 // create a beehive to check if system is unlocked
-                Building _beehive = _buildingService.GetBuildingPrefab(prefabName);
+                BuildingSpec _beehive = _buildingService.GetBuildingPrefab(prefabName);
+
+                Debug.Log("PBTL: TTU: " + _buildingUnlockingService.Unlocked(_beehive));
 
                 if (_beehive == null)
                 {
@@ -88,6 +101,11 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             {
                 this.ShowWrongFactionMessage(_prefabSpecService.FactionId, failCallback);
             }
+        }
+        public static bool IsPlantBeehiveTool(Tool tool, out PlantBeehiveToolService beehiveTool)
+        {
+            beehiveTool = tool as PlantBeehiveToolService;
+            return beehiveTool != null;
         }
 
 

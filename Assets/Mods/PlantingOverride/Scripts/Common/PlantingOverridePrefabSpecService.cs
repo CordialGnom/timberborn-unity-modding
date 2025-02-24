@@ -51,8 +51,8 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
 
             if (null != _prefabService)
             {
-                var treeComponents = _prefabService.GetAll<TreeComponent>();
-                var bushComponents = _prefabService.GetAll<Bush>();
+                var treeComponents = _prefabService.GetAll<TreeComponentSpec>();
+                var bushComponents = _prefabService.GetAll<BushSpec>();
 
                 foreach (var bushObject in bushComponents)
                 {
@@ -100,7 +100,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
 
             if (null != _prefabService)
             {
-                var cropComponents = _prefabService.GetAll<Crop>();
+                var cropComponents = _prefabService.GetAll<CropSpec>();
 
                 //todo Cordial: Load a prefab group
                 foreach (var crop in cropComponents)
@@ -120,7 +120,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
         private static string GetFactionName()
         {
             string factionId = "";
-            FactionSpecification _activeFaction;
+            FactionSpec _activeFaction;
 
             if (null != _factionService)
             {

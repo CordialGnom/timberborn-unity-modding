@@ -12,7 +12,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             _PlantBeehiveTool = PlantBeehiveTool;
         }
 
-        public Tool Create(ToolSpecification toolSpecification, ToolGroup toolGroup = null)
+        public Tool Create(ToolSpec toolSpecification, ToolGroup toolGroup = null)
         {
             _PlantBeehiveTool.SetToolGroup(toolGroup);
             return (Tool)_PlantBeehiveTool;

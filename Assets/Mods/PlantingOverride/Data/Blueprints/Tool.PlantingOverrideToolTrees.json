@@ -1,0 +1,13 @@
+{
+  "ToolSpec": {
+	"Id": "Cordial.PlantingOverrideToolTrees",
+	"GroupId": "Forestry",
+	"Type": "PlantingOverrideToolTrees",
+	"Order": 50,
+	"Icon": "Sprites/PlantingOverride/PlantingOverrideTreeIcon",
+	"NameLocKey": "Cordial.PlantingOverrideTool.Tree.DisplayName",
+	"DescriptionLocKey": "Cordial.PlantingOverrideTool.Tree.Description",
+	"Hidden": false,
+	"DevMode": false
+  }
+}

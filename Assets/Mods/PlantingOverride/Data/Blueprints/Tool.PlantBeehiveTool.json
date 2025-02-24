@@ -1,0 +1,13 @@
+{
+  "ToolSpec": {
+	"Id": "Cordial.PlantBeehiveTool",
+	"GroupId": "Fields",
+	"Type": "PlantBeehiveTool",
+	"Order": 70,
+	"Icon": "Sprites/PlantBeehive/PlantBeehiveIcon",
+	"NameLocKey": "Cordial.PlantBeehiveTool.DisplayName",
+	"DescriptionLocKey": "Cordial.PlantBeehiveTool.Description",
+	"Hidden": false,
+	"DevMode": false
+  }
+}

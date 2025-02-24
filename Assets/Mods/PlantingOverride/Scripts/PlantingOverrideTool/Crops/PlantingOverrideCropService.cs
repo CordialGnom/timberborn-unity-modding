@@ -5,15 +5,16 @@ using Cordial.Mods.PlantingOverride.Scripts.Common;
 using Cordial.Mods.PlantingOverride.Scripts.UI;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
-using Timberborn.CoreUI;
+using Timberborn.BlueprintSystem;
 using Timberborn.Fields;
+using Timberborn.ForestryUI;
 using Timberborn.Localization;
 using Timberborn.Persistence;
 using Timberborn.Planting;
 using Timberborn.SelectionSystem;
 using Timberborn.SelectionToolSystem;
 using Timberborn.SingletonSystem;
-using Timberborn.TerrainSystem;
+using Timberborn.TerrainQueryingSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
 
@@ -31,20 +32,22 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         private ToolDescription _toolDescription;               // is used
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly SelectionToolProcessor _selectionToolProcessor;
+        private readonly ISpecService _specService;
         private readonly EventBus _eventBus;
 
         // configuration
         private readonly List<string> _cropTypesActive = new();
-        private readonly PlantingOverridePrefabSpecService _specService;
+        private readonly PlantingOverridePrefabSpecService _plantOverrideSpecService;
 
         // highlighting
-        private readonly Colors _colors;
         private readonly AreaHighlightingService _areaHighlightingService;
         private readonly TerrainAreaService _terrainAreaService;
+        public Color _toolActionTileColor;
+        public Color _toolNoActionTileColor;
 
         // planting area / selection
         private readonly PlantingService _plantingService;
-        private readonly BlockService _blockService;
+        public readonly IBlockService _blockService;
 
         // configuration storage
         private readonly ISingletonLoader _singletonLoader;
@@ -58,14 +61,14 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         public PlantingOverrideCropService( SelectionToolProcessorFactory selectionToolProcessorFactory,
                                             AreaHighlightingService areaHighlightingService,
-                                            PlantingOverridePrefabSpecService specService,
+                                            PlantingOverridePrefabSpecService plantOverrideSpecService,
                                             ToolUnlockingService toolUnlockingService,
                                             TerrainAreaService terrainAreaService,
                                             ISingletonLoader singletonLoader,
                                             PlantingService plantingService,
-                                            BlockService blockService,
+                                            IBlockService blockService,
+                                            ISpecService specService,
                                             EventBus eventBus,
-                                            Colors colors,
                                             ILoc loc ) 
         {
             _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
@@ -75,6 +78,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                                                                                     new Action(ShowNoneCallback),
                                                                                     CursorKey);
 
+            _plantOverrideSpecService = plantOverrideSpecService;
             _areaHighlightingService = areaHighlightingService;
             _toolUnlockingService = toolUnlockingService;
             _terrainAreaService = terrainAreaService;
@@ -83,7 +87,6 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             _blockService = blockService;
             _specService = specService;
             _eventBus = eventBus;
-            _colors = colors;
             _loc = loc; 
 
         }
@@ -92,6 +95,9 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
             this._eventBus.Register((object)this);
+
+            _toolActionTileColor = Color.red;
+            _toolNoActionTileColor = Color.blue;
 
             if (this._singletonLoader.HasSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey))
             {
@@ -118,7 +124,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
                         if (objectComponentAt != null)
                         {
-                            if (_specService.VerifyPrefabName(kvp.Value))
+                            if (_plantOverrideSpecService.VerifyPrefabName(kvp.Value))
                             {
                                 _plantingService.SetPlantingCoordinates(kvp.Key, kvp.Value);
                             }
@@ -162,11 +168,11 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                 if (objectComponentAt != null)
                 {
                    this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
-                   this._areaHighlightingService.DrawTile(block, this._colors.PlantingToolTile);
+                   this._areaHighlightingService.DrawTile(block, this._toolActionTileColor);
                 }
                 else
                 {
-                    this._areaHighlightingService.DrawTile(block, this._colors.PriorityTileColor);
+                    this._areaHighlightingService.DrawTile(block, this._toolNoActionTileColor);
                 }
             }
                 
@@ -191,7 +197,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                     if (objectComponentAt != null)
                     {
                         if ((_cropTypesActive.Count == 1)
-                           && (_specService.VerifyPrefabName(_cropTypesActive[0])))
+                           && (_plantOverrideSpecService.VerifyPrefabName(_cropTypesActive[0])))
                         {
                             _plantingService.SetPlantingCoordinates(block, _cropTypesActive[0]);
 
