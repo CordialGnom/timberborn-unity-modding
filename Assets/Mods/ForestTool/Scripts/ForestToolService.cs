@@ -11,19 +11,15 @@ using Timberborn.PlantingUI;
 using Timberborn.ScienceSystem;
 using Timberborn.SelectionToolSystem;
 using Timberborn.SingletonSystem;
-using Timberborn.TerrainSystem;
+using Timberborn.TerrainQueryingSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEngine.UI.DefaultControls;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
-using Timberborn.BaseComponentSystem;
 using Cordial.Mods.ForestTool.Scripts.UI.Events;
-using System.Security;
-using Timberborn.CoreUI;
 using Timberborn.SelectionSystem;
-using Timberborn.BlockSystem;
 using Moq;
+using Timberborn.BlueprintSystem;
+using Timberborn.ForestryUI;
 
 namespace Cordial.Mods.ForestTool.Scripts
 {
@@ -38,8 +34,6 @@ namespace Cordial.Mods.ForestTool.Scripts
 
         private static bool isUnlocked; 
 
-        private static readonly string _defaultResource = "Pine";
-
         private readonly ToolManager _toolManager;
         private readonly ILoc _loc;
         private EventBus _eventBus;
@@ -48,6 +42,7 @@ namespace Cordial.Mods.ForestTool.Scripts
         // area selection 
         private readonly SelectionToolProcessor _selectionToolProcessor;
         private readonly ToolUnlockingService _toolUnlockingService;
+        public readonly ISpecService _specService;
 
         // planting
         private PlantingAreaValidator _plantingAreaValidator;
@@ -56,14 +51,15 @@ namespace Cordial.Mods.ForestTool.Scripts
         private TerrainAreaService _terrainAreaService;
 
         // highlighting
-        private readonly Colors _colors;
         private readonly AreaHighlightingService _areaHighlightingService;
+        public Color _toolActionTileColor;
+        public Color _toolNoActionTileColor;
 
         // availability 
-        private BuildingUnlockingService _buildingUnlockingService;
-        private BuildingService _buildingService;
+        private readonly BuildingUnlockingService _buildingUnlockingService;
+        private readonly BuildingService _buildingService;
 
-        private ForestToolPrefabSpecService _forestToolPrefabSpecService;
+        private readonly ForestToolPrefabSpecService _forestToolPrefabSpecService;
 
         // planting parametrization
         Dictionary<string, bool> _treeToggleDict = new();
@@ -86,7 +82,6 @@ namespace Cordial.Mods.ForestTool.Scripts
                             PlantingSelectionService plantingSelectionService,
                             PlantingAreaValidator plantingAreaValidator,
                             AreaHighlightingService areaHighlightingService,
-                            Colors colors,
                             PlantingService plantingService,
                             TerrainAreaService terrainAreaService,
                             ToolUnlockingService toolUnlockingService,
@@ -95,6 +90,7 @@ namespace Cordial.Mods.ForestTool.Scripts
                             ToolButtonService toolButtonService,
                             EventBus eventBus,
                             BuildingService buildingService,
+                            ISpecService specService,
                             BuildingUnlockingService buildingUnlockingService,
                             ForestToolPrefabSpecService forestToolPrefabSpecService
                                 )
@@ -115,10 +111,10 @@ namespace Cordial.Mods.ForestTool.Scripts
             _buildingService = buildingService;
             _buildingUnlockingService = buildingUnlockingService;
             _forestToolPrefabSpecService = forestToolPrefabSpecService;
+            _specService = specService;
 
 
             _areaHighlightingService = areaHighlightingService;
-            _colors = colors;
 
             _eventBus = eventBus;
             _loc = loc;
@@ -133,6 +129,9 @@ namespace Cordial.Mods.ForestTool.Scripts
             string text = this._loc.T<string>(RequirementLocKey, _loc.T(ToolBuildingLocKey));
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).AddSection(text).Build();
             this._eventBus.Register((object)this);
+
+            _toolActionTileColor = Color.red;
+            _toolNoActionTileColor = Color.blue;
         }
 
         public void SetToolGroup(ToolGroup toolGroup)
@@ -155,7 +154,7 @@ namespace Cordial.Mods.ForestTool.Scripts
                 string prefabName = "Forester." + _forestToolPrefabSpecService.FactionId;
 
                 // create a forester to check if system is unlocked
-                Building _forester = _buildingService.GetBuildingPrefab(prefabName);
+                BuildingSpec _forester = _buildingService.GetBuildingPrefab(prefabName);
 
                 IsUnlocked = _buildingUnlockingService.Unlocked(_forester);
 
@@ -188,7 +187,7 @@ namespace Cordial.Mods.ForestTool.Scripts
         {
             foreach (Vector3Int leveledCoordinate in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
             {
-                this._areaHighlightingService.DrawTile(leveledCoordinate, this._colors.PlantingToolTile);
+                this._areaHighlightingService.DrawTile(leveledCoordinate, this._toolActionTileColor);
             }
             this._areaHighlightingService.Highlight();
         }

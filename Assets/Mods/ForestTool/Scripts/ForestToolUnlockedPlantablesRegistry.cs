@@ -22,7 +22,7 @@ namespace Cordial.Mods.ForestTool.Scripts
 
         public void PostLoad()
         {
-            foreach (Building building in this._buildingService.Buildings)
+            foreach (BuildingSpec building in this._buildingService.Buildings)
             {
                 if (this._buildingUnlockingService.Unlocked(building))
                     this.AddUnlockedPlantableGroups((BaseComponent)building);

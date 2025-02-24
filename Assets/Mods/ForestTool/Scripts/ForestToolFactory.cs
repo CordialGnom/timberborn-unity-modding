@@ -12,7 +12,7 @@ namespace Cordial.Mods.ForestTool.Scripts
             _ForestTool = ForestTool;
         }
 
-        public Tool Create(ToolSpecification toolSpecification, ToolGroup toolGroup = null)
+        public Tool Create(ToolSpec toolSpecification, ToolGroup toolGroup = null)
         {
             _ForestTool.SetToolGroup(toolGroup);
             return (Tool)_ForestTool;

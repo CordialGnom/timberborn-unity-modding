@@ -8,6 +8,7 @@ using Timberborn.CoreUI;
 using Timberborn.SingletonSystem;
 using UnityEngine.UIElements;
 using Cordial.Mods.ForestTool.Scripts.UI.Events;
+using UnityEngine;
 
 namespace Cordial.Mods.ForestTool.Scripts.UI
 {
@@ -131,7 +132,7 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
         {
             foreach (var child in visualElement.Children())
             {
-                if ((child.GetType() == typeof(LocalizableToggle))
+                if ((child.GetType() == typeof(TimberApi.UIBuilderSystem.CustomElements.LocalizableToggle))
                     //|| (child.GetType() == typeof(Toggle))     // if GameTextToggle is used
                     )
                 {
@@ -182,6 +183,7 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
 
         private void ToggleValueChange(string resourceName, bool value)
         {
+            Debug.Log("CT: TVC: " + resourceName + " - " + value);
 
             switch (resourceName)
             {
