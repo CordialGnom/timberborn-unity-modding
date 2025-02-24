@@ -1,6 +1,6 @@
 {
   "ToolSpec": {
-	  "Id": "ForestTool",
+	  "Id": "Cordial.ForestTool",
 	  "GroupId": "Forestry",
 	  "Type": "ForestTool",
 	  "Order": 19,

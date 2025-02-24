@@ -1,6 +1,6 @@
 {
   "ToolSpec": {
-	  "Id": "CutterTool",
+	  "Id": "Cordial.CutterTool",
 	  "GroupId": "TreeCutting",
 	  "Type": "CutterTool",
 	  "Order": 12,
