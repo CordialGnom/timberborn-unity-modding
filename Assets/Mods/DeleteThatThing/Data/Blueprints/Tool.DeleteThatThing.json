@@ -1,0 +1,12 @@
+{
+  "ToolSpec": {
+	  "Id": "Cordial.DeleteThatThing",
+	  "GroupId": "Demolishing",
+	  "Type": "DeleteThatThing",
+	  "Order": 13,
+	  "Icon": "Sprites/DeleteThatThing/DeleteThatThingIcon",
+	  "NameLocKey": "Cordial.DeleteThatThing.DisplayName",
+	  "DescriptionLocKey": "Cordial.DeleteThatThing.Description",
+	  "Hidden": false
+  }
+}
