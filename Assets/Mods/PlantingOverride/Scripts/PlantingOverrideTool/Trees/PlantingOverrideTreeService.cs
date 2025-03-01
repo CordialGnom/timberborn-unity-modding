@@ -53,8 +53,9 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         // configuration storage
         private readonly ISingletonLoader _singletonLoader;
-        private static Dictionary<Vector3Int, string> _treeRegistry = new();
-        private static List<Vector3Int> _areaRegistry = new();
+        private Dictionary<Vector3Int, string> _treeRegistry = new();
+        private List<Vector3Int> _areaRegistry = new();
+        private static bool _plantingOverrideTreeServLoaded = false;
 
         private static readonly SingletonKey PlantingOverrideTreeServiceKey = new SingletonKey(nameof(PlantingOverrideTreeService));
         private static readonly ListKey<Vector3Int> PlantingOverrideTreeCoordKey = new ListKey<Vector3Int>("Cordial.PlantingOverrideTreeCoordKey");
@@ -93,15 +94,13 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             _blockService = blockService;
             _specService = specService;
             _eventBus = eventBus;
-            _loc = loc; 
-
+            _loc = loc;
         }
 
         public void PostLoad()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
-            this._eventBus.Register((object)this);
-
+ 
             _toolActionTileColor = Color.red;
             _toolNoActionTileColor = Color.blue;
 
@@ -113,11 +112,13 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                     _areaRegistry = _singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Get(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey);
                 }
 
+
                 if ((_singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Has(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey))
                     && (_singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Has(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey)))
                 {
                     List<string> forestryTypes = _singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Get(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey);
                     List<Vector3Int> treeCoordinates = _singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Get(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey);
+
 
                     if (treeCoordinates.Count != forestryTypes.Count)
                     {
@@ -127,13 +128,14 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                     {
                         for (int i = 0; i < forestryTypes.Count; i++)
                         {
+                            // try to add to list, otherwise overwrite duplicate coordinates
                             if (!_treeRegistry.TryAdd(treeCoordinates[i], forestryTypes[i]))
                             {
                                 _treeRegistry[treeCoordinates[i]] = forestryTypes[i];
                             }
                         }
 
-                        foreach (var kvp in _treeRegistry.ToList())
+                        foreach (var kvp in _treeRegistry)
                         {
                             TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(kvp.Key);
                             BushSpec bushComponentAt = this._blockService.GetBottomObjectComponentAt<BushSpec>(kvp.Key);
@@ -142,7 +144,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                                  || (bushComponentAt != null))
                             {
                                 if (_plantOverrideSpecService.VerifyPrefabName(kvp.Value))
-                                {
+                                { 
                                     _plantingService.SetPlantingCoordinates(kvp.Key, kvp.Value);
                                 }
                             }
@@ -150,13 +152,17 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                     }
                 }
             }
+
+            this._eventBus.Register((object)this);
+
+            _plantingOverrideTreeServLoaded = true;
         }
 
         public void Save(ISingletonSaver singletonSaver)
         {
-            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideTreeCoordKey, _treeRegistry.Keys);
-            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideTreeTypeKey, _treeRegistry.Values);
-            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideAreaCoordKey, _areaRegistry);
+            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey, _treeRegistry.Keys);
+            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey, _treeRegistry.Values);
+            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey, _areaRegistry);
         }
 
         public override void Enter()
@@ -299,8 +305,11 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         public void RemoveEntryAtCoord( Vector3Int coord)
         {
             // remove coordinate from both registries
-            _treeRegistry.Remove(coord);
-            _areaRegistry.Remove(coord);
+            if (_plantingOverrideTreeServLoaded)
+            {
+                _treeRegistry.Remove(coord);
+                _areaRegistry.Remove(coord);
+            }
         }
 
         public void RemoveEntryInCutArea(Vector3Int coord)

@@ -44,7 +44,6 @@ namespace Assets.Mods.PlantingOverride.Scripts.Common
                         string oldResource = plantingService.GetResourceAt(coordinates);
                         eventBus.Post((object)new PlantingOverridePlantingEvent(coordinates, oldResource));
                         eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(coordinates, false));
-
                     }
                 }
 
@@ -110,8 +109,6 @@ TR: False AR: False
                         // no active tool, ignore situation (likely save game startup validation)
                     }
                 }
-
-
             }
         }
 

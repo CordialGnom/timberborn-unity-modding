@@ -46,12 +46,13 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         public Color _toolNoActionTileColor;
 
         // planting area / selection
+        private static bool _plantingOverrideCropServLoaded = false;
         private readonly PlantingService _plantingService;
         public readonly IBlockService _blockService;
 
         // configuration storage
         private readonly ISingletonLoader _singletonLoader;
-        private static Dictionary<Vector3Int, string> _cropRegistry = new();
+        private Dictionary<Vector3Int, string> _cropRegistry = new();
 
         private static readonly SingletonKey PlantingOverrideCropServiceKey = new SingletonKey( nameof(PlantingOverrideCropService));
         private static readonly ListKey<Vector3Int> PlantingOverrideCropCoordKey = new ListKey<Vector3Int>("Cordial.PlantingOverrideCropCoordKey");
@@ -87,22 +88,20 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             _blockService = blockService;
             _specService = specService;
             _eventBus = eventBus;
-            _loc = loc; 
-
+            _loc = loc;
         }
 
         public void PostLoad()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
-            this._eventBus.Register((object)this);
 
             _toolActionTileColor = Color.red;
             _toolNoActionTileColor = Color.blue;
 
-            if (this._singletonLoader.HasSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey))
+            if (this._singletonLoader.HasSingleton(PlantingOverrideCropServiceKey))
             {
-                List<string> cropTypes = _singletonLoader.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Get(PlantingOverrideCropService.PlantingOverrideCropTypeKey);
-                List<Vector3Int> cropCoordinates = _singletonLoader.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Get(PlantingOverrideCropService.PlantingOverrideCropCoordKey);
+                List<string> cropTypes = _singletonLoader.GetSingleton(PlantingOverrideCropServiceKey).Get(PlantingOverrideCropTypeKey);
+                List<Vector3Int> cropCoordinates = _singletonLoader.GetSingleton(PlantingOverrideCropServiceKey).Get(PlantingOverrideCropCoordKey);
 
                 if (cropCoordinates.Count != cropTypes.Count)
                 {
@@ -132,12 +131,17 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                     }
                 }
             }
+
+            this._eventBus.Register((object)this);
+
+            _plantingOverrideCropServLoaded = true;
+
         }
 
         public void Save(ISingletonSaver singletonSaver)
         {
-            singletonSaver.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Set(PlantingOverrideCropCoordKey, _cropRegistry.Keys);
-            singletonSaver.GetSingleton(PlantingOverrideCropService.PlantingOverrideCropServiceKey).Set(PlantingOverrideCropTypeKey, _cropRegistry.Values);
+            singletonSaver.GetSingleton(PlantingOverrideCropServiceKey).Set(PlantingOverrideCropCoordKey, _cropRegistry.Keys);
+            singletonSaver.GetSingleton(PlantingOverrideCropServiceKey).Set(PlantingOverrideCropTypeKey, _cropRegistry.Values);
         }
 
         public override void Enter()
@@ -245,7 +249,10 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         public void RemoveEntryAtCoord( Vector3Int coord)
         {
-            _cropRegistry.Remove(coord);
+            if (_plantingOverrideCropServLoaded)
+            {
+                _cropRegistry.Remove(coord);
+            }
         }
         public bool HasEntryAtCoord( Vector3Int coord)
         {
