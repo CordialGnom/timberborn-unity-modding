@@ -21,11 +21,6 @@ using System.Linq;
 using Timberborn.SelectionToolSystem;
 using System;
 using Timberborn.Growing;
-using UnityEngine.UIElements;
-using Timberborn.BlueprintSystem;
-using Timberborn.ForestryUI;
-using Timberborn.RangedEffectBuildingUI;
-using Bindito.Core;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
@@ -43,7 +38,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private ToolDescription _toolDescription;               // is used
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly EventBus _eventBus;
-        public ISpecService _specService;
+        //public ISpecService _specService;
 
         // highlighting
         private static AreaHighlightingService _areaHighlightingService;
@@ -102,14 +97,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                                                                                     CursorKey);
 
             // todo add service that the tool is locked / requires beehive
-            Debug.Log("PBTS: Const");
-        }
-
-        [Inject]
-        public void InjectDependencies(ISpecService specService)
-        {
-            this._specService = specService;
-            Debug.Log("PBTS: Inj");
         }
 
         public void Load()
