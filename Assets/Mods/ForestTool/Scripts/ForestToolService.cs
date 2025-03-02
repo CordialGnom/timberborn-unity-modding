@@ -52,7 +52,7 @@ namespace Cordial.Mods.ForestTool.Scripts
 
         // highlighting
         private readonly AreaHighlightingService _areaHighlightingService;
-        public Color _toolActionTileColor;
+        public Color _plantingToolTile;
         public Color _toolNoActionTileColor;
 
         // availability 
@@ -130,8 +130,8 @@ namespace Cordial.Mods.ForestTool.Scripts
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).AddSection(text).Build();
             this._eventBus.Register((object)this);
 
-            _toolActionTileColor = Color.red;
-            _toolNoActionTileColor = Color.blue;
+            _plantingToolTile = new Color(0, 0.8f, 0, 1);
+            _toolNoActionTileColor = new Color(0.7f, 0.7f, 0, 1);
         }
 
         public void SetToolGroup(ToolGroup toolGroup)
@@ -187,7 +187,7 @@ namespace Cordial.Mods.ForestTool.Scripts
         {
             foreach (Vector3Int leveledCoordinate in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
             {
-                this._areaHighlightingService.DrawTile(leveledCoordinate, this._toolActionTileColor);
+                this._areaHighlightingService.DrawTile(leveledCoordinate, this._plantingToolTile);
             }
             this._areaHighlightingService.Highlight();
         }

@@ -1,6 +1,6 @@
 {
   "Name": "Delete That Thing",
-  "Version": "0.7.0.0",
+  "Version": "0.7.0.1",
   "Id": "Cordial.Mods.DeleteThatThing",
   "MinimumGameVersion": "0.7.0.0",
   "Description": "A tool to select multiple objects of the same type for deletion.",

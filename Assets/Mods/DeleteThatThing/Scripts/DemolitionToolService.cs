@@ -105,8 +105,8 @@ namespace Cordial.Mods.DemolitionTool.Scripts
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
 
             this._blockObjectSelectionDrawer = this._blockObjectSelectionDrawerFactory.Create(Color.red,
-                                                                                                Color.blue,
-                                                                                                Color.green);
+                                                                                                Color.red,
+                                                                                                Color.white);
         }
         public override void Enter()
         {
