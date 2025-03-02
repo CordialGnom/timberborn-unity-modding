@@ -24,6 +24,8 @@ using Timberborn.Growing;
 using UnityEngine.UIElements;
 using Timberborn.BlueprintSystem;
 using Timberborn.ForestryUI;
+using Timberborn.RangedEffectBuildingUI;
+using Bindito.Core;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
@@ -41,13 +43,12 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private ToolDescription _toolDescription;               // is used
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly EventBus _eventBus;
-        private readonly ISpecService _specService;
+        public ISpecService _specService;
 
         // highlighting
         private static AreaHighlightingService _areaHighlightingService;
         private readonly TerrainAreaService _terrainAreaService;
         public Color _toolActionTileColor;
-        public Color _toolNoActionTileColor;
 
         // selection
         private readonly SelectionToolProcessor _selectionToolProcessor;
@@ -64,8 +65,8 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
         // configuration storage
         private readonly ISingletonLoader _singletonLoader;
-        private static List<Vector3Int> _hiveCoordsNew = new();
-        private static List<Hive> _hiveRegistry = new();
+        private List<Vector3Int> _hiveCoordsNew = new();
+        private List<Hive> _hiveRegistry = new();
 
         private static readonly SingletonKey PlantBeehiveToolServiceKey = new SingletonKey("Cordial.PlantBeehiveToolService");
         private static readonly ListKey<Vector3Int> PlantBeehiveToolCoordKey = new ListKey<Vector3Int>("Cordial.PlantBeehiveToolCoordKey");
@@ -78,7 +79,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                                             ISingletonLoader singletonLoader,
                                             BuildingService buildingService,
                                             IBlockService blockService,
-                                            ISpecService specService,
+                                            //ISpecService specService,
                                             EventBus eventBus,
                                             ILoc loc )
         {
@@ -89,7 +90,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             _singletonLoader = singletonLoader;
             _buildingService = buildingService;
             _blockService = blockService;
-            _specService = specService;
+            //_specService = specService;
             _eventBus = eventBus;
             _loc = loc; 
             
@@ -101,17 +102,27 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                                                                                     CursorKey);
 
             // todo add service that the tool is locked / requires beehive
+            Debug.Log("PBTS: Const");
+        }
+
+        [Inject]
+        public void InjectDependencies(ISpecService specService)
+        {
+            this._specService = specService;
+            Debug.Log("PBTS: Inj");
         }
 
         public void Load()
         {
+            this._toolActionTileColor = new Color(1, 0.6f, 0, 1); // from böuprint/configurations/rangedeffectbuildingcolors.json
+            // couldn't get the damn spec to load
+
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
+
             this._eventBus.Register((object)this);
 
             Debug.Log("Overriding limits...");
 
-            _toolActionTileColor = Color.red;
-            _toolNoActionTileColor = Color.blue;
         }
 
         public void PostLoad()
@@ -135,12 +146,10 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         {
             if (this.Locker != null)
             {
-                Debug.Log("PBTS: Enter: +Lock");
-                this._toolUnlockingService.TryToUnlock((Tool)this);
+                this._toolUnlockingService.TryToUnlock((Tool)this, null, Exit);
             }
             else
             {
-                Debug.Log("PBTS: Enter: +NoLock");
                 // activate tool
                 this._selectionToolProcessor.Enter();
 
@@ -152,10 +161,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 if (_beehive == null)
                 {
                     this.Exit();
-                }
-                else
-                {
-                    Debug.Log("PBTS: Enter: HasHive");
                 }
             }
         }
@@ -170,7 +175,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         {
             if (this.Locker != null)
             {
-                this._toolUnlockingService.TryToUnlock((Tool)this);
+                this._toolUnlockingService.TryToUnlock((Tool)this, Enter, Exit );
             }
             else
             {
@@ -229,7 +234,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         {
             if (this.Locker != null)
             {
-                this._toolUnlockingService.TryToUnlock((Tool)this);
+                this._toolUnlockingService.TryToUnlock((Tool)this, Enter, Exit);
             }
             else
             {
@@ -555,6 +560,26 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             {
                 _hiveRegistry.Remove(PlantBeehiveToolUnregisterHiveEvent.Hive);
                 _hiveCoordsNew.Remove(PlantBeehiveToolUnregisterHiveEvent.Hive.GetComponentFast<BlockObject>().Coordinates);
+            }
+        }
+
+        [OnEvent]
+        public void OnBuildingUnlockedEvent (BuildingUnlockedEvent BuildingUnlockedEvent)
+        {
+            if ((null == BuildingUnlockedEvent)
+                    || (null == BuildingUnlockedEvent.BuildingSpec))
+            {
+                return;
+            }
+            else // event exists, and building does as well. 
+            {                
+                if (BuildingUnlockedEvent.BuildingSpec.name.Contains("Beehive"))
+                {
+                    if (this.Locker != null)
+                    {
+                        this._toolUnlockingService.TryToUnlock((Tool)this);
+                    }
+                }
             }
         }
     }

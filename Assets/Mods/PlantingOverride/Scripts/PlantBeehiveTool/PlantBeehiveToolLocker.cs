@@ -8,6 +8,8 @@ using UnityEngine;
 using System;
 using Timberborn.BlockObjectTools;
 using Timberborn.PlantingUI;
+using Timberborn.EntitySystem;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
@@ -80,8 +82,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 // create a beehive to check if system is unlocked
                 BuildingSpec _beehive = _buildingService.GetBuildingPrefab(prefabName);
 
-                Debug.Log("PBTL: TTU: " + _buildingUnlockingService.Unlocked(_beehive));
-
                 if (_beehive == null)
                 {
                     this.ShowWrongFactionMessage(_prefabSpecService.FactionId, failCallback);
@@ -89,11 +89,12 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                 else if (!_buildingUnlockingService.Unlocked(_beehive))
                 {
                     // building is not unlocked: 
-                    this.ShowLockedBuildingMessage(_buildingService.GetPrefabName(_beehive), failCallback);
+                    this.ShowLockedBuildingMessage(_beehive, failCallback);
                 }
                 else
                 {
                     // building is unlocked, tool may be used
+                    successCallback();
 
                 }
             }
@@ -113,13 +114,21 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         {
             this._dialogBoxShower.Create().SetMessage(this.GetMessage("", UnLockKey)).SetConfirmButton(successCallback).Show();
         }
-        private void ShowLockedBuildingMessage(string buildingName, Action failCallback)
+        private void ShowLockedBuildingMessage(BuildingSpec building, Action failCallback)
         {
-            this._dialogBoxShower.Create().SetMessage(this.GetMessage(buildingName, BuildingLockKey)).SetConfirmButton(failCallback).Show();
+            this._dialogBoxShower.Create().SetMessage(this.GetMessageBuild(building, BuildingLockKey)).SetConfirmButton(failCallback).Show();
         }
         private void ShowWrongFactionMessage(string factionId, Action failCallback)
         {
-            this._dialogBoxShower.Create().SetMessage(this.GetMessage(factionId, FactionLockKey)).SetConfirmButton(failCallback).Show();
+            string tgt = this._loc.T("Faction." + factionId + ".DisplayName");
+
+            this._dialogBoxShower.Create().SetMessage(this.GetMessage(tgt, FactionLockKey)).SetConfirmButton(failCallback).Show();
+        }
+        private string GetMessageBuild(BuildingSpec building, string key)
+        {
+            string tgt = this._loc.T(building.GetComponentFast<LabeledEntitySpec>().DisplayNameLocKey);
+            string str = this._loc.T(key);
+            return str + " " + tgt;
         }
         private string GetMessage(string target, string key)
         {

@@ -213,18 +213,12 @@ TR: False AR: False
 
                         if (null != blockObject)
                         {
-                            Debug.Log("Delete Hive At Coordinates: " + blockObject.Coordinates);
                             eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(blockObject.Coordinates, false));
                         }
                         else
                         {
-                            Debug.Log("Delete Hive : " + component.name);
                             eventBus.Post((object)new PlantBeehiveToolUnregisterHiveEvent(component));
                         }
-                    }
-                    else
-                    {
-                        Debug.Log("Delete: " + entity.name);
                     }
                 }
             }

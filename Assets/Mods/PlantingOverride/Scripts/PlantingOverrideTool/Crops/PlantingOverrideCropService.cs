@@ -95,8 +95,8 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
 
-            _toolActionTileColor = Color.red;
-            _toolNoActionTileColor = Color.blue;
+            _toolActionTileColor = new Color(0.95f, 0.03f, 0.05f, 1);
+            _toolNoActionTileColor = new Color(0.7f, 0.7f, 0.0f, 1);
 
             if (this._singletonLoader.HasSingleton(PlantingOverrideCropServiceKey))
             {
