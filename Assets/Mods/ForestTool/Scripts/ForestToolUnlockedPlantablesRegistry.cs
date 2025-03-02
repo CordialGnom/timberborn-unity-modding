@@ -4,6 +4,7 @@ using Timberborn.Buildings;
 using Timberborn.Planting;
 using Timberborn.ScienceSystem;
 using Timberborn.SingletonSystem;
+using UnityEngine;
 
 namespace Cordial.Mods.ForestTool.Scripts
 {
@@ -14,7 +15,7 @@ namespace Cordial.Mods.ForestTool.Scripts
         private readonly HashSet<string> _unlockedResourceGroups = new HashSet<string>();
 
         public ForestToolUnlockedPlantableRegistry(   BuildingService buildingService,
-                                                        BuildingUnlockingService buildingUnlockingService)
+                                                      BuildingUnlockingService buildingUnlockingService)
         {
             this._buildingService = buildingService;
             this._buildingUnlockingService = buildingUnlockingService;
@@ -31,7 +32,9 @@ namespace Cordial.Mods.ForestTool.Scripts
 
         public bool IsLocked()
         {
-            return !this._unlockedResourceGroups.Contains("Forester");
+            bool isLocked = !this._unlockedResourceGroups.Contains("Forester");
+            Debug.Log("FTUPR: " + isLocked);
+            return isLocked;
         }
 
         public void AddUnlockedPlantableGroups(BaseComponent baseComponent)

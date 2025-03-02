@@ -147,29 +147,35 @@ namespace Cordial.Mods.ForestTool.Scripts
             // check if tool can be entered (forester available)
             // require access to either "Forester" or the "Trees". Therefore check if
             // the trees can be planted...
-
-            // get faction forester specific building
-            if ("" != _forestToolPrefabSpecService.FactionId)
+            if (this.Locker != null)
             {
-                string prefabName = "Forester." + _forestToolPrefabSpecService.FactionId;
-
-                // create a forester to check if system is unlocked
-                BuildingSpec _forester = _buildingService.GetBuildingPrefab(prefabName);
-
-                IsUnlocked = _buildingUnlockingService.Unlocked(_forester);
-
-                if (true == IsUnlocked)
-                {
-                    // activate tool
-                    this._selectionToolProcessor.Enter();
-                }
+                this._toolUnlockingService.TryToUnlock((Tool)this, null, Exit);
             }
             else
             {
-                Debug.LogError("ForestTool: Faction not found");
-            }
+                // get faction forester specific building
+                if ("" != _forestToolPrefabSpecService.FactionId)
+                {
+                    string prefabName = "Forester." + _forestToolPrefabSpecService.FactionId;
 
-            this._eventBus.Post((object)new ForestToolSelectedEvent(this));
+                    // create a forester to check if system is unlocked
+                    BuildingSpec _forester = _buildingService.GetBuildingPrefab(prefabName);
+
+                    IsUnlocked = _buildingUnlockingService.Unlocked(_forester);
+
+                    if (true == IsUnlocked)
+                    {
+                        // activate tool
+                        this._selectionToolProcessor.Enter();
+                    }
+                }
+                else
+                {
+                    Debug.LogError("ForestTool: Faction not found");
+                }
+
+                this._eventBus.Post((object)new ForestToolSelectedEvent(this));
+            }
         }
 
 

@@ -4,13 +4,13 @@ using Timberborn.EntitySystem;
 using Timberborn.Localization;
 using Timberborn.PlantingUI;
 using Timberborn.ToolSystem;
+using UnityEngine;
 
 namespace Cordial.Mods.ForestTool.Scripts
 {
     public class ForestToolLocker : IToolLocker
     {
         private static readonly string UnlockPromptLocKey = "Planting.UnlockPrompt";
-        private static readonly string ToolNameLocKey = "Cordial.ForestTool.DisplayName";
         private static readonly string ToolBuildingNameLocKey = "Building.Forester.DisplayName";
         private readonly ILoc _loc;
         private readonly DialogBoxShower _dialogBoxShower;
@@ -28,7 +28,18 @@ namespace Cordial.Mods.ForestTool.Scripts
 
         public bool ShouldLock(Tool tool)
         {
-            return this._forestToolUnlockedPlantableRegistry.IsLocked();
+            ForestToolService forestTool;
+
+            bool shouldLock = IsForestTool(tool, out forestTool);
+
+            if (true == shouldLock)
+            {
+                return this._forestToolUnlockedPlantableRegistry.IsLocked();
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void TryToUnlock(Tool tool, Action successCallback, Action failCallback)
@@ -41,8 +52,13 @@ namespace Cordial.Mods.ForestTool.Scripts
 
         private void ShowLockedMessage(Action failCallback)
         {
-            string text = this._loc.T<string, string>(ForestToolLocker.UnlockPromptLocKey, this._loc.T(ToolBuildingNameLocKey), this._loc.T(ToolNameLocKey));
+            string text = this._loc.T<string, string>(ForestToolLocker.UnlockPromptLocKey, this._loc.T(ToolBuildingNameLocKey), ".");
             this._dialogBoxShower.Create().SetMessage(text).SetConfirmButton(failCallback).Show();
+        }
+        public static bool IsForestTool(Tool tool, out ForestToolService forestTool)
+        {
+            forestTool = tool as ForestToolService;
+            return forestTool != null;
         }
 
     }
