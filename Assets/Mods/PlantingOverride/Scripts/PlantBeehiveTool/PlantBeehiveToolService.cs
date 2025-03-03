@@ -133,7 +133,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         {
             if (this.Locker != null)
             {
-                this._toolUnlockingService.TryToUnlock((Tool)this, null, Exit);
+                this._toolUnlockingService.TryToUnlock((Tool)this);
             }
             else
             {
@@ -162,7 +162,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         {
             if (this.Locker != null)
             {
-                this._toolUnlockingService.TryToUnlock((Tool)this, Enter, Exit );
+                this._toolUnlockingService.TryToUnlock((Tool)this);
             }
             else
             {
@@ -221,7 +221,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         {
             if (this.Locker != null)
             {
-                this._toolUnlockingService.TryToUnlock((Tool)this, Enter, Exit);
+                this._toolUnlockingService.TryToUnlock((Tool)this);
             }
             else
             {

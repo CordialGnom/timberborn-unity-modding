@@ -167,9 +167,16 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         public override void Enter()
         {
-            // activate tool
-            this._selectionToolProcessor.Enter();
-            this._eventBus.Post((object)new PlantingOverrideTreeSelectedEvent(this) );
+            if (this.Locker != null)
+            {
+                this._toolUnlockingService.TryToUnlock((Tool)this);
+            }
+            else
+            {
+                // activate tool
+                this._selectionToolProcessor.Enter();
+                this._eventBus.Post((object)new PlantingOverrideTreeSelectedEvent(this));
+            }
         }
         public override void Exit()
         {
@@ -185,31 +192,37 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-
-            // iterate over all input blocks -> toggle boolean flag for it
-            foreach (Vector3Int block in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
+            if (this.Locker != null)
             {
-                TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(block);
-                BushSpec bushComponentAt = this._blockService.GetBottomObjectComponentAt<BushSpec>(block);
-
-                if (objectComponentAt != null)
-                {
-                   this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
-                   this._areaHighlightingService.DrawTile(block, this._toolActionTileColor);
-                }
-                else if (bushComponentAt != null)
-                {
-                   this._areaHighlightingService.AddForHighlight((BaseComponent)bushComponentAt);
-                   this._areaHighlightingService.DrawTile(block, this._toolActionTileColor);
-                }
-                else
-                {
-                    this._areaHighlightingService.DrawTile(block, this._toolNoActionTileColor);
-                }
+                this._toolUnlockingService.TryToUnlock((Tool)this);
             }
-                
-            // highlight everything added to the service above
-            this._areaHighlightingService.Highlight();
+            else
+            {
+                // iterate over all input blocks -> toggle boolean flag for it
+                foreach (Vector3Int block in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
+                {
+                    TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(block);
+                    BushSpec bushComponentAt = this._blockService.GetBottomObjectComponentAt<BushSpec>(block);
+
+                    if (objectComponentAt != null)
+                    {
+                        this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
+                        this._areaHighlightingService.DrawTile(block, this._toolActionTileColor);
+                    }
+                    else if (bushComponentAt != null)
+                    {
+                        this._areaHighlightingService.AddForHighlight((BaseComponent)bushComponentAt);
+                        this._areaHighlightingService.DrawTile(block, this._toolActionTileColor);
+                    }
+                    else
+                    {
+                        this._areaHighlightingService.DrawTile(block, this._toolNoActionTileColor);
+                    }
+                }
+
+                // highlight everything added to the service above
+                this._areaHighlightingService.Highlight();
+            }
         }
 
         private void ActionCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)

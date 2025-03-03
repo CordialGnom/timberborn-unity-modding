@@ -10,6 +10,6 @@ Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description,"Replace exis
 Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.CuttingAreaRemove,"Disable cutting area after planting",-
 Cordial.PlantBeehiveTool.DisplayName,"Beehive Override",-
 Cordial.PlantBeehiveTool.Description,"Replace a plant with a beehive",-
-Cordial.PlantBeehiveTool.FactionLock,"This tool is not available for:",-
-Cordial.PlantBeehiveTool.BuildingLock,"This building is locked:",-
-Cordial.PlantBeehiveTool.Unlock,"Tool unlocked!",-
+Cordial.PlantingOverrideTool.FactionLock,"This tool is not available for:",-
+Cordial.PlantingOverrideTool.BuildingLock,"This building is locked:",-
+Cordial.PlantingOverrideTool.SpecLock,"This specification is missing:",-

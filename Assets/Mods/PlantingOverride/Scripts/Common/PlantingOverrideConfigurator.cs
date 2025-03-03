@@ -25,6 +25,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
             containerDefinition.Bind<IPlantingOverrideCropTool>().To<PlantingOverrideCropService>().AsSingleton();
             containerDefinition.MultiBind<IToolFactory>().To<PlantingOverrideTreeToolFactory>().AsSingleton();
             containerDefinition.MultiBind<IToolFactory>().To<PlantingOverrideCropToolFactory>().AsSingleton();
+            containerDefinition.MultiBind<IToolLocker>().To<PlantingOverrideTreeToolLocker>().AsSingleton();
         }
     }
 }

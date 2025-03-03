@@ -15,10 +15,9 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 {
     internal class PlantBeehiveToolLocker : IToolLocker
     {
-        private static readonly string FactionLockKey = "Cordial.PlantBeehiveTool.FactionLock";
-        private static readonly string BuildingLockKey = "Cordial.PlantBeehiveTool.BuildingLock";
-        private static readonly string UnLockKey = "Cordial.PlantBeehiveTool.Unlock";
-        private readonly InputService _inputService;
+        private static readonly string FactionLockKey = "Cordial.PlantingOverrideTool.FactionLock";
+        private static readonly string BuildingLockKey = "Cordial.PlantingOverrideTool.BuildingLock";
+
         private readonly PlantBeehivePrefabSpecService _prefabSpecService;
         private readonly BuildingUnlockingService _buildingUnlockingService;
         private readonly BuildingService _buildingService;
@@ -26,14 +25,13 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private readonly DialogBoxShower _dialogBoxShower;
         private readonly ILoc _loc;
 
-        public PlantBeehiveToolLocker(  InputService inputService,
-                                        DialogBoxShower dialogBoxShower,
+        public PlantBeehiveToolLocker(  DialogBoxShower dialogBoxShower,
                                         PlantBeehivePrefabSpecService prefabSpecService,
                                         BuildingUnlockingService buildingUnlockingService,
                                         BuildingService buildingService,
                                         ILoc loc)
         {
-            this._inputService = inputService;
+
             this._buildingService = buildingService;
             this._buildingUnlockingService = buildingUnlockingService;
             this._dialogBoxShower = dialogBoxShower;
@@ -110,10 +108,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         }
 
 
-        private void ShowUnlockedMessage(Action successCallback)
-        {
-            this._dialogBoxShower.Create().SetMessage(this.GetMessage("", UnLockKey)).SetConfirmButton(successCallback).Show();
-        }
+
         private void ShowLockedBuildingMessage(BuildingSpec building, Action failCallback)
         {
             this._dialogBoxShower.Create().SetMessage(this.GetMessageBuild(building, BuildingLockKey)).SetConfirmButton(failCallback).Show();
