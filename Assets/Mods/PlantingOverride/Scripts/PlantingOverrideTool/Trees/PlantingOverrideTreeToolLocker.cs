@@ -44,14 +44,10 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         {
             bool shouldLock = IsPlantingOverrideTreeTool(tool, out PlantingOverrideTreeService overrideTool);
 
-            Debug.Log("POTTL: SL: " + tool.ToString() );
-
             if (true == shouldLock)
             {
                 // get faction ID to create forester buildingspec
                 _buildingSpecName = "Forester." + _prefabSpecService.FactionId;
-
-                Debug.Log("POTTL: SL: " + _buildingSpecName);
 
                 // create the building to check if system is unlocked
                 BuildingSpec _buildingSpec = _buildingService.GetBuildingPrefab(_buildingSpecName);
