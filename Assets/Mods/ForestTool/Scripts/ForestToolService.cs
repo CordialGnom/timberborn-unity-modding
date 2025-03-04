@@ -149,7 +149,7 @@ namespace Cordial.Mods.ForestTool.Scripts
             // the trees can be planted...
             if (this.Locker != null)
             {
-                this._toolUnlockingService.TryToUnlock((Tool)this, null, Exit);
+                this._toolUnlockingService.TryToUnlock((Tool)this);
             }
             else
             {

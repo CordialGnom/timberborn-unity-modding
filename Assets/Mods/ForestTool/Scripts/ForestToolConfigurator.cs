@@ -24,7 +24,6 @@ namespace Cordial.Mods.ForestTool.Scripts
             containerDefinition.Bind<IForestTool>().To<ForestToolService>().AsSingleton();
             containerDefinition.Bind<ForestToolService>().AsSingleton();
             containerDefinition.MultiBind<IToolFactory>().To<ForestToolFactory>().AsSingleton();
-            containerDefinition.Bind<ForestToolUnlockedPlantableRegistry>().AsSingleton();
             containerDefinition.MultiBind<IToolLocker>().To<ForestToolLocker>().AsSingleton();
         }
     }
