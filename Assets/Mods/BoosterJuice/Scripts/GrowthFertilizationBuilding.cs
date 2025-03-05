@@ -127,7 +127,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         private TreeCuttingArea _treeCuttingArea;
         private GrowthFertilizationAreaService _growthFertilizationAreaService;
-        private BlockService _blockService;
+        private IBlockService _blockService;
         private BlockObjectRange _blockObjectRange;
 
         private readonly List<Yielder> _yieldersInArea = new();
@@ -140,7 +140,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
 
         [Inject]
-        public void InjectDependencies( BlockService blockService,
+        public void InjectDependencies( IBlockService blockService,
                                         TreeCuttingArea treeCuttingArea,
                                         ITimeTriggerFactory timeTriggerFactory,
                                         GrowthFertilizationAreaService growthFertilizationAreaService,
