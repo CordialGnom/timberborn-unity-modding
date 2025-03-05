@@ -183,8 +183,6 @@ namespace Cordial.Mods.ForestTool.Scripts.UI
 
         private void ToggleValueChange(string resourceName, bool value)
         {
-            Debug.Log("CT: TVC: " + resourceName + " - " + value);
-
             switch (resourceName)
             {
                 case "EmptySpots":
