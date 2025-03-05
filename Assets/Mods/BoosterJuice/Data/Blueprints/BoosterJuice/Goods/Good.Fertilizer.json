@@ -1,4 +1,5 @@
 {
+  "GoodSpec": {
   "Id": "Fertilizer",
   "BackwardCompatibleIds": [],
   "DisplayNameLocKey": "Cordial.Good.Fertilizer.DisplayName",
@@ -15,7 +16,7 @@
   "CarryingAnimation": "CarryInHands",
   "Weight": 2,
   "GoodGroupId": "Materials",
-  "ForceImport": false,
   "Icon": "Sprites/Goods/FertilizerIcon",
   "RequiredFeatureToggle": ""
+  }
 }

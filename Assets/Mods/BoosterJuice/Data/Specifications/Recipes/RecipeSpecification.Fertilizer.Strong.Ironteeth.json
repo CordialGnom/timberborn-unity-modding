@@ -1,4 +1,5 @@
 {
+  "RecipeSpec": {
   "Id": "Fertilizer.Strong.Ironteeth",
   "DisplayLocKey": "Cordial.Fertilizer.Strong",
   "CycleDurationInHours": 3,
@@ -20,4 +21,5 @@
   "CyclesFuelLasts": 1,
   "FuelCapacity": 5,
   "Icon": "Sprites/Goods/FertilizerIcon"
+  }
 }

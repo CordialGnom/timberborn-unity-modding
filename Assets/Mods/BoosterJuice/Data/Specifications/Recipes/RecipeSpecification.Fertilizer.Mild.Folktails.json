@@ -1,4 +1,5 @@
 {
+  "RecipeSpec": {
   "Id": "Fertilizer.Mild.Folktails",
   "DisplayLocKey": "Cordial.Fertilizer.Mild",
   "CycleDurationInHours": 2,
@@ -20,4 +21,5 @@
   "CyclesFuelLasts": 4,
   "FuelCapacity": 5,
   "Icon": "Sprites/Goods/FertilizerIcon"
+  }
 }

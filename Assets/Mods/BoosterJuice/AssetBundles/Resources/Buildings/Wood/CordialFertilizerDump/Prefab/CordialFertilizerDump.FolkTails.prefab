@@ -133,11 +133,11 @@ GameObject:
   - component: {fileID: 2211323622329524335}
   - component: {fileID: 1140854788850801161}
   - component: {fileID: 5942121940428331157}
-  - component: {fileID: 2968424312998453266}
   - component: {fileID: 663454571032427625}
   - component: {fileID: 7519088433775485310}
   - component: {fileID: 1763230076772760443}
   - component: {fileID: 7672197548274035088}
+  - component: {fileID: -583707987952910944}
   m_Layer: 0
   m_Name: CordialFertilizerDump.FolkTails
   m_TagString: Untagged
@@ -177,8 +177,12 @@ MonoBehaviour:
   _componentCache: {fileID: 0}
   _selectionSoundName: Default
   _loopingSoundName: 
-  _buildingCost: []
-  _scienceCost: 0
+  _buildingCost:
+  - _goodId: Log
+    _amount: 6
+  - _goodId: Plank
+    _amount: 4
+  _scienceCost: 200
   _placeFinished: 0
   _finishableWithBeaversOnSite: 0
   _drawRangeBoundsOnIt: 0
@@ -214,7 +218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _componentCache: {fileID: 0}
-  _localAccess: {x: 0, y: 0, z: 0}
+  _localAccess: {x: 0.5, y: 0.1, z: 0.25}
   _forceOneFinalAccess: 0
 --- !u!114 &2167036561229256711
 MonoBehaviour:
@@ -250,7 +254,9 @@ MonoBehaviour:
   _defaultWorkers: 1
   _defaultWorkerType: Beaver
   _disallowOtherWorkerTypes: 0
-  _workerTypeUnlockCosts: []
+  _workerTypeUnlockCosts:
+  - _workerType: Bot
+    _scienceCost: 500
 --- !u!114 &1007045395171114205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,7 +287,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _componentCache: {fileID: 0}
-  _slotSpecs: []
+  _slotSpecs:
+  - _slotKeyword: Entrance
+    _animation: Sitting
+    _inanimate: 0
+    _randomizeYRotation: 0
+    _waterSlot: 0
 --- !u!114 &2065015196999959613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,13 +320,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _componentCache: {fileID: 0}
   _blocksSpec:
-    _size: {x: 0, y: 0, z: 0}
-    _blockSpecs: []
+    _size: {x: 1, y: 2, z: 1}
+    _blockSpecs:
+    - _matterBelow: 1
+      _legacyOccupation: 0
+      _useNewOccupation: 1
+      _occupations: 54
+      _stackable: 0
+      _occupyAllBelow: 0
+      _optionallyUnderground: 0
+      _underground: 0
+    - _matterBelow: 0
+      _legacyOccupation: 0
+      _useNewOccupation: 1
+      _occupations: 51
+      _stackable: 0
+      _occupyAllBelow: 0
+      _optionallyUnderground: 0
+      _underground: 0
   _entrance:
-    _hasEntrance: 0
-    _coordinates: {x: 0, y: 0, z: 0}
+    _hasEntrance: 1
+    _coordinates: {x: 0, y: -1, z: 0}
   _baseZ: 0
-  _overridable: 0
+  _overridable: 1
   _flippable: 0
 --- !u!114 &1140854788850801161
 MonoBehaviour:
@@ -330,13 +357,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _componentCache: {fileID: 0}
-  _toolGroupId: 
-  _toolOrder: 0
+  _toolGroupId: Wood
+  _toolOrder: 11
   _toolShape: 0
   _layout: 0
   _customPivot:
-    _hasCustomPivot: 0
-    _coordinates: {x: 0, y: 0, z: 0}
+    _hasCustomPivot: 1
+    _coordinates: {x: 0.5, y: 0.5, z: 0}
   _devModeTool: 0
 --- !u!114 &5942121940428331157
 MonoBehaviour:
@@ -351,20 +378,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _componentCache: {fileID: 0}
---- !u!114 &2968424312998453266
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 279545971, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentCache: {fileID: 0}
-  _productionRecipeIds: []
 --- !u!114 &663454571032427625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,6 +437,26 @@ MonoBehaviour:
   _componentCache: {fileID: 0}
   _progressThresholds:
   - 0
+--- !u!114 &-583707987952910944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d94f8a9b1cd73544c934187379c54fb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
+  _growthFactor: 0.5
+  _growthConsumptionFactor: 0.5
+  _yieldFactor: 0.5
+  _yieldConsumptionFactor: 0.5
+  _growthFertilizationRadius: 8
+  _capacity: 60
+  _supply: Fertilizer
 --- !u!1 &4187045584144244368
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,7 +556,7 @@ MonoBehaviour:
   m_Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelName: ConstructionSites\ConstructionSite1x1\ConstructionSite1x1.Model
+  _modelName: ConstructionBases\ConstructionBase1x1\ConstructionBase1x1.Model
 --- !u!1 &7175132922643718069
 GameObject:
   m_ObjectHideFlags: 0
