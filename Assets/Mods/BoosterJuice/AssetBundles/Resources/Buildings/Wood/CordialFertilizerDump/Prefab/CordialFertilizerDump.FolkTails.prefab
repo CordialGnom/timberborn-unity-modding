@@ -124,21 +124,21 @@ GameObject:
   - component: {fileID: 803529049518635409}
   - component: {fileID: 3911629199033159004}
   - component: {fileID: 5124144526841976077}
-  - component: {fileID: 119316661825720608}
-  - component: {fileID: 2167036561229256711}
   - component: {fileID: 3691699643970336472}
+  - component: {fileID: 6000033476252860160}
+  - component: {fileID: 5942121940428331157}
   - component: {fileID: 1007045395171114205}
-  - component: {fileID: 3885051100522500008}
-  - component: {fileID: 2065015196999959613}
   - component: {fileID: 2211323622329524335}
   - component: {fileID: 1140854788850801161}
-  - component: {fileID: 5942121940428331157}
-  - component: {fileID: 663454571032427625}
+  - component: {fileID: 2167036561229256711}
+  - component: {fileID: 2065015196999959613}
   - component: {fileID: 7519088433775485310}
+  - component: {fileID: 3885051100522500008}
+  - component: {fileID: 4484219768439538716}
+  - component: {fileID: 663454571032427625}
   - component: {fileID: 1763230076772760443}
   - component: {fileID: 7672197548274035088}
   - component: {fileID: -583707987952910944}
-  - component: {fileID: 4805429761919883028}
   m_Layer: 0
   m_Name: CordialFertilizerDump.FolkTails
   m_TagString: Untagged
@@ -206,38 +206,6 @@ MonoBehaviour:
   _undergroundModelName: 
   _constructionModeModel: 0
   _undergroundModelDepth: 0
---- !u!114 &119316661825720608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1475725842, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentCache: {fileID: 0}
-  _localAccess: {x: 0.5, y: 0.1, z: 0.25}
-  _forceOneFinalAccess: 0
---- !u!114 &2167036561229256711
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 652365310, guid: b6b9d4cc3090b6fceb2eb6438dd271f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentCache: {fileID: 0}
-  _displayNameLocKey: Cordial.Building.FertilizerDump.DisplayName
-  _descriptionLocKey: Cordial.Building.FertilizerDump.Description
-  _flavorDescriptionLocKey: Cordial.Building.FertilizerDump.FlavorDescription
-  _imagePath: Buildings/Wood/CordialFertilizerDump/FertilizerDumpIcon
 --- !u!114 &3691699643970336472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,6 +226,39 @@ MonoBehaviour:
   _workerTypeUnlockCosts:
   - _workerType: Bot
     _scienceCost: 500
+--- !u!114 &6000033476252860160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -904470794, guid: bcb85dd25e41826ab5a7dea12cff2430, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
+  _operatingState: 0
+  _limitedCapacityFinished: 0
+  _capacityFinished: 0
+  _throttledExitFinished: 0
+  _limitedCapacityUnfinished: 0
+  _capacityUnfinished: 0
+  _throttledExitUnfinished: 0
+--- !u!114 &5942121940428331157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1796300005, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
 --- !u!114 &1007045395171114205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,38 +276,6 @@ MonoBehaviour:
   _backwardCompatiblePrefabNames: []
   _requiredFeatureToggle: 
   _disablingFeatureToggle: 
---- !u!114 &3885051100522500008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1219910101, guid: dd1baa4f323651ee41781eb84b2b1960, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentCache: {fileID: 0}
-  _slotSpecs:
-  - _slotKeyword: Entrance
-    _animation: Sitting
-    _inanimate: 0
-    _randomizeYRotation: 0
-    _waterSlot: 0
---- !u!114 &2065015196999959613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -747059159, guid: 71874a96862cca0445075c2f72e705bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentCache: {fileID: 0}
 --- !u!114 &2211323622329524335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -343,7 +312,7 @@ MonoBehaviour:
     _hasEntrance: 1
     _coordinates: {x: 0, y: -1, z: 0}
   _baseZ: 0
-  _overridable: 1
+  _overridable: 0
   _flippable: 0
 --- !u!114 &1140854788850801161
 MonoBehaviour:
@@ -366,7 +335,7 @@ MonoBehaviour:
     _hasCustomPivot: 1
     _coordinates: {x: 0.5, y: 0.5, z: 0}
   _devModeTool: 0
---- !u!114 &5942121940428331157
+--- !u!114 &2167036561229256711
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -375,10 +344,74 @@ MonoBehaviour:
   m_GameObject: {fileID: 2863585299073478030}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1796300005, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
+  m_Script: {fileID: 652365310, guid: b6b9d4cc3090b6fceb2eb6438dd271f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentCache: {fileID: 0}
+  _displayNameLocKey: Cordial.Building.FertilizerDump.DisplayName
+  _descriptionLocKey: Cordial.Building.FertilizerDump.Description
+  _flavorDescriptionLocKey: Cordial.Building.FertilizerDump.FlavorDescription
+  _imagePath: Buildings/Wood/CordialFertilizerDump/FertilizerDumpIcon
+--- !u!114 &2065015196999959613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -747059159, guid: 71874a96862cca0445075c2f72e705bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
+--- !u!114 &7519088433775485310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1839023324, guid: 6e68475ee52ce568acbd493b99ce126d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
+--- !u!114 &3885051100522500008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1219910101, guid: dd1baa4f323651ee41781eb84b2b1960, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
+  _slotSpecs:
+  - _slotKeyword: Entrance
+    _animation: Sitting
+    _inanimate: 0
+    _randomizeYRotation: 0
+    _waterSlot: 0
+--- !u!114 &4484219768439538716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1475725842, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
+  _localAccess: {x: 0.5, y: 0.1, z: 0.25}
+  _forceOneFinalAccess: 0
 --- !u!114 &663454571032427625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -397,19 +430,6 @@ MonoBehaviour:
   _blockAllEdges: 0
   _edgeGroups: []
   _unblockedCoordinates: []
---- !u!114 &7519088433775485310
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1839023324, guid: 6e68475ee52ce568acbd493b99ce126d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentCache: {fileID: 0}
 --- !u!114 &1763230076772760443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,19 +478,6 @@ MonoBehaviour:
   _growthFertilizationRadius: 8
   _capacity: 60
   _supply: Fertilizer
---- !u!114 &4805429761919883028
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2863585299073478030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -813592589, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentCache: {fileID: 0}
 --- !u!1 &4187045584144244368
 GameObject:
   m_ObjectHideFlags: 0

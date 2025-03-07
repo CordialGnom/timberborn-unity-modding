@@ -52,6 +52,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts
             private static void InitializeBehaviors(TemplateModule.Builder builder)
             {
                 builder.AddDecorator<GrowthFertilizationBuilding, GrowthFertilizationWorkplaceBehaviour>();
+                builder.AddDecorator<GrowthFertilizationBuilding, EmptyOutputWorkplaceBehavior>();
                 builder.AddDecorator<GrowthFertilizationBuilding, EmptyInventoriesWorkplaceBehavior>();
                 builder.AddDecorator<GrowthFertilizationBuilding, FillInputWorkplaceBehavior>();
                 builder.AddDecorator<GrowthFertilizationBuilding, RemoveUnwantedStockWorkplaceBehavior>();

@@ -7,6 +7,7 @@ using Timberborn.Hauling;
 using Timberborn.InventorySystem;
 using Timberborn.Workshops;
 using Timberborn.WorkSystem;
+using UnityEngine;
 
 namespace Cordial.Mods.BoosterJuice.Scripts
 {
@@ -23,6 +24,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts
         public void InjectDependencies(InventoryFillCalculator inventoryFillCalculator)
         {
             this._inventoryFillCalculator = inventoryFillCalculator;
+
+            Debug.Log("IHBP: Inject");
         }
 
         public void Awake()
@@ -32,7 +35,36 @@ namespace Cordial.Mods.BoosterJuice.Scripts
             this._inventories = this.GetComponentFast<Inventories>();
             this._fillInputWorkplaceBehavior = this.GetComponentFast<FillInputWorkplaceBehavior>();
             this._emptyOutputWorkplaceBehavior = this.GetComponentFast<EmptyOutputWorkplaceBehavior>();
+
+            Debug.Log("IHBP: Awake");
+
+            if (null != this._growthFertilizationBuilding)
+            {
+
+                Debug.Log("IHBP: GFB");
+            }
+            if (null != this._inventoryFillCalculator)
+            {
+
+                Debug.Log("IHBP: _inventoryFillCalculator");
+            }
+            if (null != this._blockableBuilding)
+            {
+
+                Debug.Log("IHBP: _blockableBuilding");
+            }
+            if (null != this._fillInputWorkplaceBehavior)
+            {
+
+                Debug.Log("IHBP: _fillInputWorkplaceBehavior");
+            }
+            if (null != this._emptyOutputWorkplaceBehavior)
+            {
+
+                Debug.Log("IHBP: _emptyOutputWorkplaceBehavior");
+            }
         }
+
         public void GetWeightedBehaviors(IList<WeightedBehavior> weightedBehaviors)
         {
             if (!this._growthFertilizationBuilding || !this._blockableBuilding.IsUnblocked)

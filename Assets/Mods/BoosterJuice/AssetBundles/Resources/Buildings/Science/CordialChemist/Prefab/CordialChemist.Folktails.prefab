@@ -44,8 +44,8 @@ GameObject:
   - component: {fileID: 4545369178478499}
   - component: {fileID: -5396280535376966047}
   - component: {fileID: 114184180646374874}
-  - component: {fileID: 114674017543891984}
   - component: {fileID: 1314533603433546675}
+  - component: {fileID: 114674017543891984}
   - component: {fileID: -6459299531140468888}
   - component: {fileID: 3365786756213060849}
   - component: {fileID: 2285827206503453037}
@@ -57,6 +57,7 @@ GameObject:
   - component: {fileID: 7261666559968553762}
   - component: {fileID: 869710937262307207}
   - component: {fileID: 5897267108860653782}
+  - component: {fileID: 3010267878217595228}
   - component: {fileID: 114146374758593142}
   m_Layer: 0
   m_Name: CordialChemist.Folktails
@@ -127,22 +128,6 @@ MonoBehaviour:
   _undergroundModelName: 
   _constructionModeModel: 0
   _undergroundModelDepth: 0
---- !u!114 &114674017543891984
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1336555144283641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 279545971, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentCache: {fileID: 0}
-  _productionRecipeIds:
-  - Fertilizer.Mild.Folktails
-  - Fertilizer.Strong.Folktails
 --- !u!114 &1314533603433546675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,6 +148,22 @@ MonoBehaviour:
   _workerTypeUnlockCosts:
   - _workerType: Bot
     _scienceCost: 500
+--- !u!114 &114674017543891984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336555144283641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 279545971, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
+  _productionRecipeIds:
+  - Fertilizer.Mild.Folktails
+  - Fertilizer.Strong.Folktails
 --- !u!114 &-6459299531140468888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439,6 +440,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1551590166, guid: 603f82a4140498c516499d72a9d347b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
+--- !u!114 &3010267878217595228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336555144283641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -813592589, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentCache: {fileID: 0}
