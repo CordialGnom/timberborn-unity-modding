@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Timberborn.BehaviorSystem;
 using Timberborn.EnterableSystem;
 using Timberborn.WalkingSystem;

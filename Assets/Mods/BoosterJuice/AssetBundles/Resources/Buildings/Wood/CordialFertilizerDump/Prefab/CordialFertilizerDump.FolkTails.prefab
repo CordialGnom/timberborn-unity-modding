@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 1763230076772760443}
   - component: {fileID: 7672197548274035088}
   - component: {fileID: -583707987952910944}
+  - component: {fileID: 4805429761919883028}
   m_Layer: 0
   m_Name: CordialFertilizerDump.FolkTails
   m_TagString: Untagged
@@ -457,6 +458,19 @@ MonoBehaviour:
   _growthFertilizationRadius: 8
   _capacity: 60
   _supply: Fertilizer
+--- !u!114 &4805429761919883028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2863585299073478030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -813592589, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
 --- !u!1 &4187045584144244368
 GameObject:
   m_ObjectHideFlags: 0
