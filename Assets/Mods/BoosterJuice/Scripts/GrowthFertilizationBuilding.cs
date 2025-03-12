@@ -97,7 +97,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
         {
             get => (float)this.Inventory.UnreservedAmountInStock(this._supply) + this._supplyLeft;
         }
-        public float DailyGrowth => (this._dailyGrowth * 100.0f);
+        public float DailyGrowth => (this._dailyGrowth *100.0f);
 
         public float AverageGrowth => (this._averageGrowth);
 
@@ -383,7 +383,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                     growthTimeTgt_d = growthTimeTotal_d * _growthFactor;
 
                     // calculate offset to be applied to growable each day
-                    growthTimeOffset = (((1.0f / growthTimeTgt_d) - (1.0f / growthTimeTotal_d)) / 100.0f);
+                    growthTimeOffset = (((1.0f / growthTimeTgt_d) - (1.0f / growthTimeTotal_d)));
 
                     // add proportional effect that growth effect diminishes during the day
                     // x =  ((hoursInDay+1) - workHour) * (growthTimeOffset * !HoursOfDay)
@@ -396,9 +396,12 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                     // instead for clarity. 
                     //growthFertilizerConsumption = _growthConsumptionFactor * growthTimeOffset * _timeTriggerCallCountPerDay;
                     // the growth time offset here is based on the original calculation referencing oak. 
-                    growthFertilizerConsumption = _growthConsumptionFactor * 0.000333f * _timeTriggerCallCountPerDay;
+                    growthFertilizerConsumption = _growthConsumptionFactor * 0.333f * _timeTriggerCallCountPerDay;
 
                     _consumptionPerHour += growthFertilizerConsumption;
+
+                    // store current state to compare
+                    float growthTimeDone = growable.GrowthProgress;
 
                     if (UpdateConsumption(growthFertilizerConsumption))
                     {
@@ -408,7 +411,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
                 }
 
                 // growth increase in this cycle, reference as percentage of the whole growth time
-                _dailyGrowth += ((growthTimeOffsetCycle / (1 / growthTimeTotal_d)) * 100.0f);
+                _dailyGrowth += ((growthTimeOffsetCycle / (1 / growthTimeTotal_d)));
 
                 if (FertilizeYieldActive)
                 {

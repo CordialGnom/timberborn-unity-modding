@@ -472,7 +472,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _componentCache: {fileID: 0}
   _growthFactor: 0.5
-  _growthConsumptionFactor: 760
+  _growthConsumptionFactor: 0.76
   _yieldFactor: 0.5
   _yieldConsumptionFactor: 0.74
   _growthFertilizationRadius: 8
