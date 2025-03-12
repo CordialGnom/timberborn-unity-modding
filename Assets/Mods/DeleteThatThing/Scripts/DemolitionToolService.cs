@@ -56,7 +56,7 @@ namespace Cordial.Mods.DemolitionTool.Scripts
         private readonly DialogBoxShower _dialogBoxShower;
 
         // deletion area / component(s)
-        private readonly BlockService _blockService;
+        private readonly IBlockService _blockService;
         private BlockObject _startObject;
         private string _startObjectName = String.Empty;
         private bool _pathSelectActive;
@@ -78,7 +78,7 @@ namespace Cordial.Mods.DemolitionTool.Scripts
                                     ILoc loc,
                                     ISpecService specService,
                                     PlantingService plantingService,
-                                    BlockService blockService,
+                                    IBlockService blockService,
                                     InputService inputService,
                                     CursorService cursorService,
                                     EntityService entityService,
