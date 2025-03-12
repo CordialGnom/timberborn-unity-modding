@@ -183,7 +183,7 @@ MonoBehaviour:
     _amount: 6
   - _goodId: Plank
     _amount: 4
-  _scienceCost: 200
+  _scienceCost: 120
   _placeFinished: 0
   _finishableWithBeaversOnSite: 0
   _drawRangeBoundsOnIt: 0
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _componentCache: {fileID: 0}
   _toolGroupId: Wood
-  _toolOrder: 11
+  _toolOrder: 15
   _toolShape: 0
   _layout: 0
   _customPivot:
@@ -472,11 +472,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _componentCache: {fileID: 0}
   _growthFactor: 0.5
-  _growthConsumptionFactor: 0.5
+  _growthConsumptionFactor: 760
   _yieldFactor: 0.5
-  _yieldConsumptionFactor: 0.5
+  _yieldConsumptionFactor: 0.74
   _growthFertilizationRadius: 8
-  _capacity: 60
+  _capacity: 50
   _supply: Fertilizer
 --- !u!1 &4187045584144244368
 GameObject:
