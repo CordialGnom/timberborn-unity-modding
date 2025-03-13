@@ -42,22 +42,22 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4545369178478499}
-  - component: {fileID: 114871128561087209}
+  - component: {fileID: -5396280535376966047}
   - component: {fileID: 114184180646374874}
-  - component: {fileID: 114182693751339799}
+  - component: {fileID: 1314533603433546675}
   - component: {fileID: 114674017543891984}
-  - component: {fileID: 114020141782412925}
-  - component: {fileID: 114050078512440269}
-  - component: {fileID: 114870083986030491}
-  - component: {fileID: 114918868713525233}
-  - component: {fileID: 114267985950949651}
-  - component: {fileID: 114526329019015849}
-  - component: {fileID: 114200043106353986}
-  - component: {fileID: 114052078782418163}
-  - component: {fileID: 114452477824174909}
-  - component: {fileID: 114486474688034814}
-  - component: {fileID: 114326278249427629}
-  - component: {fileID: 114936112519771211}
+  - component: {fileID: -6459299531140468888}
+  - component: {fileID: 3365786756213060849}
+  - component: {fileID: 2285827206503453037}
+  - component: {fileID: -2025605450903619471}
+  - component: {fileID: -7222578091219531860}
+  - component: {fileID: -5459644743588235286}
+  - component: {fileID: 3902702249293390018}
+  - component: {fileID: -1068142742755852649}
+  - component: {fileID: 7261666559968553762}
+  - component: {fileID: 869710937262307207}
+  - component: {fileID: 5897267108860653782}
+  - component: {fileID: 3010267878217595228}
   - component: {fileID: 114146374758593142}
   m_Layer: 0
   m_Name: CordialChemist.IronTeeth
@@ -83,7 +83,7 @@ Transform:
   - {fileID: 4067505464642312}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -0, z: -0}
---- !u!114 &114871128561087209
+--- !u!114 &-5396280535376966047
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,9 +92,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -790041461, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
+  m_Script: {fileID: -579399493, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
   _selectionSoundName: Default
   _loopingSoundName: 
   _buildingCost:
@@ -120,11 +121,14 @@ MonoBehaviour:
   m_Script: {fileID: 1596376676, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
   _finishedModelName: '#Finished'
   _unfinishedModelName: '#Unfinished'
   _finishedUncoveredModelName: 
+  _undergroundModelName: 
   _constructionModeModel: 0
---- !u!114 &114182693751339799
+  _undergroundModelDepth: 0
+--- !u!114 &1314533603433546675
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,9 +137,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1496982017, guid: 71874a96862cca0445075c2f72e705bf, type: 3}
+  m_Script: {fileID: 413955577, guid: 71874a96862cca0445075c2f72e705bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
   _maxWorkers: 1
   _defaultWorkers: 1
   _defaultWorkerType: Beaver
@@ -155,10 +160,11 @@ MonoBehaviour:
   m_Script: {fileID: 279545971, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
   _productionRecipeIds:
-  - Fertilizer.Mild.Ironteeth
-  - Fertilizer.Strong.Ironteeth
---- !u!114 &114020141782412925
+  - Fertilizer.Mild.IronTeeth
+  - Fertilizer.Strong.IronTeeth
+--- !u!114 &-6459299531140468888
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -167,10 +173,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1933283616, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
+  m_Script: {fileID: 1796300005, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114050078512440269
+  _componentCache: {fileID: 0}
+--- !u!114 &3365786756213060849
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -179,9 +186,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -730909465, guid: bcb85dd25e41826ab5a7dea12cff2430, type: 3}
+  m_Script: {fileID: -904470794, guid: bcb85dd25e41826ab5a7dea12cff2430, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
   _operatingState: 0
   _limitedCapacityFinished: 0
   _capacityFinished: 0
@@ -189,7 +197,7 @@ MonoBehaviour:
   _limitedCapacityUnfinished: 0
   _capacityUnfinished: 0
   _throttledExitUnfinished: 0
---- !u!114 &114870083986030491
+--- !u!114 &2285827206503453037
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -198,14 +206,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -731835049, guid: b5f268a4cb31a93ed707a95d3a502b0e, type: 3}
+  m_Script: {fileID: 1566945626, guid: b5f268a4cb31a93ed707a95d3a502b0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prefabName: CordialChemist.Folktails
+  _componentCache: {fileID: 0}
+  _prefabName: CordialChemist.IronTeeth
   _backwardCompatiblePrefabNames: []
   _requiredFeatureToggle: 
   _disablingFeatureToggle: 
---- !u!114 &114918868713525233
+--- !u!114 &-2025605450903619471
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,16 +223,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 9237227, guid: dd1baa4f323651ee41781eb84b2b1960, type: 3}
+  m_Script: {fileID: -1219910101, guid: dd1baa4f323651ee41781eb84b2b1960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slotSpecifications:
+  _componentCache: {fileID: 0}
+  _slotSpecs:
   - _slotKeyword: Entrance
     _animation: Sitting
     _inanimate: 0
     _randomizeYRotation: 0
     _waterSlot: 0
---- !u!114 &114267985950949651
+--- !u!114 &-7222578091219531860
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -232,10 +242,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -455950880, guid: 71874a96862cca0445075c2f72e705bf, type: 3}
+  m_Script: {fileID: -747059159, guid: 71874a96862cca0445075c2f72e705bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114526329019015849
+  _componentCache: {fileID: 0}
+--- !u!114 &-5459644743588235286
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -244,91 +255,84 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1800879565, guid: c1ff95bb5ae0e8b420075ec58add6f36, type: 3}
+  m_Script: {fileID: 447443988, guid: c1ff95bb5ae0e8b420075ec58add6f36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _blocksSpecification:
-    _size: {x: 2, y: 2, z: 3}
-    _blockSpecifications:
+  _componentCache: {fileID: 0}
+  _blocksSpec:
+    _size: {x: 2, y: 2, z: 2}
+    _blockSpecs:
     - _matterBelow: 1
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: -1
+      _occupations: 62
       _stackable: 0
       _occupyAllBelow: 0
+      _optionallyUnderground: 0
+      _underground: 0
     - _matterBelow: 1
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: -1
+      _occupations: 62
       _stackable: 0
       _occupyAllBelow: 0
+      _optionallyUnderground: 0
+      _underground: 0
     - _matterBelow: 1
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: -1
+      _occupations: 62
       _stackable: 0
       _occupyAllBelow: 0
+      _optionallyUnderground: 0
+      _underground: 0
     - _matterBelow: 1
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: -1
+      _occupations: 62
       _stackable: 0
       _occupyAllBelow: 0
+      _optionallyUnderground: 0
+      _underground: 0
     - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
       _occupations: -1
       _stackable: 0
       _occupyAllBelow: 0
+      _optionallyUnderground: 0
+      _underground: 0
     - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
       _occupations: -1
       _stackable: 0
       _occupyAllBelow: 0
+      _optionallyUnderground: 0
+      _underground: 0
     - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
       _occupations: -1
       _stackable: 0
       _occupyAllBelow: 0
+      _optionallyUnderground: 0
+      _underground: 0
     - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
       _occupations: -1
       _stackable: 0
       _occupyAllBelow: 0
-    - _matterBelow: 3
-      _legacyOccupation: 0
-      _useNewOccupation: 1
-      _occupations: -1
-      _stackable: 0
-      _occupyAllBelow: 0
-    - _matterBelow: 3
-      _legacyOccupation: 0
-      _useNewOccupation: 1
-      _occupations: 59
-      _stackable: 0
-      _occupyAllBelow: 0
-    - _matterBelow: 3
-      _legacyOccupation: 0
-      _useNewOccupation: 1
-      _occupations: -1
-      _stackable: 0
-      _occupyAllBelow: 0
-    - _matterBelow: 3
-      _legacyOccupation: 0
-      _useNewOccupation: 1
-      _occupations: 59
-      _stackable: 0
-      _occupyAllBelow: 0
+      _optionallyUnderground: 0
+      _underground: 0
   _entrance:
     _hasEntrance: 1
     _coordinates: {x: 0, y: -1, z: 0}
   _baseZ: 0
   _overridable: 0
   _flippable: 1
---- !u!114 &114200043106353986
+--- !u!114 &3902702249293390018
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -337,12 +341,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1794062130, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
+  m_Script: {fileID: 1475725842, guid: 1bd6ccb667024f9c2b77daf7f62a4eed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _localAccess: {x: 0.5, y: 0.03047585, z: 0.75}
+  _componentCache: {fileID: 0}
+  _localAccess: {x: 0.5, y: 0.05, z: 0.05}
   _forceOneFinalAccess: 0
---- !u!114 &114052078782418163
+--- !u!114 &-1068142742755852649
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -351,18 +356,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -871492198, guid: c1ff95bb5ae0e8b420075ec58add6f36, type: 3}
+  m_Script: {fileID: -1706396145, guid: c1ff95bb5ae0e8b420075ec58add6f36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
   _toolGroupId: Science
-  _toolOrder: 20
+  _toolOrder: 21
   _toolShape: 0
   _layout: 0
   _customPivot:
     _hasCustomPivot: 0
     _coordinates: {x: 0, y: 0, z: 0}
   _devModeTool: 0
---- !u!114 &114452477824174909
+--- !u!114 &7261666559968553762
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -374,11 +380,12 @@ MonoBehaviour:
   m_Script: {fileID: 652365310, guid: b6b9d4cc3090b6fceb2eb6438dd271f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
   _displayNameLocKey: Cordial.Building.Chemist.DisplayName
   _descriptionLocKey: Cordial.Building.Chemist.Description
   _flavorDescriptionLocKey: Cordial.Building.Chemist.FlavorDescription
   _imagePath: Buildings/Science/CordialChemist/Prefab/ChemistIcon
---- !u!114 &114486474688034814
+--- !u!114 &869710937262307207
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -387,10 +394,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -598504670, guid: 6e68475ee52ce568acbd493b99ce126d, type: 3}
+  m_Script: {fileID: -1839023324, guid: 6e68475ee52ce568acbd493b99ce126d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114326278249427629
+  _componentCache: {fileID: 0}
+--- !u!114 &5897267108860653782
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -399,10 +407,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1912839643, guid: 603f82a4140498c516499d72a9d347b6, type: 3}
+  m_Script: {fileID: -1551590166, guid: 603f82a4140498c516499d72a9d347b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114936112519771211
+  _componentCache: {fileID: 0}
+--- !u!114 &3010267878217595228
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -411,9 +420,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1336555144283641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1700995066, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
+  m_Script: {fileID: -813592589, guid: 9d9a15fd937d3c3e3eda286523371813, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
 --- !u!114 &114146374758593142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -426,6 +436,7 @@ MonoBehaviour:
   m_Script: {fileID: 437054131, guid: 644c1295076bbdbb604b7f96aa6be9c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentCache: {fileID: 0}
   _progressThresholds:
   - 0
 --- !u!1 &1374611798881936
@@ -437,12 +448,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4787205739302512}
-  - component: {fileID: 65103608058040389}
   - component: {fileID: 114744187920427093}
+  - component: {fileID: 65103608058040389}
   - component: {fileID: 65674075532428830}
   - component: {fileID: 65840398264347581}
-  - component: {fileID: 65824996645702012}
-  - component: {fileID: 65007152438312613}
   m_Layer: 0
   m_Name: ConstructionStage0
   m_TagString: Untagged
@@ -465,6 +474,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4067505464642312}
   m_LocalEulerAnglesHint: {x: 0, y: -0, z: -0}
+--- !u!114 &114744187920427093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1374611798881936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _modelName: Buildings\Science\CordialChemist\Models\CordialChemist.IronTeeth.ConstructionStage0.Model
 --- !u!65 &65103608058040389
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -486,19 +508,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2, y: 0.1, z: 2}
   m_Center: {x: 1, y: 0.05, z: 1}
---- !u!114 &114744187920427093
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1374611798881936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _modelName: Buildings/Science/CordialChemist/Models/CordialChemist.IronTeeth.ConstructionStage0.Model
 --- !u!65 &65674075532428830
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -518,8 +527,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.7830276, y: 0.936661, z: 1.5010328}
-  m_Center: {x: 1, y: 0.4683305, z: 1}
+  m_Size: {x: 1.8, y: 1.4, z: 2}
+  m_Center: {x: 0.9, y: 0.8, z: 1}
 --- !u!65 &65840398264347581
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -539,50 +548,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0756861, y: 0.55118394, z: 1.5010328}
-  m_Center: {x: 1, y: 1.2090272, z: 1}
---- !u!65 &65824996645702012
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1374611798881936}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.3159256, y: 0.6869159, z: 1.5010328}
-  m_Center: {x: 1, y: 1.8252499, z: 1}
---- !u!65 &65007152438312613
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1374611798881936}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.64513326, y: 1.2806656, z: 0.8683137}
-  m_Center: {x: 1.417698, y: 1.5930408, z: 1}
+  m_Size: {x: 0.9, y: 0.5, z: 2}
+  m_Center: {x: 0.85, y: 1.5, z: 1}
 --- !u!1 &1469866550219986
 GameObject:
   m_ObjectHideFlags: 0
@@ -592,11 +559,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4546625828309967}
+  - component: {fileID: 114643167214187562}
   - component: {fileID: 65972679226572098}
   - component: {fileID: 136460760159595885}
-  - component: {fileID: 114643167214187562}
   - component: {fileID: 65525513253602626}
   - component: {fileID: 65071375623338200}
+  - component: {fileID: 1857879319286295780}
   m_Layer: 0
   m_Name: '#Finished'
   m_TagString: Untagged
@@ -619,6 +587,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4545369178478499}
   m_LocalEulerAnglesHint: {x: 0, y: -0, z: -0}
+--- !u!114 &114643167214187562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1469866550219986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _modelName: Buildings\Science\CordialChemist\Models\CordialChemist.IronTeeth.Model
 --- !u!65 &65972679226572098
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -638,7 +619,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.7830276, y: 0.936661, z: 1.5010328}
+  m_Size: {x: 2, y: 0.936661, z: 2}
   m_Center: {x: 1, y: 0.4683305, z: 1}
 --- !u!136 &136460760159595885
 CapsuleCollider:
@@ -659,23 +640,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.35069478
+  m_Radius: 0.25
   m_Height: 1.1085858
   m_Direction: 1
-  m_Center: {x: 1.5, y: 2.1, z: 1}
---- !u!114 &114643167214187562
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1469866550219986}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _modelName: Buildings\Science\CordialChemist\Models\CordialChemist.IronTeeth.Model
+  m_Center: {x: 1.8, y: 1.2, z: 1.55}
 --- !u!65 &65525513253602626
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -695,8 +663,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.3159256, y: 0.6869159, z: 1.5010328}
-  m_Center: {x: 1, y: 1.8252499, z: 1}
+  m_Size: {x: 1.7, y: 0.5, z: 2}
+  m_Center: {x: 0.85, y: 1.2, z: 1}
 --- !u!65 &65071375623338200
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -716,8 +684,29 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0756861, y: 0.55118394, z: 1.5010328}
-  m_Center: {x: 1, y: 1.2090272, z: 1}
+  m_Size: {x: 1.3, y: 0.4, z: 2}
+  m_Center: {x: 0.85, y: 1.55, z: 1}
+--- !u!65 &1857879319286295780
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1469866550219986}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.4, y: 0.4, z: 0.4}
+  m_Center: {x: 1.7, y: 1.55, z: 1.45}
 --- !u!1 &1904961071200704
 GameObject:
   m_ObjectHideFlags: 0
@@ -784,4 +773,4 @@ MonoBehaviour:
   m_Script: {fileID: -1942782917, guid: 40833514e55bcf2135fbcf9411078554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelName: ConstructionSites\ConstructionSite2x2\ConstructionSite2x2.Model
+  _modelName: ConstructionBases\ConstructionBase2x2\ConstructionBase2x2.Model
