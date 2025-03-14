@@ -297,7 +297,7 @@ MonoBehaviour:
     - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: -1
+      _occupations: 59
       _stackable: 0
       _occupyAllBelow: 0
       _optionallyUnderground: 0
@@ -305,7 +305,7 @@ MonoBehaviour:
     - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: -1
+      _occupations: 59
       _stackable: 0
       _occupyAllBelow: 0
       _optionallyUnderground: 0
@@ -313,7 +313,7 @@ MonoBehaviour:
     - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: -1
+      _occupations: 59
       _stackable: 0
       _occupyAllBelow: 0
       _optionallyUnderground: 0
@@ -321,7 +321,7 @@ MonoBehaviour:
     - _matterBelow: 3
       _legacyOccupation: 0
       _useNewOccupation: 1
-      _occupations: -1
+      _occupations: 59
       _stackable: 0
       _occupyAllBelow: 0
       _optionallyUnderground: 0
