@@ -6,8 +6,8 @@
 	"CyclesCapacity": 3,
 	"Ingredients": [
 		{  "Id": "Dirt", 		"Amount": 1 },
-		{  "Id": "Eggplant", "Amount": 1 },
-		{  "Id": "Extract",  	"Amount": 1 },
+		{  "Id": "Eggplant", 	"Amount": 1 },
+		{  "Id": "Extract",  	"Amount": 2 },
 		{  "Id": "Water", 		"Amount": 3 }
 	],
 	  "Products": [
