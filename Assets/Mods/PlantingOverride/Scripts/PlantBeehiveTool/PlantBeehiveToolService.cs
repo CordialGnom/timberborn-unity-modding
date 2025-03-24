@@ -21,6 +21,7 @@ using System.Linq;
 using Timberborn.SelectionToolSystem;
 using System;
 using Timberborn.Growing;
+using Timberborn.Planting;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
@@ -50,13 +51,11 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private readonly IBlockService _blockService;
         private static Vector3Int _cursorPosPrev = new Vector3Int(0, 0, 0);
 
-
         // building placement
         private readonly BuildingUnlockingService _buildingUnlockingService;
         private readonly BuildingService _buildingService;
         private BuildingSpec _beehive;
-
-        private BlockObjectRange _blockObjectRange;
+        private readonly PlantingService _plantingService;
 
         // configuration storage
         private readonly ISingletonLoader _singletonLoader;
@@ -73,6 +72,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                                             TerrainAreaService terrainAreaService,
                                             ISingletonLoader singletonLoader,
                                             BuildingService buildingService,
+                                            PlantingService plantingService,
                                             IBlockService blockService,
                                             //ISpecService specService,
                                             EventBus eventBus,
@@ -84,6 +84,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             _terrainAreaService = terrainAreaService;
             _singletonLoader = singletonLoader;
             _buildingService = buildingService;
+            _plantingService = plantingService;
             _blockService = blockService;
             //_specService = specService;
             _eventBus = eventBus;
@@ -166,7 +167,6 @@ namespace Cordial.Mods.PlantBeehive.Scripts
             }
             else
             {
-
                 // only take first input block
                 Vector3Int startCoord = inputBlocks.FirstOrDefault();
 
@@ -370,7 +370,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                         {
                             // check what kind of object has been found
                             block.TryGetComponentFast<Demolishable>(out var demolishable);
-                            block.TryGetComponentFast<Growable>(out var growable);
+                            block.TryGetComponentFast<GrowableSpec>(out var growable);
                             block.TryGetComponentFast<BuildingSpec>(out var building);
 
                             if ((building != null)
@@ -387,6 +387,7 @@ namespace Cordial.Mods.PlantBeehive.Scripts
                                 {
                                     _hiveCoordsNew.Add(coord);
                                     demolishable.Mark();
+                                    _plantingService.UnsetPlantingCoordinates(coord);
                                     demolishable.TryGetComponentFast<BuilderPrioritizable>(out BuilderPrioritizable prioritizable);
 
                                     // increase the priority of the plant which is to be deleted
@@ -510,7 +511,15 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
                     if (null != placer)
                     {
-                        placer.Place(block, placement);
+                        try
+                        {
+                            placer.Place(block, placement);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError("PlantingOverride: Beehive failed with: " + e.Message + " at " + coordinates);
+                        }
+
                         _hiveCoordsNew.Remove(coordinates);
                     }
                 }

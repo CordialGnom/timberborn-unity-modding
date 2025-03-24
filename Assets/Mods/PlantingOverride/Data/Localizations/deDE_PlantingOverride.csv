@@ -11,6 +11,6 @@ Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description,Ersetze bishe
 Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.CuttingAreaRemove,"Pflanze aus dem Fällbereich entfernen",-
 Cordial.PlantBeehiveTool.DisplayName,"Bienenstock 'setzen' ",-
 Cordial.PlantBeehiveTool.Description,"Ersetze eine Pflanze mit einem Bienenstock",-
-Cordial.PlantBeehiveTool.FactionLock,"Dieses Werkzeug ist nicht verfügbar für:",-
-Cordial.PlantBeehiveTool.BuildingLock,"Dieses Gebäude ist gesperrt:",-
-Cordial.PlantBeehiveTool.Unlock,"Werkzeug entsperrt!",-
+Cordial.PlantingOverrideTool.FactionLock,"Dieses Werkzeug ist nicht verfügbar für:",-
+Cordial.PlantingOverrideTool.BuildingLock,"Dieses Gebäude muss freigeschalten werden:",-
+Cordial.PlantingOverrideTool.SpecLock,"Werkzeug entsperrt!",-
