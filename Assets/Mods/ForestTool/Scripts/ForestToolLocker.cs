@@ -22,7 +22,6 @@ namespace Cordial.Mods.ForestTool.Scripts
         private readonly ILoc _loc;
         private readonly DialogBoxShower _dialogBoxShower;
 
-        private string _buildingSpecName = String.Empty;
 
         public ForestToolLocker(    ILoc loc,
                                     DialogBoxShower dialogBoxShower,
@@ -43,19 +42,27 @@ namespace Cordial.Mods.ForestTool.Scripts
 
             if (true == shouldLock)
             {
-                // get faction ID to create forester buildingspec
-                _buildingSpecName = "Forester." + _prefabSpecService.FactionId;
+                BuildingSpec foresterSpec = new BuildingSpec();
+                bool specFound = false;
 
-                // create the building to check if system is unlocked
-                BuildingSpec _buildingSpec = _buildingService.GetBuildingPrefab(_buildingSpecName);
-
-                if (_buildingSpec != null)
+                // get a list of all buildings
+                foreach (BuildingSpec buildingspec in _buildingService.Buildings)
                 {
-                    return (!_buildingUnlockingService.Unlocked(_buildingSpec));
+                    if (buildingspec.name.Contains("Forester"))
+                    {
+                        foresterSpec = buildingspec;
+                        specFound = true;
+                        break;
+                    }
+                }
+
+                if (specFound)
+                {
+                    return (!_buildingUnlockingService.Unlocked(foresterSpec));
                 }
                 else
                 {
-                    return true;
+                    return true;    // should lock
                 }
             }
             else
@@ -66,20 +73,31 @@ namespace Cordial.Mods.ForestTool.Scripts
 
         public void TryToUnlock(Tool tool, Action successCallback, Action failCallback)
         {
-            if (string.Empty != _buildingSpecName)
-            {
-                // string exists, try to get it. 
-                // create the building to check if system is unlocked
-                BuildingSpec _buildingSpec = _buildingService.GetBuildingPrefab(_buildingSpecName);
+            BuildingSpec foresterSpec = new BuildingSpec();
+            bool specFound = false;
 
-                if (_buildingSpec == null)
+            // get a list of all buildings and search for the beehive
+            foreach (BuildingSpec buildingspec in _buildingService.Buildings)
+            {
+                if (buildingspec.name.Contains("Forester"))
                 {
-                    this.ShowWrongBuildingMessage(_buildingSpecName, failCallback);
+                    foresterSpec = buildingspec;
+                    specFound = true;
+                    break;
                 }
-                else if (!_buildingUnlockingService.Unlocked(_buildingSpec))
+            }
+
+            // if specification was found...
+            if (specFound)
+            {
+                if (foresterSpec == null)
+                {
+                    this.ShowWrongBuildingMessage("Forester", failCallback);
+                }
+                else if (!_buildingUnlockingService.Unlocked(foresterSpec))
                 {
                     // building is not unlocked: 
-                    this.ShowLockedBuildingMessage(_buildingSpec, failCallback);
+                    this.ShowLockedBuildingMessage(foresterSpec, failCallback);
                 }
                 else
                 {
@@ -87,7 +105,12 @@ namespace Cordial.Mods.ForestTool.Scripts
                     successCallback();
                 }
             }
+            else
+            {
+                this.ShowWrongBuildingMessage("Forester", failCallback);
+            }
         }
+
         public static bool IsForestTool(Tool tool, out ForestToolService overrideTool)
         {
             overrideTool = tool as ForestToolService;

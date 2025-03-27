@@ -156,17 +156,27 @@ namespace Cordial.Mods.ForestTool.Scripts
                 // get faction forester specific building
                 if ("" != _forestToolPrefabSpecService.FactionId)
                 {
-                    string prefabName = "Forester." + _forestToolPrefabSpecService.FactionId;
+                    BuildingSpec foresterSpec = new BuildingSpec();
 
-                    // create a forester to check if system is unlocked
-                    BuildingSpec _forester = _buildingService.GetBuildingPrefab(prefabName);
-
-                    IsUnlocked = _buildingUnlockingService.Unlocked(_forester);
-
-                    if (true == IsUnlocked)
+                    // get a list of all buildings
+                    foreach (BuildingSpec buildingspec in _buildingService.Buildings)
                     {
-                        // activate tool
-                        this._selectionToolProcessor.Enter();
+                        if (buildingspec.name.Contains("Forester"))
+                        {
+                            foresterSpec = buildingspec;
+                            break;
+                        }
+                    }
+
+                    if (foresterSpec != null)
+                    {
+                        IsUnlocked = _buildingUnlockingService.Unlocked(foresterSpec);
+
+                        if (true == IsUnlocked)
+                        {
+                            // activate tool
+                            this._selectionToolProcessor.Enter();
+                        }
                     }
                 }
                 else
