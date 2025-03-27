@@ -1,8 +1,11 @@
 ﻿using Cordial.Mods.PlantingOverride.Scripts.Common;
+using NUnit.Framework;
 using System;
+using System.Threading;
 using Timberborn.Buildings;
 using Timberborn.CoreUI;
 using Timberborn.EntitySystem;
+using Timberborn.Forestry;
 using Timberborn.Localization;
 using Timberborn.ScienceSystem;
 using Timberborn.ToolSystem;
@@ -21,8 +24,6 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         private readonly DialogBoxShower _dialogBoxShower;
         private readonly ILoc _loc;
-
-        private string _buildingSpecName = String.Empty; 
 
         public PlantingOverrideTreeToolLocker(  DialogBoxShower dialogBoxShower,
                                                 PlantingOverridePrefabSpecService prefabSpecService,
@@ -46,21 +47,28 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
             if (true == shouldLock)
             {
-                // get faction ID to create forester buildingspec
-                _buildingSpecName = "Forester." + _prefabSpecService.FactionId;
+                BuildingSpec foresterSpec = new BuildingSpec();
+                bool specFound = false;
 
-                // create the building to check if system is unlocked
-                BuildingSpec _buildingSpec = _buildingService.GetBuildingPrefab(_buildingSpecName);
-
-                if (_buildingSpec != null)
+                // get a list of all buildings
+                foreach (BuildingSpec buildingspec in _buildingService.Buildings)
                 {
-                    return (!_buildingUnlockingService.Unlocked(_buildingSpec));
+                    if (buildingspec.name.Contains("Forester"))
+                    {
+                        foresterSpec = buildingspec;
+                        specFound = true;
+                        break;
+                    }
+                }
+
+                if (specFound)
+                {
+                    return (!_buildingUnlockingService.Unlocked(foresterSpec));
                 }
                 else
                 {
-                    return true;
+                    return true;    // should lock
                 }
-
             }
             else
             {
@@ -70,20 +78,31 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         public void TryToUnlock(Tool tool, Action successCallback, Action failCallback)
         {
-            if (string.Empty != _buildingSpecName)
-            {
-                // string exists, try to get it. 
-                // create the building to check if system is unlocked
-                BuildingSpec _buildingSpec = _buildingService.GetBuildingPrefab(_buildingSpecName);
+            BuildingSpec foresterSpec = new BuildingSpec();
+            bool specFound = false;
 
-                if (_buildingSpec == null)
+            // get a list of all buildings and search for the beehive
+            foreach (BuildingSpec buildingspec in _buildingService.Buildings)
+            {
+                if (buildingspec.name.Contains("Forester"))
                 {
-                    this.ShowWrongBuildingMessage(_buildingSpecName, failCallback);
+                    foresterSpec = buildingspec;
+                    specFound = true;
+                    break;
                 }
-                else if (!_buildingUnlockingService.Unlocked(_buildingSpec))
+            }
+
+            // if specification was found...
+            if (specFound)
+            {
+                if (foresterSpec == null)
+                {
+                    this.ShowWrongBuildingMessage("Forester", failCallback);
+                }
+                else if (!_buildingUnlockingService.Unlocked(foresterSpec))
                 {
                     // building is not unlocked: 
-                    this.ShowLockedBuildingMessage(_buildingSpec, failCallback);
+                    this.ShowLockedBuildingMessage(foresterSpec, failCallback);
                 }
                 else
                 {
@@ -91,7 +110,13 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                     successCallback();
                 }
             }
+            else
+            {
+                this.ShowWrongBuildingMessage("Forester", failCallback);
+            }
         }
+
+
         public static bool IsPlantingOverrideTreeTool(Tool tool, out PlantingOverrideTreeService overrideTool)
         {
             overrideTool = tool as PlantingOverrideTreeService;

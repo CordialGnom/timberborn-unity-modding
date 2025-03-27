@@ -47,20 +47,27 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
             if (true == shouldLock)
             {
-                // get faction: this is only applicable for folktails (beehive is available)
-                if (_prefabSpecService.FactionId.Contains("Folktails"))
+                BuildingSpec beehiveSpec = new BuildingSpec();
+                bool specFound = false;
+
+                // get a list of all buildings
+                foreach (BuildingSpec buildingspec in _buildingService.Buildings)
                 {
-                    // check if beehive is unlocked
-                    string prefabName = "Beehive.Folktails";
+                    if (buildingspec.name.Contains("Beehive"))
+                    {
+                        beehiveSpec = buildingspec;
+                        specFound = true;
+                        break;
+                    }
+                }
 
-                    // create a beehive to check if system is unlocked
-                    BuildingSpec _beehive = _buildingService.GetBuildingPrefab(prefabName);
-
-                    return (!_buildingUnlockingService.Unlocked(_beehive));
+                if (specFound)
+                {
+                    return (!_buildingUnlockingService.Unlocked(beehiveSpec));
                 }
                 else
                 {
-                    return true;
+                    return true;    // should lock
                 }
             }
             else
@@ -71,29 +78,38 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
         public void TryToUnlock(Tool tool, Action successCallback, Action failCallback)
         {
-            // get faction
-            if (_prefabSpecService.FactionId.Contains("Folktails"))
+            BuildingSpec beehiveSpec = new BuildingSpec();
+            bool specFound = false;
+
+            // get a list of all buildings and search for the beehive
+            foreach (BuildingSpec buildingspec in _buildingService.Buildings)
             {
-                // check if beehive is unlocked
-                string prefabName = "Beehive.Folktails";
+                if (buildingspec.name.Contains("Beehive"))
+                {
+                    beehiveSpec = buildingspec;
+                    specFound = true;
+                    break;
+                }
+            }
 
-                // create a beehive to check if system is unlocked
-                BuildingSpec _beehive = _buildingService.GetBuildingPrefab(prefabName);
 
-                if (_beehive == null)
+
+            // if specification was found...
+            if (specFound)
+            {
+                if (beehiveSpec == null)
                 {
                     this.ShowWrongFactionMessage(_prefabSpecService.FactionId, failCallback);
                 }
-                else if (!_buildingUnlockingService.Unlocked(_beehive))
+                else if (!_buildingUnlockingService.Unlocked(beehiveSpec))
                 {
                     // building is not unlocked: 
-                    this.ShowLockedBuildingMessage(_beehive, failCallback);
+                    this.ShowLockedBuildingMessage(beehiveSpec, failCallback);
                 }
                 else
                 {
                     // building is unlocked, tool may be used
                     successCallback();
-
                 }
             }
             else
@@ -116,6 +132,12 @@ namespace Cordial.Mods.PlantBeehive.Scripts
         private void ShowWrongFactionMessage(string factionId, Action failCallback)
         {
             string tgt = this._loc.T("Faction." + factionId + ".DisplayName");
+
+            // replace if modded faction and no displayname is available
+            if (tgt.Contains("DisplayName"))
+            {
+                tgt = factionId;
+            }
 
             this._dialogBoxShower.Create().SetMessage(this.GetMessage(tgt, FactionLockKey)).SetConfirmButton(failCallback).Show();
         }
