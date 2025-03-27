@@ -1,0 +1,6 @@
+{
+  "FactionSpec": {
+    "Id": "GreedyBuilders",
+	"Goods#append": [ "Fertilizer" ]
+  }
+}
