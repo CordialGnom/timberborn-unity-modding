@@ -239,12 +239,12 @@ namespace Cordial.Mods.CutterTool.Scripts
                                     // --> check if fully grown (= 1.0)
                                     // --> check if not yielding (cuttable / gatherable)
 
-                                    bool cuttableEmpty = (cuttable.Yielder.Yield.Amount == 0);
+                                    bool cuttableEmpty = cuttable.Yielder.IsYieldRemoved;
 
                                     // not all trees have gatherables
                                     if (gatherable != null)
                                     {
-                                        gatherableEmpty = (gatherable.Yielder.Yield.Amount == 0);
+                                        gatherableEmpty = gatherable.Yielder.IsYieldRemoved;
                                     }
 
                                     // is a stump or not
@@ -256,11 +256,15 @@ namespace Cordial.Mods.CutterTool.Scripts
                                     {
                                         coordinatesList.Add(block);
                                     }
+
+                                    Debug.Log("Ignore: G" + gatherableEmpty + " C " + cuttableEmpty + " D " + growthDone + " I " + invIsEmpty);
                                 }
                             }
                             else // add any expected trees
                             {
                                 coordinatesList.Add(block);
+
+                                Debug.Log("No Stump feature");
                             }
                         }
                         else
