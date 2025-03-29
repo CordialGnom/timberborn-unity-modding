@@ -256,15 +256,11 @@ namespace Cordial.Mods.CutterTool.Scripts
                                     {
                                         coordinatesList.Add(block);
                                     }
-
-                                    Debug.Log("Ignore: G" + gatherableEmpty + " C " + cuttableEmpty + " D " + growthDone + " I " + invIsEmpty);
                                 }
                             }
                             else // add any expected trees
                             {
                                 coordinatesList.Add(block);
-
-                                Debug.Log("No Stump feature");
                             }
                         }
                         else
