@@ -246,6 +246,10 @@ namespace Cordial.Mods.CutterTool.Scripts
                                     {
                                         gatherableEmpty = gatherable.Yielder.IsYieldRemoved;
                                     }
+                                    else
+                                    {
+                                        gatherableEmpty = true;
+                                    }
 
                                     // is a stump or not
                                     if (invIsEmpty && cuttableEmpty && growthDone && gatherableEmpty)
