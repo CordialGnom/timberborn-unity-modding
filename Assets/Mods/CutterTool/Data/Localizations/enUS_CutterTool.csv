@@ -10,3 +10,5 @@ Cordial.CutterTool.CutterToolPanel.AreaConfig.Pattern04, Lines Y,-
 Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeAll, All tree types,-
 Cordial.CutterTool.CutterToolPanel.TreeConfig.TreeMark, Mark trees only,-
 Cordial.CutterTool.CutterToolPanel.TreeConfig.IgnoreStump, Ignore stumps,-
+Cordial.CutterTool.CutterToolPanel.TreeConfig.ClearCut, Clear mismatched cutting area,-
+Cordial.CutterTool.CutterToolPanel.TreeConfig.IgnoreDeadSapling, Ignore dead saplings,-

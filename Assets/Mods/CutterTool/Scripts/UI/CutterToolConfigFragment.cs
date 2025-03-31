@@ -27,6 +27,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         Toggle _toggleTreeAll = new();
         Toggle _toggleTreeMark = new();
         Toggle _toggleStump = new();
+        Toggle _toggleClearCut = new();
+        Toggle _toggleSapling = new();
 
         private readonly List<Toggle> _toggleTreeList = new();
         private readonly List<string> _toggleNameList = new();
@@ -42,6 +44,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
         public CutterPatterns CutterPatterns => _cutterPatterns;
         public bool TreeMarkOnly => _toggleTreeMark.value;
         public bool IgnoreStumps => _toggleStump.value;
+        public bool ClearCutArea => _toggleClearCut.value;
+        public bool IgnoreDeadSapling => _toggleSapling.value;
 
 
         public CutterToolConfigFragment (UIBuilder uiBuilder,
@@ -82,6 +86,16 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                 .SetLocKey("Cordial.CutterTool.CutterToolPanel.TreeConfig.IgnoreStump")
                 .Build();
 
+            _toggleClearCut = _uiBuilder.Create<GameToggle>()
+                .SetName("ClearCut")
+                .SetLocKey("Cordial.CutterTool.CutterToolPanel.TreeConfig.ClearCut")
+                .Build();
+
+            _toggleSapling = _uiBuilder.Create<GameToggle>()
+                .SetName("IgnoreDeadSapling")
+                .SetLocKey("Cordial.CutterTool.CutterToolPanel.TreeConfig.IgnoreDeadSapling")
+                .Build();
+
             // create toggle elements for all available tree types
             ImmutableArray<string> treeList = _cutterToolPrefabSpecService.GetAllTrees();
 
@@ -120,7 +134,9 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
 
             _root.Add(CreateCenteredPanelFragmentBuilder()
                      .AddComponent(_toggleStump)
+                     .AddComponent(_toggleSapling)
                      .AddComponent(_toggleTreeMark)
+                     .AddComponent(_toggleClearCut)
                      .BuildAndInitialize());
 
             VisualElement toggleList = new();
@@ -236,6 +252,8 @@ namespace Cordial.Mods.CutterTool.Scripts.UI
                     break;
                 case "IgnoreStump": // these toggles are handled directly through their internal values
                 case "TreeMark":
+                case "ClearCut":
+                case "IgnoreDeadSapling":
                     break;
                 default:    // tree type configuration
                     UpdateToggleTreeType(resourceName, value);

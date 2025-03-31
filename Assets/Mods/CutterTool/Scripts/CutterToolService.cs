@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cordial.Mods.CutterTool.Scripts.UI;
+using Moq;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
 using Timberborn.BlueprintSystem;
@@ -46,6 +47,8 @@ namespace Cordial.Mods.CutterTool.Scripts
         private readonly List<string> _treeTypesActive = new();
         private bool _treeMarkOnly = false;
         private bool _ignoreStumps = false;
+        private bool _ignoreSapling = false;
+        private bool _clearCut = false;
 
         // highlighting
         public readonly AreaHighlightingService _areaHighlightingService;
@@ -156,9 +159,18 @@ namespace Cordial.Mods.CutterTool.Scripts
                             {
                                 gatherableEmpty = (gatherable.Yielder.Yield.Amount == 0);
                             }
+                            else
+                            {
+                                gatherableEmpty = true;
+                            }
 
                             // is a stump or not
                             if (invIsEmpty && cuttableEmpty && growthDone && gatherableEmpty && _ignoreStumps)
+                            {
+                                // ignore stumps, do not mark as part of the selection
+                                this._areaHighlightingService.DrawTile(block, _toolNoActionTileColor);
+                            }
+                            else if (invIsEmpty && !growthDone && gatherableEmpty && livingResource.IsDead && _ignoreSapling)
                             {
                                 // ignore stumps, do not mark as part of the selection
                                 this._areaHighlightingService.DrawTile(block, _toolNoActionTileColor);
@@ -201,6 +213,9 @@ namespace Cordial.Mods.CutterTool.Scripts
             }
             else
             {
+                // check / act on setting to clear cutting area
+                ClearCutArea(_clearCut, this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray) );
+
                 this._areaHighlightingService.UnhighlightAll();
 
                 IEnumerable<Vector3Int> patternBlocks = GetPatternCoordinates(inputBlocks, ray);
@@ -218,53 +233,50 @@ namespace Cordial.Mods.CutterTool.Scripts
 
                         if (_treeTypesActive.Contains(treeName))
                         {
-                            if (_ignoreStumps)
-                            {
-                                // check if component is only a stump
-                                objectComponentAt.TryGetComponentFast<Cuttable>(out Cuttable cuttable);
-                                objectComponentAt.TryGetComponentFast<LivingNaturalResource>(out LivingNaturalResource livingResource);
-                                objectComponentAt.TryGetComponentFast<Gatherable>(out Gatherable gatherable);
-                                objectComponentAt.TryGetComponentFast<Growable>(out Growable growable);
+                            // check if component is only a stump
+                            objectComponentAt.TryGetComponentFast<Cuttable>(out Cuttable cuttable);
+                            objectComponentAt.TryGetComponentFast<LivingNaturalResource>(out LivingNaturalResource livingResource);
+                            objectComponentAt.TryGetComponentFast<Gatherable>(out Gatherable gatherable);
+                            objectComponentAt.TryGetComponentFast<Growable>(out Growable growable);
 
-                                if ((cuttable != null)
-                                    && (livingResource != null)
-                                    && (growable != null))
+                            if ((cuttable != null)
+                                && (livingResource != null)
+                                && (growable != null))
+                            {
+                                bool gatherableEmpty = false;
+                                bool invIsEmpty = livingResource.GetComponentFast<GoodStack>().Inventory.IsEmpty;
+                                bool growthDone = (growable.IsGrown);
+
+                                // must be a cuttable
+                                // must be a living resource
+                                // --> check if fully grown (= 1.0)
+                                // --> check if not yielding (cuttable / gatherable)
+
+                                bool cuttableEmpty = cuttable.Yielder.IsYieldRemoved;
+
+                                // not all trees have gatherables
+                                if (gatherable != null)
                                 {
-                                    bool gatherableEmpty = false;
-                                    bool invIsEmpty = livingResource.GetComponentFast<GoodStack>().Inventory.IsEmpty;
-                                    bool growthDone = (growable.IsGrown);
-
-                                    // must be a cuttable
-                                    // must be a living resource
-                                    // --> check if fully grown (= 1.0)
-                                    // --> check if not yielding (cuttable / gatherable)
-
-                                    bool cuttableEmpty = cuttable.Yielder.IsYieldRemoved;
-
-                                    // not all trees have gatherables
-                                    if (gatherable != null)
-                                    {
-                                        gatherableEmpty = gatherable.Yielder.IsYieldRemoved;
-                                    }
-                                    else
-                                    {
-                                        gatherableEmpty = true;
-                                    }
-
-                                    // is a stump or not
-                                    if (invIsEmpty && cuttableEmpty && growthDone && gatherableEmpty)
-                                    {
-                                        // ignore stumps, do not mark as part of the selection
-                                    }
-                                    else // a tree or a markable stump
-                                    {
-                                        coordinatesList.Add(block);
-                                    }
+                                    gatherableEmpty = gatherable.Yielder.IsYieldRemoved;
                                 }
-                            }
-                            else // add any expected trees
-                            {
-                                coordinatesList.Add(block);
+                                else
+                                {
+                                    gatherableEmpty = true;
+                                }
+
+                                // is a stump or not
+                                if (invIsEmpty && cuttableEmpty && growthDone && gatherableEmpty && _ignoreStumps)
+                                {
+                                    // ignore stumps, do not mark as part of the selection
+                                }
+                                else if (invIsEmpty && !growthDone && gatherableEmpty && livingResource.IsDead && _ignoreSapling)
+                                {
+                                    // ignore dead saplings, do not mark as part of the selection
+                                }
+                                else // a tree or a markable stump
+                                {
+                                    coordinatesList.Add(block);
+                                }
                             }
                         }
                         else
@@ -395,6 +407,15 @@ namespace Cordial.Mods.CutterTool.Scripts
             return blockList.AsEnumerable();
         }
 
+        private void ClearCutArea(bool clearCut, IEnumerable<Vector3Int> inputBlocks)
+        {
+            // remove any coordinate from the cutting area
+            if (clearCut)
+            {
+                this._treeCuttingArea.RemoveCoordinates(inputBlocks);
+            }
+        }
+
         [OnEvent]
         public void OnCutterToolConfigChangeEvent(CutterToolConfigChangeEvent cutterToolConfigChangeEvent)
         {
@@ -405,6 +426,8 @@ namespace Cordial.Mods.CutterTool.Scripts
             _cutterPatterns = cutterToolConfigChangeEvent.CutterToolConfig.CutterPatterns;
             _treeMarkOnly = cutterToolConfigChangeEvent.CutterToolConfig.TreeMarkOnly;
             _ignoreStumps = cutterToolConfigChangeEvent.CutterToolConfig.IgnoreStumps;
+            _clearCut = cutterToolConfigChangeEvent.CutterToolConfig.ClearCutArea;
+            _ignoreSapling = cutterToolConfigChangeEvent.CutterToolConfig.IgnoreDeadSapling;
 
             _treeTypesActive.Clear();
 
