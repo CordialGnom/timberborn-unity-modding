@@ -15,6 +15,7 @@ using Timberborn.SelectionSystem;
 using Timberborn.SingletonSystem;
 using Timberborn.TerrainQueryingSystem;
 using Timberborn.ToolSystem;
+using Timberborn.WorldPersistence;
 using UnityEngine;
 using Timberborn.Common;
 using System.Linq;
@@ -25,7 +26,7 @@ using Timberborn.Planting;
 
 namespace Cordial.Mods.PlantBeehive.Scripts
 {
-    public class PlantBeehiveToolService : Tool, ISaveableSingleton, ILoadableSingleton, IPostLoadableSingleton, IPlantBeehiveTool
+    public class PlantBeehiveToolService : Tool, ILoadableSingleton, ISaveableSingleton, IPostLoadableSingleton, IPlantBeehiveTool
     {
         private const int _cBeehiveRadius = 3;
 

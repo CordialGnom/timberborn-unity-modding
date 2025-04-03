@@ -25,6 +25,7 @@ using Cordial.Mods.BoosterJuice.Scripts.Events;
 using Timberborn.Cutting;
 using Timberborn.GoodStackSystem;
 using Timberborn.NaturalResourcesLifecycle;
+using Timberborn.WorldPersistence;
 
 namespace Cordial.Mods.BoosterJuice.Scripts {
   public class GrowthFertilizationBuilding : BaseComponent, 
