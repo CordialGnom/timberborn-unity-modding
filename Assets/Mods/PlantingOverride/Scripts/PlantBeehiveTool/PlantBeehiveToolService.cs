@@ -116,13 +116,16 @@ namespace Cordial.Mods.PlantBeehive.Scripts
 
         public void PostLoad()
         {
-            if (this._singletonLoader.HasSingleton(PlantBeehiveToolService.PlantBeehiveToolServiceKey))
+            if (this._singletonLoader.TryGetSingleton(PlantBeehiveToolService.PlantBeehiveToolServiceKey, out IObjectLoader objectLoader))
             {
-                // reload coordinates where a hive is to be planted
-                _hiveCoordsNew = _singletonLoader.GetSingleton(PlantBeehiveToolService.PlantBeehiveToolServiceKey).Get(PlantBeehiveToolService.PlantBeehiveToolCoordKey);
-                
-                // replace hivecoords with a distinct (no duplicate) copy of itself
-                _hiveCoordsNew = _hiveCoordsNew.Distinct().ToList();
+                if (objectLoader.Has(PlantBeehiveToolService.PlantBeehiveToolCoordKey))
+                {
+                    // reload coordinates where a hive is to be planted
+                    _hiveCoordsNew = objectLoader.Get(PlantBeehiveToolService.PlantBeehiveToolCoordKey);
+
+                    // replace hivecoords with a distinct (no duplicate) copy of itself
+                    _hiveCoordsNew = _hiveCoordsNew.Distinct().ToList();
+                }
             }
         }
 

@@ -104,20 +104,20 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             _toolActionTileColor = new Color(0.95f, 0.03f, 0.05f, 1);
             _toolNoActionTileColor = new Color(0.7f, 0.7f, 0.0f, 1);
 
-            if (this._singletonLoader.HasSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey))
+            if (this._singletonLoader.TryGetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey, out IObjectLoader objectLoader))
             {
                 
-                if (_singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Has(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey)) 
+                if (objectLoader.Has(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey)) 
                 {
-                    _areaRegistry = _singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Get(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey);
+                    _areaRegistry = objectLoader.Get(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey);
                 }
 
 
-                if ((_singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Has(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey))
-                    && (_singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Has(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey)))
+                if ((objectLoader.Has(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey))
+                    && (objectLoader.Has(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey)))
                 {
-                    List<string> forestryTypes = _singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Get(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey);
-                    List<Vector3Int> treeCoordinates = _singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Get(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey);
+                    List<string> forestryTypes = objectLoader.Get(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey);
+                    List<Vector3Int> treeCoordinates = objectLoader.Get(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey);
 
 
                     if (treeCoordinates.Count != forestryTypes.Count)

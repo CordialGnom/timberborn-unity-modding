@@ -3,14 +3,14 @@ Cordial.Good.Fertilizer.DisplayName,Baumdünger,-
 Cordial.Good.Fertilizer.PluralDisplayName,Baumdünger,-
 Cordial.Fertilizer.Mild,Baumdünger,-
 Cordial.Fertilizer.Strong,Baumdünger,-
-Cordial.Building.Chemist.Description,Kocht chemische Konzentrate.,-
-Cordial.Building.Chemist.DisplayName,Chemielabor,A building that serves as an chemistry laboratory. Produces all sorts of smells and smoke.
+Cordial.Building.Chemist.Description,"Eine Fabrik, die Baumdünger produziert, mit dem Bäume schneller wachsen.",-
+Cordial.Building.Chemist.DisplayName,Baumdüngerfabrik,A building that serves as an chemistry laboratory. Produces all sorts of smells and smoke.
 Cordial.Building.Chemist.FlavorDescription,Die phantastischen Apparaturen im Inneren werden ausschließlich für wissenschaftliche Zwecke verwendet.,-
 Cordial.Building.FertilizerDump.Description,Leitet Baumdünger an gepflanzte Bäume ab.,-
 Cordial.Building.FertilizerDump.DisplayName,Baumdüngerableiter,-
 Cordial.Building.FertilizerDump.FlavorDescription,Baumdünger verbessert Wachstum und Ertrag.,-
-Cordial.Building.FertilizerDump.Consumption,Baumdünger Verbrauch, the ": " is part of the code
-Cordial.Building.FertilizerDump.TreeCount,Wachsende Bäume, the ": " is part of the code
+Cordial.Building.FertilizerDump.Consumption,Baumdünger Verbrauch," the "": "" is part of the code"
+Cordial.Building.FertilizerDump.TreeCount,Wachsende Bäume," the "": "" is part of the code"
 Cordial.Building.FertilizerDump.FertilizeYield,Verwende Baumdünger für den Reifungsfortschritt, 
 Cordial.TreeFragment.Title,Wachstum ist durch Baumdünger beeinflusst.,-
 Cordial.TreeFragment.GrowthDaily,Tägliches Wachstum erhöht um,-
@@ -18,4 +18,3 @@ Cordial.TreeFragment.GrowthAverage,Durchschn. Wachstum verringert um,-
 Cordial.TreeFragment.YieldAverage,Durchschn. Reifung verringert um,-
 Cordial.Unit.Days,Tage, plural of day as a unit
 Cordial.Unit.PerHour,/h,-
-

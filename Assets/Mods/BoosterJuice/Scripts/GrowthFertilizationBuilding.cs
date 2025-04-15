@@ -286,10 +286,8 @@ namespace Cordial.Mods.BoosterJuice.Scripts {
 
         public void Load(IEntityLoader entityLoader)
         {
-            if (!entityLoader.HasComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey))
+            if (!entityLoader.TryGetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey, out IObjectLoader loader))
                 return;
-
-            IObjectLoader loader = entityLoader.GetComponent(GrowthFertilizationBuilding.GrowthFertilizationBuildingKey);
 
             if (loader != null)
             {

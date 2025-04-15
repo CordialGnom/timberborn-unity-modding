@@ -98,34 +98,38 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             _toolActionTileColor = new Color(0.95f, 0.03f, 0.05f, 1);
             _toolNoActionTileColor = new Color(0.7f, 0.7f, 0.0f, 1);
 
-            if (this._singletonLoader.HasSingleton(PlantingOverrideCropServiceKey))
+            if (this._singletonLoader.TryGetSingleton(PlantingOverrideCropServiceKey, out IObjectLoader objectLoader))
             {
-                List<string> cropTypes = _singletonLoader.GetSingleton(PlantingOverrideCropServiceKey).Get(PlantingOverrideCropTypeKey);
-                List<Vector3Int> cropCoordinates = _singletonLoader.GetSingleton(PlantingOverrideCropServiceKey).Get(PlantingOverrideCropCoordKey);
+                if ((objectLoader.Has(PlantingOverrideCropTypeKey))
+                    && (objectLoader.Has(PlantingOverrideCropCoordKey)))
+                {
+                    List<string> cropTypes = objectLoader.Get(PlantingOverrideCropTypeKey);
+                    List<Vector3Int> cropCoordinates = objectLoader.Get(PlantingOverrideCropCoordKey);
 
-                if (cropCoordinates.Count != cropTypes.Count)
-                {
-                    Debug.Log("PO: Did not load planting override crop configuration");
-                }
-                else
-                {
-                    for (int i = 0; i < cropTypes.Count; i++)
+                    if (cropCoordinates.Count != cropTypes.Count)
                     {
-                        if (!_cropRegistry.TryAdd(cropCoordinates[i], cropTypes[i]))
-                        {
-                            _cropRegistry[cropCoordinates[i]] = cropTypes[i];
-                        }
+                        Debug.Log("PO: Did not load planting override crop configuration");
                     }
-
-                    foreach (var kvp in _cropRegistry.ToList())
+                    else
                     {
-                        Crop objectComponentAt = this._blockService.GetBottomObjectComponentAt<Crop>(kvp.Key);
-
-                        if (objectComponentAt != null)
+                        for (int i = 0; i < cropTypes.Count; i++)
                         {
-                            if (_plantOverrideSpecService.VerifyPrefabName(kvp.Value))
+                            if (!_cropRegistry.TryAdd(cropCoordinates[i], cropTypes[i]))
                             {
-                                _plantingService.SetPlantingCoordinates(kvp.Key, kvp.Value);
+                                _cropRegistry[cropCoordinates[i]] = cropTypes[i];
+                            }
+                        }
+
+                        foreach (var kvp in _cropRegistry.ToList())
+                        {
+                            Crop objectComponentAt = this._blockService.GetBottomObjectComponentAt<Crop>(kvp.Key);
+
+                            if (objectComponentAt != null)
+                            {
+                                if (_plantOverrideSpecService.VerifyPrefabName(kvp.Value))
+                                {
+                                    _plantingService.SetPlantingCoordinates(kvp.Key, kvp.Value);
+                                }
                             }
                         }
                     }

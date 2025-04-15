@@ -8,9 +8,9 @@ Cordial.PlantingOverrideTool.Tree.Description,"Verwende dieses Werkzeug, um eine
 Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Title,"Pflanzbereich Konfiguration
 (Planting Override)",-
 Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.Description,Ersetze bisherigen Pfanzbereich (Bäume/Nutzpflanzen) mit:,-
-Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.CuttingAreaRemove,"Pflanze aus dem Fällbereich entfernen",-
-Cordial.PlantBeehiveTool.DisplayName,"Bienenstock 'setzen' ",-
-Cordial.PlantBeehiveTool.Description,"Ersetze eine Pflanze mit einem Bienenstock",-
-Cordial.PlantingOverrideTool.FactionLock,"Dieses Werkzeug ist nicht verfügbar für:",-
-Cordial.PlantingOverrideTool.BuildingLock,"Dieses Gebäude muss freigeschalten werden:",-
-Cordial.PlantingOverrideTool.SpecLock,"Werkzeug entsperrt!",-
+Cordial.PlantingOverrideTool.PlantingOverrideToolPanel.CuttingAreaRemove,Pflanze aus dem Fällbereich entfernen,-
+Cordial.PlantBeehiveTool.DisplayName,Bienenstock setzen,-
+Cordial.PlantBeehiveTool.Description,Ersetze eine Pflanze mit einem Bienenstock,-
+Cordial.PlantingOverrideTool.FactionLock,Dieses Werkzeug ist nicht verfügbar für:,-
+Cordial.PlantingOverrideTool.BuildingLock,Dieses Gebäude muss freigeschalten werden:,-
+Cordial.PlantingOverrideTool.SpecLock,Werkzeug entsperrt!,-
