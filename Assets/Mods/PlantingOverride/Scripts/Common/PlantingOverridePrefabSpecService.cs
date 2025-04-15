@@ -6,6 +6,8 @@ using Timberborn.PrefabSystem;
 using Timberborn.Forestry;
 using TimberApi.DependencyContainerSystem;
 using Timberborn.Fields;
+using Timberborn.GameFactionSystem;
+using Timberborn.FactionSystem;
 
 
 namespace Cordial.Mods.PlantingOverride.Scripts.Common
@@ -16,16 +18,30 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
         // access to specs
         private static PrefabService _prefabService;
 
-        public PlantingOverridePrefabSpecService( PrefabService prefabService)
+        // access to faction
+        private static FactionService _factionService;
+
+        // faction information
+        private static string _factionId;
+        public string FactionId => _factionId;
+
+        public PlantingOverridePrefabSpecService(   PrefabService prefabService,
+                                                    FactionService factionService)
         {
             _prefabService = prefabService;
+            _factionService = factionService;
         }
 
         public void Load()
         {
-            if (null == _prefabService)
+            if ((null == _prefabService)
+               || (null == _factionService))
             {
                 Debug.LogError("PO: Missing Service");
+            }
+            else
+            {
+                _factionId = GetFactionName();
             }
         }
 
@@ -35,8 +51,8 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
 
             if (null != _prefabService)
             {
-                var treeComponents = _prefabService.GetAll<TreeComponent>();
-                var bushComponents = _prefabService.GetAll<Bush>();
+                var treeComponents = _prefabService.GetAll<TreeComponentSpec>();
+                var bushComponents = _prefabService.GetAll<BushSpec>();
 
                 foreach (var bushObject in bushComponents)
                 {
@@ -84,7 +100,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
 
             if (null != _prefabService)
             {
-                var cropComponents = _prefabService.GetAll<Crop>();
+                var cropComponents = _prefabService.GetAll<CropSpec>();
 
                 //todo Cordial: Load a prefab group
                 foreach (var crop in cropComponents)
@@ -101,6 +117,18 @@ namespace Cordial.Mods.PlantingOverride.Scripts.Common
 
             return cropTypes.Contains(prefabNameInp.Replace(" ", ""));
         }
+        private static string GetFactionName()
+        {
+            string factionId = "";
+            FactionSpec _activeFaction;
 
+            if (null != _factionService)
+            {
+                _activeFaction = _factionService.Current;
+                factionId = _activeFaction.Id;
+            }
+
+            return factionId;
+        }
     }
 }

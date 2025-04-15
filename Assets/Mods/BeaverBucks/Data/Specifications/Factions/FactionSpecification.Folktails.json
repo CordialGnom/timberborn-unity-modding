@@ -1,0 +1,4 @@
+{
+	"Goods#append" : [ "TailTea" ],
+	"Needs#append" : [ "TailTea", "BeaverBucks" ]
+}

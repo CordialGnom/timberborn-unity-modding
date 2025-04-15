@@ -1,0 +1,21 @@
+{
+  "RecipeSpec": {
+	"Id": "Fertilizer.Mild.IronTeeth",
+	"DisplayLocKey": "Cordial.Fertilizer.Mild",
+	"CycleDurationInHours": 3,
+	"CyclesCapacity": 3,
+	"Ingredients": [
+		{  "Id": "Berries", 	"Amount": 1 },
+		{  "Id": "Kohlrabi", 	"Amount": 2 },
+		{  "Id": "Water", 		"Amount": 2 }
+	],
+	  "Products": [
+		{  "Id": "Fertilizer",	"Amount": 6 }
+	  ],
+	"ProducedSciencePoints": 0,
+	"Fuel": "Log" ,
+	"CyclesFuelLasts": 2,
+	"FuelCapacity": 5,
+	"Icon": "Sprites/Goods/FertilizerIcon"
+  }
+}

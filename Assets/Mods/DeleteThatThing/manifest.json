@@ -1,13 +1,17 @@
 {
   "Name": "Delete That Thing",
-  "Version": "0.1.0",
+  "Version": "0.7.0.2",
   "Id": "Cordial.Mods.DeleteThatThing",
-  "MinimumGameVersion": "0.6.7.0",
+  "MinimumGameVersion": "0.7.4.2",
   "Description": "A tool to select multiple objects of the same type for deletion.",
   "RequiredMods": [
   {
 	"Id": "TimberApi",
-	"MinimumVersion": "0.7.8.0"
-  }
+	"MinimumVersion": "0.7.12.1"
+  },
+	{
+		"Id": "TimberApi.UIBuilder",
+		"MinimumVersion": "1.0.0.1"
+	}
   ]
 }

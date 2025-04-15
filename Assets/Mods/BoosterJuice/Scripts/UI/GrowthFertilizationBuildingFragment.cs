@@ -9,7 +9,6 @@ using Timberborn.BaseComponentSystem;
 using Timberborn.CoreUI;
 using Timberborn.EntityPanelSystem;
 using Timberborn.Localization;
-using Timberborn.SingletonSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 using TimberApi.UIPresets.Labels;

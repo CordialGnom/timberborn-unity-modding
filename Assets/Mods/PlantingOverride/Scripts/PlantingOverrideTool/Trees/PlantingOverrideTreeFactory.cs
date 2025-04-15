@@ -12,7 +12,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             _PlantingOverrideTool = PlantingOverrideTool;
         }
 
-        public Tool Create(ToolSpecification toolSpecification, ToolGroup toolGroup = null)
+        public Tool Create(ToolSpec toolSpecification, ToolGroup toolGroup = null)
         {
             _PlantingOverrideTool.SetToolGroup(toolGroup);
             return (Tool)_PlantingOverrideTool;

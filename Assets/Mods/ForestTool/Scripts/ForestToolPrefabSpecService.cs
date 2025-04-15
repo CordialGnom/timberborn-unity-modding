@@ -54,7 +54,7 @@ namespace Cordial.Mods.ForestTool.Scripts
 
             if (null != _prefabService)
             { 
-                var treeComponents = _prefabService.GetAll<TreeComponent>();
+                var treeComponents = _prefabService.GetAll<TreeComponentSpec>();
 
                 //todo Cordial: Load a prefab group
                 foreach (var treeObject in treeComponents)
@@ -67,7 +67,7 @@ namespace Cordial.Mods.ForestTool.Scripts
         private static string GetFactionName()
         {
             string factionId = "";
-            FactionSpecification _activeFaction;
+            FactionSpec _activeFaction;
 
             if (null != _factionService)
             {
@@ -83,21 +83,19 @@ namespace Cordial.Mods.ForestTool.Scripts
 
             if (null != _prefabService)
             {
-                var treeComponents = _prefabService.GetAll<TreeComponent>();
-                var bushComponents = _prefabService.GetAll<Bush>();
-
-                foreach (var treeObject in treeComponents)
-                {
-                    treeTypes.Add(treeObject.name);
-                }
+                var treeComponents = _prefabService.GetAll<TreeComponentSpec>();
+                var bushComponents = _prefabService.GetAll<BushSpec>();
 
                 foreach (var bushObject in bushComponents)
                 {
                     treeTypes.Add(bushObject.name);
                 }
 
+                foreach (var treeObject in treeComponents)
+                {
+                    treeTypes.Add(treeObject.name);
+                }
             }
-
             return treeTypes.ToImmutableArray<string>();
         }
     }

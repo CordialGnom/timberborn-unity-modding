@@ -4,6 +4,7 @@ using Timberborn.SingletonSystem;
 using UnityEngine;
 using Timberborn.PrefabSystem;
 using Timberborn.Forestry;
+using System.Linq;
 
 
 namespace Cordial.Mods.CutterTool.Scripts
@@ -33,7 +34,7 @@ namespace Cordial.Mods.CutterTool.Scripts
 
             if (null != _prefabService)
             { 
-                var treeComponents = _prefabService.GetAll<TreeComponent>();
+                var treeComponents = _prefabService.GetAll<TreeComponentSpec>();
 
                 //todo Cordial: Load a prefab group
                 foreach (var treeObject in treeComponents)

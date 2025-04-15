@@ -22,7 +22,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
     {
         readonly UiFactory _uiFactory;
 
-        private TreeComponent _growthFertilizationTreeComponent;
+        private TreeComponentSpec _growthFertilizationTreeComponent;
         private GrowthFertilizationAreaService _growthFertilizationAreaService;
         private Vector3Int _growableCoordinates;
 
@@ -80,7 +80,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts.UI
 
         public void ShowFragment(BaseComponent entity)
         {
-            this._growthFertilizationTreeComponent =     entity.GetComponentFast<TreeComponent>();
+            this._growthFertilizationTreeComponent =     entity.GetComponentFast<TreeComponentSpec>();
              
             if (this._growthFertilizationTreeComponent != null)
             {

@@ -1,0 +1,11 @@
+{
+  "ToolSpec": {
+	  "Id": "Cordial.CutterTool",
+	  "GroupId": "TreeCutting",
+	  "Type": "CutterTool",
+	  "Order": 12,
+	  "Icon": "Sprites/CutterTool/CutterToolIcon",
+	  "NameLocKey": "Cordial.CutterTool.DisplayName",
+	  "DescriptionLocKey": "Cordial.CutterTool.Description"
+  }
+}

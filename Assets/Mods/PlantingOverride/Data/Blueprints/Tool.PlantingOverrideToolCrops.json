@@ -1,0 +1,13 @@
+{
+  "ToolSpec": {
+	"Id": "Cordial.PlantingOverrideToolCrops",
+	"GroupId": "Fields",
+	"Type": "PlantingOverrideToolCrops",
+	"Order": 60,
+	"Icon": "Sprites/PlantingOverride/PlantingOverrideCropIcon",
+	"NameLocKey": "Cordial.PlantingOverrideTool.Crop.DisplayName",
+	"DescriptionLocKey": "Cordial.PlantingOverrideTool.Crop.Description",
+	"Hidden": false,
+	"DevMode": false
+  }
+}

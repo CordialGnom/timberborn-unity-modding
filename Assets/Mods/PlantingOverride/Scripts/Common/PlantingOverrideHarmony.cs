@@ -1,16 +1,16 @@
-﻿using Cordial.Mods.PlantingOverride.Scripts.Common;
+﻿using Cordial.Mods.PlantBeehive.Scripts;
+using Cordial.Mods.PlantingOverride.Scripts.Common;
 using HarmonyLib;
-using System.Collections.Generic;
 using TimberApi.DependencyContainerSystem;
+using Timberborn.BaseComponentSystem;
 using Timberborn.BehaviorSystem;
 using Timberborn.BlockSystem;
 using Timberborn.Common;
-using Timberborn.DemolishingUI;
-using Timberborn.Forestry;
+using Timberborn.Demolishing;
+using Timberborn.EntitySystem;
 using Timberborn.ModManagerScene;
 using Timberborn.Planting;
-using Timberborn.PlantingUI;
-using Timberborn.ReservableSystem;
+using Timberborn.Pollination;
 using Timberborn.SingletonSystem;
 using Timberborn.ToolSystem;
 using UnityEngine;
@@ -33,16 +33,17 @@ namespace Assets.Mods.PlantingOverride.Scripts.Common
                 // need to get access to class/object as well. 
                 if (null != __instance)
                 {
-                    PlantingOverridePrefabSpecService specService = DependencyContainer.GetInstance<PlantingOverridePrefabSpecService>();
+                    PlantingOverridePrefabSpecService plantOverrideSpecService = DependencyContainer.GetInstance<PlantingOverridePrefabSpecService>();
                     PlantingService plantingService = DependencyContainer.GetInstance<PlantingService>();
                     EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
 
                     if ((null != plantingService)
-                            && (null != specService)
+                            && (null != plantOverrideSpecService)
                             && (null != eventBus))
                     {
-                        string oldResource = plantingService.GetResourceAt(coordinates.XY());
+                        string oldResource = plantingService.GetResourceAt(coordinates);
                         eventBus.Post((object)new PlantingOverridePlantingEvent(coordinates, oldResource));
+                        eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(coordinates, false));
                     }
                 }
 
@@ -108,8 +109,118 @@ TR: False AR: False
                         // no active tool, ignore situation (likely save game startup validation)
                     }
                 }
+            }
+        }
 
 
+        // Plant Beehive Tool Patch for the demolishable (plant) unmark event
+        // in the case of unmark, either the plant has been deleted, or effectively unmarked by the user
+        [HarmonyPatch(typeof(Demolishable), "Unmark")]
+        public static class DemolishableUnmarkPatch
+        {
+            static void Postfix(Demolishable __instance)
+            {
+                bool placeHive = true;
+                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+                ToolManager toolManager = DependencyContainer.GetInstance<ToolManager>();
+
+                if ((null != __instance)
+                    && (null != __instance.GetComponentFast<BlockObject>()))
+                {
+                    if (null != toolManager)
+                    {
+                        if (null != toolManager.ActiveTool)
+                        {
+                            // there is an active tool, check if it is the demolition service
+
+                            if ((toolManager.ActiveTool.ToString().Contains("Delet"))
+                                || (toolManager.ActiveTool.ToString().Contains("Demol"))
+                                || (toolManager.ActiveTool.ToString().Contains("Cancel")))
+                            {
+                                // only remove coordinates
+                                placeHive = false;
+                            }
+                        }
+                    }
+
+                    eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(__instance.GetComponentFast<BlockObject>().Coordinates, placeHive));
+                }
+            }
+        }
+
+        // register all hives as they are created
+        [HarmonyPatch(typeof(Hive), "Awake")]
+        public static class HiveAwakePatch
+        {
+            static void Postfix(Hive __instance)
+            {
+                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+
+                if (null != __instance)
+                {
+                    eventBus.Post((object)new PlantBeehiveToolRegisterHiveEvent(__instance));
+                }
+            }
+        }
+
+        // register all hives as they are created
+        [HarmonyPatch(typeof(Hive), "OnEnterFinishedState")]
+        public static class HiveOnEnterFinishedStatePatch
+        {
+            static void Postfix(Hive __instance)
+            {
+                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+
+                if (null != __instance)
+                {
+                    eventBus.Post((object)new PlantBeehiveToolRegisterHiveEvent(__instance));
+
+                }
+            }
+        }
+
+        // unregister any hive
+        [HarmonyPatch(typeof(Hive), "OnExitFinishedState")]
+        public static class HiveOnExitFinishedStatePatch
+        {
+            static void Postfix(Hive __instance)
+            {
+                EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+
+                if (null != __instance)
+                {
+                    eventBus.Post((object)new PlantBeehiveToolUnregisterHiveEvent(__instance));
+                }
+            }
+        } 
+        
+        // unregister any hive that has been deleted (e.g. in construction state)
+        [HarmonyPatch(typeof(EntityService), "Delete")]
+        public static class EntityServiceOnDeletePatch
+        {
+            static void Postfix(ref BaseComponent entity)
+            {
+                if (null != entity)
+                {
+                    EventBus eventBus = DependencyContainer.GetInstance<EventBus>();
+
+                    // check if entity has a hive component
+                    entity.TryGetComponentFast<Hive>(out Hive component);
+
+                    if (null != component)
+                    {
+                        component.TryGetComponentFast<BlockObject>(out BlockObject blockObject);
+
+                        if (null != blockObject)
+                        {
+                            eventBus.Post((object)new PlantBeehiveToolUnmarkEvent(blockObject.Coordinates, false));
+                        }
+                        else
+                        {
+                            eventBus.Post((object)new PlantBeehiveToolUnregisterHiveEvent(component));
+                        }
+                    }
+                }
             }
         }
     }

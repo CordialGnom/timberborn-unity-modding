@@ -1,0 +1,11 @@
+{
+  "ToolSpec": {
+	  "Id": "Cordial.ForestTool",
+	  "GroupId": "Forestry",
+	  "Type": "ForestTool",
+	  "Order": 19,
+	  "Icon": "Sprites/ForestTool/ForestToolIcon",
+	  "NameLocKey": "Cordial.ForestTool.DisplayName",
+	  "DescriptionLocKey": "Cordial.ForestTool.Description",
+  }
+}

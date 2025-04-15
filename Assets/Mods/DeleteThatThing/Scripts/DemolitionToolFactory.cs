@@ -12,7 +12,7 @@ namespace Cordial.Mods.DemolitionTool.Scripts
             _DemolitionTool = DemolitionTool;
         }
 
-        public Tool Create(ToolSpecification toolSpecification, ToolGroup toolGroup = null)
+        public Tool Create(ToolSpec toolSpecification, ToolGroup toolGroup = null)
         {
             _DemolitionTool.SetToolGroup(toolGroup);
             return (Tool)_DemolitionTool;

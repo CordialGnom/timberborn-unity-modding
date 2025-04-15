@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Cordial.Mods.PlantingOverride.Scripts.Common;
 using Cordial.Mods.PlantingOverride.Scripts.UI;
-using NUnit.Framework;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
-using Timberborn.CoreUI;
+using Timberborn.BlueprintSystem;
 using Timberborn.Forestry;
 using Timberborn.Localization;
 using Timberborn.Persistence;
@@ -14,8 +13,9 @@ using Timberborn.Planting;
 using Timberborn.SelectionSystem;
 using Timberborn.SelectionToolSystem;
 using Timberborn.SingletonSystem;
-using Timberborn.TerrainSystem;
+using Timberborn.TerrainQueryingSystem;
 using Timberborn.ToolSystem;
+using Timberborn.WorldPersistence;
 using UnityEngine;
 
 namespace Cordial.Mods.PlantingOverride.Scripts
@@ -32,27 +32,30 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         private ToolDescription _toolDescription;               // is used
         private readonly ToolUnlockingService _toolUnlockingService;
         private readonly SelectionToolProcessor _selectionToolProcessor;
+        private readonly ISpecService _specService;
         private readonly EventBus _eventBus;
 
         // configuration
         private readonly List<string> _treeTypesActive = new();
-        private readonly PlantingOverridePrefabSpecService _specService;
+        private readonly PlantingOverridePrefabSpecService _plantOverrideSpecService;
         private bool _removeCuttingArea;
 
         // highlighting
-        private readonly Colors _colors;
         private readonly AreaHighlightingService _areaHighlightingService;
         private readonly TerrainAreaService _terrainAreaService;
+        public Color _toolActionTileColor;
+        public Color _toolNoActionTileColor;
 
         // planting area / selection
         private readonly PlantingService _plantingService;
-        private readonly BlockService _blockService;
+        private readonly IBlockService _blockService;
         private readonly TreeCuttingArea _treeCuttingArea;
 
         // configuration storage
         private readonly ISingletonLoader _singletonLoader;
-        private static Dictionary<Vector3Int, string> _treeRegistry = new();
-        private static List<Vector3Int> _areaRegistry = new();
+        private Dictionary<Vector3Int, string> _treeRegistry = new();
+        private List<Vector3Int> _areaRegistry = new();
+        private static bool _plantingOverrideTreeServLoaded = false;
 
         private static readonly SingletonKey PlantingOverrideTreeServiceKey = new SingletonKey(nameof(PlantingOverrideTreeService));
         private static readonly ListKey<Vector3Int> PlantingOverrideTreeCoordKey = new ListKey<Vector3Int>("Cordial.PlantingOverrideTreeCoordKey");
@@ -63,15 +66,15 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         public PlantingOverrideTreeService( SelectionToolProcessorFactory selectionToolProcessorFactory,
                                             AreaHighlightingService areaHighlightingService,
-                                            PlantingOverridePrefabSpecService specService,
+                                            PlantingOverridePrefabSpecService plantOverrideSpecService,
                                             ToolUnlockingService toolUnlockingService,
                                             TerrainAreaService terrainAreaService,
                                             ISingletonLoader singletonLoader,
                                             TreeCuttingArea treeCuttingArea,
                                             PlantingService plantingService,
-                                            BlockService blockService,
+                                            IBlockService blockService,
+                                            ISpecService specService,
                                             EventBus eventBus,
-                                            Colors colors,
                                             ILoc loc ) 
         {
             _selectionToolProcessor = selectionToolProcessorFactory.Create(new Action<IEnumerable<Vector3Int>,
@@ -81,6 +84,7 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                                                                                     new Action(ShowNoneCallback),
                                                                                     CursorKey);
 
+            _plantOverrideSpecService = plantOverrideSpecService;
             _areaHighlightingService = areaHighlightingService;
             _toolUnlockingService = toolUnlockingService;
             _terrainAreaService = terrainAreaService;
@@ -90,29 +94,31 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             _blockService = blockService;
             _specService = specService;
             _eventBus = eventBus;
-            _colors = colors;
-            _loc = loc; 
-
+            _loc = loc;
         }
 
         public void PostLoad()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
-            this._eventBus.Register((object)this);
 
-            if (this._singletonLoader.HasSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey))
+            _toolActionTileColor = new Color(0.95f, 0.03f, 0.05f, 1);
+            _toolNoActionTileColor = new Color(0.7f, 0.7f, 0.0f, 1);
+
+            if (this._singletonLoader.TryGetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey, out IObjectLoader objectLoader))
             {
                 
-                if (_singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Has(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey)) 
+                if (objectLoader.Has(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey)) 
                 {
-                    _areaRegistry = _singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Get(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey);
+                    _areaRegistry = objectLoader.Get(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey);
                 }
 
-                if ((_singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Has(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey))
-                    && (_singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Has(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey)))
+
+                if ((objectLoader.Has(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey))
+                    && (objectLoader.Has(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey)))
                 {
-                    List<string> forestryTypes = _singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Get(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey);
-                    List<Vector3Int> treeCoordinates = _singletonLoader.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Get(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey);
+                    List<string> forestryTypes = objectLoader.Get(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey);
+                    List<Vector3Int> treeCoordinates = objectLoader.Get(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey);
+
 
                     if (treeCoordinates.Count != forestryTypes.Count)
                     {
@@ -122,22 +128,23 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                     {
                         for (int i = 0; i < forestryTypes.Count; i++)
                         {
+                            // try to add to list, otherwise overwrite duplicate coordinates
                             if (!_treeRegistry.TryAdd(treeCoordinates[i], forestryTypes[i]))
                             {
                                 _treeRegistry[treeCoordinates[i]] = forestryTypes[i];
                             }
                         }
 
-                        foreach (var kvp in _treeRegistry.ToList())
+                        foreach (var kvp in _treeRegistry)
                         {
-                            TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(kvp.Key);
-                            Bush bushComponentAt = this._blockService.GetBottomObjectComponentAt<Bush>(kvp.Key);
+                            TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(kvp.Key);
+                            BushSpec bushComponentAt = this._blockService.GetBottomObjectComponentAt<BushSpec>(kvp.Key);
 
                             if ((objectComponentAt != null)
                                  || (bushComponentAt != null))
                             {
-                                if (_specService.VerifyPrefabName(kvp.Value))
-                                {
+                                if (_plantOverrideSpecService.VerifyPrefabName(kvp.Value))
+                                { 
                                     _plantingService.SetPlantingCoordinates(kvp.Key, kvp.Value);
                                 }
                             }
@@ -145,20 +152,31 @@ namespace Cordial.Mods.PlantingOverride.Scripts
                     }
                 }
             }
+
+            this._eventBus.Register((object)this);
+
+            _plantingOverrideTreeServLoaded = true;
         }
 
         public void Save(ISingletonSaver singletonSaver)
         {
-            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideTreeCoordKey, _treeRegistry.Keys);
-            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideTreeTypeKey, _treeRegistry.Values);
-            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideAreaCoordKey, _areaRegistry);
+            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideTreeService.PlantingOverrideTreeCoordKey, _treeRegistry.Keys);
+            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideTreeService.PlantingOverrideTreeTypeKey, _treeRegistry.Values);
+            singletonSaver.GetSingleton(PlantingOverrideTreeService.PlantingOverrideTreeServiceKey).Set(PlantingOverrideTreeService.PlantingOverrideAreaCoordKey, _areaRegistry);
         }
 
         public override void Enter()
         {
-            // activate tool
-            this._selectionToolProcessor.Enter();
-            this._eventBus.Post((object)new PlantingOverrideTreeSelectedEvent(this) );
+            if (this.Locker != null)
+            {
+                this._toolUnlockingService.TryToUnlock((Tool)this);
+            }
+            else
+            {
+                // activate tool
+                this._selectionToolProcessor.Enter();
+                this._eventBus.Post((object)new PlantingOverrideTreeSelectedEvent(this));
+            }
         }
         public override void Exit()
         {
@@ -174,31 +192,37 @@ namespace Cordial.Mods.PlantingOverride.Scripts
 
         private void PreviewCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
         {
-
-            // iterate over all input blocks -> toggle boolean flag for it
-            foreach (Vector3Int block in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
+            if (this.Locker != null)
             {
-                TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
-                Bush bushComponentAt = this._blockService.GetBottomObjectComponentAt<Bush>(block);
-
-                if (objectComponentAt != null)
-                {
-                   this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
-                   this._areaHighlightingService.DrawTile(block, this._colors.PlantingToolTile);
-                }
-                else if (bushComponentAt != null)
-                {
-                   this._areaHighlightingService.AddForHighlight((BaseComponent)bushComponentAt);
-                   this._areaHighlightingService.DrawTile(block, this._colors.PlantingToolTile);
-                }
-                else
-                {
-                    this._areaHighlightingService.DrawTile(block, this._colors.PriorityTileColor);
-                }
+                this._toolUnlockingService.TryToUnlock((Tool)this);
             }
-                
-            // highlight everything added to the service above
-            this._areaHighlightingService.Highlight();
+            else
+            {
+                // iterate over all input blocks -> toggle boolean flag for it
+                foreach (Vector3Int block in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
+                {
+                    TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(block);
+                    BushSpec bushComponentAt = this._blockService.GetBottomObjectComponentAt<BushSpec>(block);
+
+                    if (objectComponentAt != null)
+                    {
+                        this._areaHighlightingService.AddForHighlight((BaseComponent)objectComponentAt);
+                        this._areaHighlightingService.DrawTile(block, this._toolActionTileColor);
+                    }
+                    else if (bushComponentAt != null)
+                    {
+                        this._areaHighlightingService.AddForHighlight((BaseComponent)bushComponentAt);
+                        this._areaHighlightingService.DrawTile(block, this._toolActionTileColor);
+                    }
+                    else
+                    {
+                        this._areaHighlightingService.DrawTile(block, this._toolNoActionTileColor);
+                    }
+                }
+
+                // highlight everything added to the service above
+                this._areaHighlightingService.Highlight();
+            }
         }
 
         private void ActionCallback(IEnumerable<Vector3Int> inputBlocks, Ray ray)
@@ -210,18 +234,18 @@ namespace Cordial.Mods.PlantingOverride.Scripts
             else
             {
                 this._areaHighlightingService.UnhighlightAll();
-                _specService.VerifyPrefabName(_treeTypesActive[0]);
+                _plantOverrideSpecService.VerifyPrefabName(_treeTypesActive[0]);
 
                 foreach (Vector3Int block in this._terrainAreaService.InMapLeveledCoordinates(inputBlocks, ray))
                 {                
-                    TreeComponent objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponent>(block);
-                    Bush bushComponentAt = this._blockService.GetBottomObjectComponentAt<Bush>(block);
+                    TreeComponentSpec objectComponentAt = this._blockService.GetBottomObjectComponentAt<TreeComponentSpec>(block);
+                    BushSpec bushComponentAt = this._blockService.GetBottomObjectComponentAt<BushSpec>(block);
 
                     if ((objectComponentAt != null)
                         || (bushComponentAt != null))
                     {
                         if ((_treeTypesActive.Count == 1)
-                            && (_specService.VerifyPrefabName(_treeTypesActive[0])))
+                            && (_plantOverrideSpecService.VerifyPrefabName(_treeTypesActive[0])))
                         {
                             _plantingService.SetPlantingCoordinates(block, _treeTypesActive[0]);
 
@@ -294,8 +318,11 @@ namespace Cordial.Mods.PlantingOverride.Scripts
         public void RemoveEntryAtCoord( Vector3Int coord)
         {
             // remove coordinate from both registries
-            _treeRegistry.Remove(coord);
-            _areaRegistry.Remove(coord);
+            if (_plantingOverrideTreeServLoaded)
+            {
+                _treeRegistry.Remove(coord);
+                _areaRegistry.Remove(coord);
+            }
         }
 
         public void RemoveEntryInCutArea(Vector3Int coord)

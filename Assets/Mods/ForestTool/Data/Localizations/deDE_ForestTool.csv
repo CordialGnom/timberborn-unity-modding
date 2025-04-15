@@ -4,6 +4,8 @@ Cordial.ForestTool.Description,"Verwende dieses Werkzeug, um einen konfigurierba
 Coridal.ForestTool.Requirement,Erforderliches Gebäude: {0},{0} stands for Building.Forester.DisplayName
 Cordial.ForestTool.ForestToolPanel.Title,Mischwald Konfiguration (Forest Tool),-
 Cordial.ForestTool.ForestToolPanel.Description,Konfiguriere die Pflanzenarten und die zu bepflanzenden Stellen,-
-Cordial.ForestTool.ForestToolPanel.ToggleTreeAll,Alle Förster Pflanzenarten,-
+Cordial.ForestTool.ForestToolPanel.ToggleTreeAll,Alle Pflanzenarten (Förster),-
 Cordial.ForestTool.ForestToolPanel.ToggleEmpty,Erlaube Lichtungen," perhaps ""enable empty spots"" or something similar"
 Cordial.ForestTool.ForestToolError.Description,"{0} muss freigeschaltet werden, um Bäume zu pflanzen.",{0} stands for Building.Forester.DisplayName
+Cordial.ForestTool.BuildingLock,Dieses Gebäude muss freigeschalten werden:,-
+Cordial.ForestTool.SpecLock,Werkzeug entsperrt!,-

@@ -4,22 +4,23 @@ using System.Linq;
 using Timberborn.AreaSelectionSystem;
 using Timberborn.BaseComponentSystem;
 using Timberborn.BlockSystem;
+using Timberborn.BlueprintSystem;
 using Timberborn.Buildings;
 using Timberborn.CoreUI;
 using Timberborn.Cutting;
 using Timberborn.Demolishing;
+using Timberborn.DemolishingUI;
 using Timberborn.EntitySystem;
 using Timberborn.Forestry;
-using Timberborn.Gathering;
 using Timberborn.GoodStackSystem;
 using Timberborn.Growing;
 using Timberborn.InputSystem;
 using Timberborn.Localization;
 using Timberborn.NaturalResourcesLifecycle;
 using Timberborn.Planting;
-using Timberborn.PrefabSystem;
 using Timberborn.SingletonSystem;
 using Timberborn.ToolSystem;
+using Timberborn.PrefabSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -31,6 +32,7 @@ namespace Cordial.Mods.DemolitionTool.Scripts
         private static readonly string TitleLocKey = "Cordial.DeleteThatThing.DisplayName";
         private static readonly string DescriptionLocKey = "Cordial.DeleteThatThing.Description";
         private static readonly string CursorKey = "DeleteBuildingCursor";
+        private readonly ILoc _loc;
         public static readonly string DeletionSelectKey = "MouseLeft";
         public static readonly string ToolPromptLocKey = "DeletionTool.Prompt.Objects";
         public static readonly string AbortPromptLocKey = "Cordial.DeleteThatThing.Prompt.Abort";
@@ -38,11 +40,11 @@ namespace Cordial.Mods.DemolitionTool.Scripts
         public static readonly string DeadTreePromptLocKey = "Cordial.DeleteThatThing.Prompt.DeadTree";
 
         // tool setup
-        private readonly ILoc _loc;
         private ToolDescription _toolDescription;      // is used
         private readonly ToolUnlockingService _toolUnlockingService;
 
         // selection
+        private readonly ISpecService _specService;
         private readonly InputService _inputService;
         private bool _selectionActive;
         private bool _selectionIsDemolishable;
@@ -51,13 +53,12 @@ namespace Cordial.Mods.DemolitionTool.Scripts
         private bool _paused;
 
         // highlighting
-        private readonly Colors _colors;
         private readonly DialogBoxShower _dialogBoxShower;
 
         // deletion area / component(s)
-        private readonly BlockService _blockService;
+        private readonly IBlockService _blockService;
         private BlockObject _startObject;
-        private string _startObjectName;
+        private string _startObjectName = String.Empty;
         private bool _pathSelectActive;
         private readonly List<BlockObject> _selectedObjects = new();
         private readonly HashSet<BlockObject> _stackedObjects = new();
@@ -65,7 +66,7 @@ namespace Cordial.Mods.DemolitionTool.Scripts
         // TB demolotion 
         private readonly AreaBlockObjectPickerFactory _areaBlockObjectPickerFactory;
         private readonly BlockObjectSelectionDrawerFactory _blockObjectSelectionDrawerFactory;
-        private readonly BlockObjectSelectionDrawer _blockObjectSelectionDrawer;
+        private BlockObjectSelectionDrawer _blockObjectSelectionDrawer;
         private AreaBlockObjectPicker _areaBlockObjectPicker;
 
         private readonly CursorService _cursorService;
@@ -74,10 +75,10 @@ namespace Cordial.Mods.DemolitionTool.Scripts
 
 
         public DemolitionToolService( ToolUnlockingService toolUnlockingService,
-                                    Colors colors,
                                     ILoc loc,
+                                    ISpecService specService,
                                     PlantingService plantingService,
-                                    BlockService blockService,
+                                    IBlockService blockService,
                                     InputService inputService,
                                     CursorService cursorService,
                                     EntityService entityService,
@@ -92,20 +93,20 @@ namespace Cordial.Mods.DemolitionTool.Scripts
             _entityService = entityService;
             _inputService = inputService;
             _blockService = blockService;
-            _colors = colors;
+            _specService = specService;
             _loc = loc;
 
             this._areaBlockObjectPickerFactory = areaBlockObjectPickerFactory;
             this._blockObjectSelectionDrawerFactory = blockObjectSelectionDrawerFactory;
-
-            this._blockObjectSelectionDrawer = this._blockObjectSelectionDrawerFactory.Create(this._colors.DeletedObjectHighlightColor,
-                                                                                                this._colors.DeletedAreaTileColor,
-                                                                                                this._colors.DeletedAreaSideColor);
         }
 
         public void Load()
         {
             _toolDescription = new ToolDescription.Builder(_loc.T(TitleLocKey)).AddSection(_loc.T(DescriptionLocKey)).Build();
+
+            this._blockObjectSelectionDrawer = this._blockObjectSelectionDrawerFactory.Create(Color.red,
+                                                                                                Color.red,
+                                                                                                Color.white);
         }
         public override void Enter()
         {
@@ -152,17 +153,17 @@ namespace Cordial.Mods.DemolitionTool.Scripts
             {
                 _selectionActive =    true;
                 _startObject =        blockObjects.First();
-                _startObjectName =    _startObject.GetComponentFast<Prefab>().PrefabName;
+                _startObjectName =    _startObject.GetComponentFast<PrefabSpec>().PrefabName;
 
                 if (_startObject != null)
                 {
                     _startObject.TryGetComponentFast<Demolishable>(out var demolishable);
-                    _startObject.TryGetComponentFast<Building>(out var building);
+                    _startObject.TryGetComponentFast<BuildingSpec>(out var building);
 
                     _selectionIsDemolishable = (demolishable != null);
                     _selectionIsBuilding = (building != null);
                     _selectionIsPath = (_startObjectName.Contains("Path"));
-                 }
+                }
 
                 if ((!_selectionIsDemolishable) && (!_selectionIsBuilding) && (!_selectionIsPath))
                 {
@@ -179,7 +180,7 @@ namespace Cordial.Mods.DemolitionTool.Scripts
                 {
                     if (blockObject != null)
                     {
-                        var blockBaseName = blockObject.GetComponentFast<Prefab>().PrefabName;
+                        var blockBaseName = blockObject.GetComponentFast<PrefabSpec>().PrefabName;
 
                         if (_startObjectName == blockBaseName)
                         {
@@ -225,7 +226,7 @@ namespace Cordial.Mods.DemolitionTool.Scripts
                     {
                         if (blockObject != null)
                         {
-                            var blockBaseName = blockObject.GetComponentFast<Prefab>().PrefabName;
+                            var blockBaseName = blockObject.GetComponentFast<PrefabSpec>().PrefabName;
 
                             if (_startObjectName == blockBaseName)
                             {
@@ -237,12 +238,11 @@ namespace Cordial.Mods.DemolitionTool.Scripts
                     // check if demolishable is a stump/dead tree, or a live one, to set a different dialog box
                     if (_selectionIsDemolishable)
                     {
-                        TreeComponent treeComponent = _startObject.GetComponentFast<TreeComponent>();
+                        TreeComponentSpec treeComponent = _startObject.GetComponentFast<TreeComponentSpec>();
                         if (treeComponent != null)
                         {
                             if (CheckTreeIsStump(_startObject))
-                            {
-                                // dialog box for stumps
+                            { 
                                 ShowDeadStumpDialog();
                             }
                             else if (CheckTreeIsDead(_startObject))
@@ -449,7 +449,7 @@ namespace Cordial.Mods.DemolitionTool.Scripts
                             foreach (var stackObject in _stackedObjects)
                             {
                                 // different object, same location
-                                if (stackObject.GetComponentFast<Prefab>().PrefabName != _startObjectName)
+                                if (stackObject.GetComponentFast<PrefabSpec>().PrefabName != _startObjectName)
                                 {
                                     // different type, do not delete any at this position
                                     deleteAbort = true;   // per iteration
@@ -483,6 +483,8 @@ namespace Cordial.Mods.DemolitionTool.Scripts
 
         private void ResetSelection()
         {
+            _startObject = null;
+            _startObjectName = String.Empty;
             _selectedObjects.Clear();
             _selectionActive = false;
             _selectionIsDemolishable = false;

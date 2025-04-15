@@ -7,6 +7,7 @@ using Timberborn.Hauling;
 using Timberborn.InventorySystem;
 using Timberborn.Workshops;
 using Timberborn.WorkSystem;
+using UnityEngine;
 
 namespace Cordial.Mods.BoosterJuice.Scripts
 {
@@ -33,6 +34,7 @@ namespace Cordial.Mods.BoosterJuice.Scripts
             this._fillInputWorkplaceBehavior = this.GetComponentFast<FillInputWorkplaceBehavior>();
             this._emptyOutputWorkplaceBehavior = this.GetComponentFast<EmptyOutputWorkplaceBehavior>();
         }
+
         public void GetWeightedBehaviors(IList<WeightedBehavior> weightedBehaviors)
         {
             if (!this._growthFertilizationBuilding || !this._blockableBuilding.IsUnblocked)
