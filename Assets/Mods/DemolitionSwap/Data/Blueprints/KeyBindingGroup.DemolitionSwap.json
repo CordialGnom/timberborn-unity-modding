@@ -1,0 +1,7 @@
+{
+  "KeyBindingGroupSpec": {
+    "Id": "DemolitionSwap",
+    "Order": 10101,
+    "LocKey": "Cordial.DemolitionSwap.KeyBindingGroup.DemolitionSwap"
+  }
+}

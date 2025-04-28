@@ -1,0 +1,8 @@
+ID,Text,Comment
+Cordial.DemolitionSwap.DisplayName,Swap active tool with demolition mode,-
+Cordial.DemolitionSwap.Description,This mod swaps the current tool and activates a demolition mode,-
+Cordial.DemolitionSwap.Prompt.Confirm,"All selected objects will be deleted? Do you wish to continue?",-
+Cordial.DemolitionSwap.Prompt.Stump,"A tree stump has been selected. This will only mark stumps for demolition. Do you wish to continue?",-
+Cordial.DemolitionSwap.Prompt.DeadTree,"A dead tree has been selected. This will only mark dead trees for demolition. Do you wish to continue?",-
+Cordial.DemolitionSwap.KeyBindingGroup.DemolitionSwap,Demolition Mode Swap,-
+Cordial.DemolitionSwap.KeyBinding.DemolitionSwap,Demolition Mode,-

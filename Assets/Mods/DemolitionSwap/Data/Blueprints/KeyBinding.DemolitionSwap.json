@@ -1,0 +1,12 @@
+{
+  "KeyBindingSpec": {
+    "Id": "Cordial.DemolitionSwap.KeyBinding.DemolitionSwap",
+    "GroupId": "DemolitionSwap",
+    "LocKey": "Cordial.DemolitionSwap.KeyBinding.DemolitionSwap",
+    "Order": 10,
+    "PrimaryInputBindingSpec": {
+      "Path": "/Keyboard/leftShift"
+    },
+    "AllowOtherModifiers": true
+  }
+}
